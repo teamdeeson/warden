@@ -1,0 +1,5 @@
+<p>This is a list of sites</p>
+
+{% for site in sites %}
+<a href="/sites/{{ site.id }}">{{ site.url }}</a> - {{ site.core_version }}<br />
+{% endfor %}

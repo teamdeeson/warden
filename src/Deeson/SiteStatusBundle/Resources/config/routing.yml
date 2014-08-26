@@ -1,0 +1,15 @@
+deeson_site_status_homepage:
+    path:     /hello/{name}
+    defaults: { _controller: DeesonSiteStatusBundle:Default:index }
+
+sites_list:
+    path:    /sites
+    defaults: { _controller: DeesonSiteStatusBundle:Sites:index }
+
+sites_add:
+    path:    /sites/add
+    defaults: { _controller: DeesonSiteStatusBundle:Sites:add }
+
+sites_details:
+    path:    /sites/{id}
+    defaults: { _controller: DeesonSiteStatusBundle:Sites:detail }

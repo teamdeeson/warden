@@ -1,0 +1,7 @@
+parameters:
+#    deeson_site_status.example.class: Deeson\SiteStatusBundle\Example
+
+services:
+#    deeson_site_status.example:
+#        class: %deeson_site_status.example.class%
+#        arguments: [@service_id, "plain_value", %parameter%]
