@@ -1,5 +1,23 @@
-<p>This is a list of sites</p>
+{% extends 'DeesonSiteStatusBundle::layout.html.twig' %}
 
-{% for site in sites %}
-<a href="/sites/{{ site.id }}">{{ site.url }}</a> - {{ site.core_version }}<br />
-{% endfor %}
+{% block title %}Site Status{% endblock %}
+
+{% block content_header '' %}
+
+{% block content %}
+
+    <p>This is a list of sites</p>
+
+    {% if sites %}
+
+    {% for site in sites %}
+    <a href="/sites/{{ site.getId() }}">{{ site.getUrl() }}</a> - {{ site.getCoreVersion() }}<br />
+    {% endfor %}
+
+    {% else %}
+
+        <p>There are currently no sites registered.</p>
+
+    {% endif %}
+
+{% endblock %}
