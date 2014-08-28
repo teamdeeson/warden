@@ -17,14 +17,14 @@ class StatusRequestController extends Controller {
    *
    * @var int
    */
-  protected $connectionTimeout = 5;
+  protected $connectionTimeout = 10;
 
   /**
    * The array of headers to be used when making a curl connection.
    *
    * @var array
    */
-  protected $connectionHeader = array();
+  protected $connectionHeaders = array();
 
   /**
    * Drupal core version.
@@ -46,6 +46,11 @@ class StatusRequestController extends Controller {
   protected $requestTime = 0;
 
   /**
+   * @var \Deeson\SiteStatusBundle\Document\Site $site
+   */
+  protected $site = NULL;
+
+  /**
    * Constructor
    */
   public function __construct() {
@@ -64,36 +69,19 @@ class StatusRequestController extends Controller {
 
   /**
    * @param \Deeson\SiteStatusBundle\Document\Site $site
+   */
+  public function setSite($site) {
+    $this->site = $site;
+  }
+
+  /**
+   * Get the status data for the site.
    *
    * @return stdclass object.
    */
-  public function getSiteStatusData(\Deeson\SiteStatusBundle\Document\Site $site) {
-    $this->setClientTimeout($this->connectionTimeout);
-
-    $siteStatusUrl = $this->getSiteStatusUrl($site->getUrl(), $site->getSystemStatusToken());
-
-    $startTime = $this->getMicrotimeFloat();
-
-    $request = $this->buzz->get($siteStatusUrl, $this->connectionHeader);
-    $dataRequest = $request->getContent();
-
-    $endTime = $this->getMicrotimeFloat();
-    //printf('<pre>req: %s</pre>', print_r(array($startTime, $endTime, $endTime - $startTime), true));
-    $this->requestTime = $endTime - $startTime;
-
-    //printf('<pre>req: %s</pre>', print_r($data_request, true));
-    $dataRequestObject = json_decode($dataRequest);
-    //printf('<pre>req obj: %s</pre>', print_r($data_request_object, true));
-
-    if (is_string($dataRequestObject->system_status) && $dataRequestObject->system_status == 'encrypted') {
-      $systemStatusData = $this->decrypt($dataRequestObject->data, $site->getSystemStatusEncryptToken());
-      $systemStatusDataObject = json_decode($systemStatusData);
-    }
-    else {
-      // This request isn't encrypted so don't do anything with it but generate an alert?
-      throw new StatusRequestException('Request is not encrypted!');
-      $systemStatusDataObject = $dataRequestObject->system_status;
-    }
+  public function requestSiteStatusData() {
+    $dataRequest = $this->getRequestData();
+    $systemStatusDataObject = $this->processSiteData($dataRequest);
 
     $this->coreVersion = $systemStatusDataObject->system_status->core->drupal->version;
     $this->moduleData = json_decode(json_encode($systemStatusDataObject->system_status->contrib), TRUE);
@@ -145,6 +133,50 @@ class StatusRequestController extends Controller {
    */
   protected function setClientTimeout($timeout) {
     $this->buzz->getClient()->setTimeout($timeout);
+  }
+
+  /**
+   * @return string
+   */
+  protected function getRequestData() {
+    $siteStatusUrl = $this->getSiteStatusUrl($this->site->getUrl(), $this->site->getSystemStatusToken());
+    $this->setClientTimeout($this->connectionTimeout);
+
+    $startTime = $this->getMicrotimeFloat();
+
+    $request = $this->buzz->get($siteStatusUrl, $this->connectionHeaders);
+    $requestData = $request->getContent();
+
+    $endTime = $this->getMicrotimeFloat();
+    $this->requestTime = $endTime - $startTime;
+
+    return $requestData;
+  }
+
+  /**
+   * Process the data returned from the request.
+   *
+   * @param string $requestData
+   *
+   * @return stdClass object
+   *   The data from the request.
+   */
+  protected function processSiteData($requestData) {
+    //printf('<pre>req: %s</pre>', print_r($data_request, true));
+    $requestDataObject = json_decode($requestData);
+    //printf('<pre>req obj: %s</pre>', print_r($data_request_object, true));
+
+    if (is_string($requestDataObject->system_status) && $requestDataObject->system_status == 'encrypted') {
+      $systemStatusData = $this->decrypt($requestDataObject->data, $this->site->getSystemStatusEncryptToken());
+      $systemStatusDataObject = json_decode($systemStatusData);
+    }
+    else {
+      // This request isn't encrypted so don't do anything with it but generate an alert?
+      throw new StatusRequestException('Request is not encrypted!');
+      $systemStatusDataObject = $requestDataObject->system_status;
+    }
+
+    return $systemStatusDataObject;
   }
 
   /**

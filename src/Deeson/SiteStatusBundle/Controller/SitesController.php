@@ -100,8 +100,9 @@ class SitesController extends Controller
 
     /** @var StatusRequestController $statusRequest */
     $statusRequest = $this->get('status_request');
-    $statusRequest->setConnectionTimeout(10);
-    $statusRequest->getSiteStatusData($site);
+    //$statusRequest->setConnectionTimeout(10);
+    $statusRequest->setSite($site);
+    $statusRequest->requestSiteStatusData();
 
     $coreVersion = $statusRequest->getCoreVersion();
     //$moduleData = $statusRequest->getModuleData();
