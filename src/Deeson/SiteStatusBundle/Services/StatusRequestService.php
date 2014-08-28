@@ -1,6 +1,6 @@
 <?php
 
-namespace Deeson\SiteStatusBundle\Controller;
+namespace Deeson\SiteStatusBundle\Services;
 
 use Deeson\SiteStatusBundle\Exception\StatusRequestException;
 
