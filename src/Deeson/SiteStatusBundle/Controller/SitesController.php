@@ -98,15 +98,15 @@ class SitesController extends Controller
   public function UpdateCoreAction($id) {
     $site = $this->getSiteData($id);
 
-    /** @var StatusRequestController $statusRequest */
-    $statusRequest = $this->get('status_request');
-    //$statusRequest->setConnectionTimeout(10);
-    $statusRequest->setSite($site);
-    $statusRequest->requestSiteStatusData();
+    /** @var StatusRequestService $statusService */
+    $statusService = $this->get('site_status_service');
+    //$statusService->setConnectionTimeout(10);
+    $statusService->setSite($site);
+    $statusService->requestSiteStatusData();
 
-    $coreVersion = $statusRequest->getCoreVersion();
+    $coreVersion = $statusService->getCoreVersion();
     //$moduleData = $statusRequest->getModuleData();
-    $requestTime = $statusRequest->getRequestTime();
+    $requestTime = $statusService->getRequestTime();
 
     $this->updateSite($id, array('coreVersion' => $coreVersion));
 

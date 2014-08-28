@@ -6,5 +6,23 @@ services:
 #        class: %deeson_site_status.example.class%
 #        arguments: [@service_id, "plain_value", %parameter%]
 
-    status_request:
-        class: Deeson\SiteStatusBundle\Controller\StatusRequestController
+# cURL client for Buzz
+    buzz.client.file_get_contents:
+        class:  Buzz\Client\FileGetContents
+        public: false
+        calls:
+          - [setVerifyPeer, [false]]
+    buzz.client.curl:
+        class:  Buzz\Client\Curl
+        public: false
+        calls:
+          - [setVerifyPeer, [false]]
+
+    # Buzz browser
+    buzz.browser:
+        class:     Buzz\Browser
+        arguments: ['@buzz.client.curl']
+
+    site_status_service:
+        class: Deeson\SiteStatusBundle\Services\StatusRequestService
+        arguments: ['@buzz.browser']

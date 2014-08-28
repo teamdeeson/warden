@@ -3,9 +3,8 @@
 namespace Deeson\SiteStatusBundle\Controller;
 
 use Deeson\SiteStatusBundle\Exception\StatusRequestException;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
-class StatusRequestController extends Controller {
+class StatusRequestService {
 
   /**
    * @var \Buzz\Browser
@@ -53,9 +52,8 @@ class StatusRequestController extends Controller {
   /**
    * Constructor
    */
-  public function __construct() {
-    $this->buzz = new \Buzz\Browser();
-    $this->buzz->setClient(new \Buzz\Client\Curl());
+  public function __construct($buzz) {
+    $this->buzz = $buzz;
   }
 
   /**
