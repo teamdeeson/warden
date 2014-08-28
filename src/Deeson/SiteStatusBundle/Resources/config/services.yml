@@ -5,3 +5,6 @@ services:
 #    deeson_site_status.example:
 #        class: %deeson_site_status.example.class%
 #        arguments: [@service_id, "plain_value", %parameter%]
+
+    status_request:
+        class: Deeson\SiteStatusBundle\Controller\StatusRequestController

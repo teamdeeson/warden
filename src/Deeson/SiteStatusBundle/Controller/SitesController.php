@@ -2,7 +2,6 @@
 
 namespace Deeson\SiteStatusBundle\Controller;
 
-use Deeson\SiteStatusBundle\Exception\SitesStatusException;
 use Deeson\SiteStatusBundle\Document\Site;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -31,38 +30,8 @@ class SitesController extends Controller
    * @return \Symfony\Component\HttpFoundation\Response
    */
   public function DetailAction($id) {
-    $site = $this->getSiteData($id);
-    //printf('<pre>%s</pre>', print_r($site_data, true));
-
-    $site_status_url = $site->getUrl() . '/admin/reports/system_status/' . $site->getSystemStatusToken();
-
-    /*$buzz = $this->container->get('buzz');
-    $request = $buzz->get($site_status_url);
-    $data_request = $request->getContent();
-
-    //printf('<pre>req: %s</pre>', print_r($data_request, true));
-    $data_request_object = json_decode($data_request);
-    //printf('<pre>req obj: %s</pre>', print_r($data_request_object, true));
-    if (is_string($data_request_object->system_status) && $data_request_object->system_status == 'encrypted') {
-      $system_status_data = $this->decrypt($data_request_object->data, $site->getSystemStatusEncryptToken());
-      $system_status_data_object = json_decode($system_status_data);
-    }
-    else {
-      throw new SitesStatusException('Request is not encrypted!');
-      $system_status_data_object = $data_request_object->system_status;
-      // This request isn't encrypted so don't do anything with it but generate an alert?
-    }*/
-    //printf('<pre>%s</pre>', print_r($system_status_data_object, true);
-    /*$core_version = $system_status_data_object->system_status->core->drupal->version;
-
-    if ($site->getCoreVersion() !== '') {
-      print 'update core';
-      $this->updateSite($id, array('coreVersion' => $core_version));
-    }*/
-
     $params = array(
-      'site' => $site,
-      'status_data' => '', //print_r($system_status_data_object, true),
+      'site' => $this->getSiteData($id),
     );
 
     return $this->render('DeesonSiteStatusBundle:Sites:detail.html.twig', $params);
@@ -75,18 +44,18 @@ class SitesController extends Controller
    */
   public function AddAction() {
     $request = Request::createFromGlobals();
-    $query_site_url = $request->query->get('siteUrl');
-    list($site_url, $system_status_token, $system_status_encrypt_token) = explode('|', $query_site_url);
+    $querySiteUrl = $request->query->get('siteUrl');
+    list($siteUrl, $systemStatusToken, $systemStatusEncryptToken) = explode('|', $querySiteUrl);
 
     $dm = $this->getDoctrineManager();
     $repository = $this->getDoctrineRepository($dm);
-    $sites_by_url = $repository->findBy(array('url' => $site_url));
+    $sitesByUrl = $repository->findBy(array('url' => $siteUrl));
 
-    if ($sites_by_url->count() < 1) {
+    if ($sitesByUrl->count() < 1) {
       $site = new Site();
-      $site->setUrl($site_url);
-      $site->setSystemStatusToken($system_status_token);
-      $site->setSystemStatusEncryptToken($system_status_encrypt_token);
+      $site->setUrl($siteUrl);
+      $site->setSystemStatusToken($systemStatusToken);
+      $site->setSystemStatusEncryptToken($systemStatusEncryptToken);
 
       $dm->persist($site);
       $dm->flush();
@@ -97,8 +66,6 @@ class SitesController extends Controller
       $this->get('session')->getFlashBag()->add('error', 'Your site is already registered!');
     }
 
-    //printf('<pre>%s</pre>', print_r($site, true));
-    //die();
     return $this->redirect('/sites');
   }
 
@@ -131,29 +98,18 @@ class SitesController extends Controller
   public function UpdateCoreAction($id) {
     $site = $this->getSiteData($id);
 
-    $site_status_url = $site->getUrl() . '/admin/reports/system_status/' . $site->getSystemStatusToken();
+    /** @var StatusRequestController $statusRequest */
+    $statusRequest = $this->get('status_request');
+    $statusRequest->setConnectionTimeout(10);
+    $statusRequest->getSiteStatusData($site);
 
-    $buzz = $this->container->get('buzz');
-    $request = $buzz->get($site_status_url);
-    $data_request = $request->getContent();
+    $coreVersion = $statusRequest->getCoreVersion();
+    //$moduleData = $statusRequest->getModuleData();
+    $requestTime = $statusRequest->getRequestTime();
 
-    //printf('<pre>req: %s</pre>', print_r($data_request, true));
-    $data_request_object = json_decode($data_request);
-    //printf('<pre>req obj: %s</pre>', print_r($data_request_object, true));
-    if (is_string($data_request_object->system_status) && $data_request_object->system_status == 'encrypted') {
-      $system_status_data = $this->decrypt($data_request_object->data, $site->getSystemStatusEncryptToken());
-      $system_status_data_object = json_decode($system_status_data);
-    }
-    else {
-      throw new SitesStatusException('Request is not encrypted!');
-      $system_status_data_object = $data_request_object->system_status;
-      // This request isn't encrypted so don't do anything with it but generate an alert?
-    }
-    //printf('<pre>%s</pre>', print_r($system_status_data_object, true);
-    $core_version = $system_status_data_object->system_status->core->drupal->version;
-    $this->updateSite($id, array('coreVersion' => $core_version));
+    $this->updateSite($id, array('coreVersion' => $coreVersion));
 
-    $this->get('session')->getFlashBag()->add('notice', 'Your site has had the core version updated!');
+    $this->get('session')->getFlashBag()->add('notice', 'Your site has had the core version updated! (' . $requestTime . ' secs)');
 
     return $this->redirect('/sites/' . $id);
   }
@@ -162,13 +118,13 @@ class SitesController extends Controller
    * Update the site details.
    *
    * @param $id
-   * @param $site_data
+   * @param $siteData
    */
-  protected function updateSite($id, $site_data) {
+  protected function updateSite($id, $siteData) {
     $dm = $this->getDoctrineManager();
     $site = $this->getDoctrineRepository($dm)->find($id);
 
-    foreach ($site_data as $key => $value) {
+    foreach ($siteData as $key => $value) {
       $method = 'set' . ucfirst($key);
       if (!method_exists($site, $method)) {
         $this->get('session')->getFlashBag()->add('error', "Error: $method not valid on site object.");
@@ -227,21 +183,5 @@ class SitesController extends Controller
     }
 
     return $dm->getRepository('DeesonSiteStatusBundle:Site');
-  }
-
-
-  /**
-   * System Status: decrypt an encrypted message.
-   */
-  protected function decrypt($ciphertext_base64, $encrypt_token) {
-    $key = hash("SHA256", $encrypt_token, TRUE);
-    $iv_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC);
-    $ciphertext_dec = base64_decode($ciphertext_base64);
-    $iv_dec = substr($ciphertext_dec, 0, $iv_size);
-    $ciphertext_dec = substr($ciphertext_dec, $iv_size);
-    $plaintext_dec = mcrypt_decrypt(MCRYPT_RIJNDAEL_128, $key, $ciphertext_dec, MCRYPT_MODE_CBC, $iv_dec);
-
-    //return $plaintext_dec;
-    return utf8_decode(trim($plaintext_dec));
   }
 }
