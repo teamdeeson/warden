@@ -26,3 +26,7 @@ services:
     site_status_service:
         class: Deeson\SiteStatusBundle\Services\StatusRequestService
         arguments: ['@buzz.browser']
+
+    site_manager:
+        class: Deeson\SiteStatusBundle\Managers\SiteManager
+        arguments: [@doctrine_mongodb]

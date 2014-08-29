@@ -2,20 +2,23 @@
 
 namespace Deeson\SiteStatusBundle\Controller;
 
-use Deeson\SiteStatusBundle\Document\Site;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Deeson\SiteStatusBundle\Managers\SiteManager;
 
-class SitesController extends Controller
-{
+class SitesController extends Controller {
   /**
    * Default action for listing the sites available.
    *
    * @return \Symfony\Component\HttpFoundation\Response
    */
   public function IndexAction() {
+    /** @var SiteManager $manager */
+    $manager = $this->get('site_manager');
+    $sites = $manager->getAllEntities();
+
     $params = array(
-      'sites' => $this->getSitesList(),
+      'sites' => $sites,
     );
 
     return $this->render('DeesonSiteStatusBundle:Sites:index.html.twig', $params);
@@ -29,9 +32,13 @@ class SitesController extends Controller
    *
    * @return \Symfony\Component\HttpFoundation\Response
    */
-  public function DetailAction($id) {
+  public function ShowAction($id) {
+    /** @var SiteManager $manager */
+    $manager = $this->get('site_manager');
+    $site = $manager->getEntityById($id);
+
     $params = array(
-      'site' => $this->getSiteData($id),
+      'site' => $site,
     );
 
     return $this->render('DeesonSiteStatusBundle:Sites:detail.html.twig', $params);
@@ -47,19 +54,15 @@ class SitesController extends Controller
     $querySiteUrl = $request->query->get('siteUrl');
     list($siteUrl, $systemStatusToken, $systemStatusEncryptToken) = explode('|', $querySiteUrl);
 
-    $dm = $this->getDoctrineManager();
-    $repository = $this->getDoctrineRepository($dm);
-    $sitesByUrl = $repository->findBy(array('url' => $siteUrl));
+    /** @var SiteManager $manager */
+    $manager = $this->get('site_manager');
 
-    if ($sitesByUrl->count() < 1) {
-      $site = new Site();
+    if (!$manager->siteExists($siteUrl)) {
+      $site = $manager->makeNewItem();
       $site->setUrl($siteUrl);
       $site->setSystemStatusToken($systemStatusToken);
       $site->setSystemStatusEncryptToken($systemStatusEncryptToken);
-
-      $dm->persist($site);
-      $dm->flush();
-
+      $manager->saveEntity($site);
       $this->get('session')->getFlashBag()->add('notice', 'Your site has now been registered.');
     }
     else {
@@ -78,11 +81,9 @@ class SitesController extends Controller
    * @return \Symfony\Component\HttpFoundation\RedirectResponse
    */
   public function DeleteAction($id) {
-    $site = $this->getSiteData($id);
-
-    $dm = $this->getDoctrineManager();
-    $dm->remove($site);
-    $dm->flush();
+    /** @var SiteManager $manager */
+    $manager = $this->get('site_manager');
+    $manager->deleteEntity($id);
 
     return $this->redirect('/sites');
   }
@@ -96,7 +97,10 @@ class SitesController extends Controller
    * @return \Symfony\Component\HttpFoundation\RedirectResponse
    */
   public function UpdateCoreAction($id) {
-    $site = $this->getSiteData($id);
+    //$requestTime = 0;
+    //$coreVersion = '';
+    $manager = $this->get('site_manager');
+    $site = $manager->getEntityById($id);
 
     /** @var StatusRequestService $statusService */
     $statusService = $this->get('site_status_service');
@@ -108,81 +112,12 @@ class SitesController extends Controller
     //$moduleData = $statusRequest->getModuleData();
     $requestTime = $statusService->getRequestTime();
 
-    $this->updateSite($id, array('coreVersion' => $coreVersion));
+    /** @var SiteManager $manager */
+    $manager = $this->get('site_manager');
+    $manager->updateEntity($id, array('coreVersion' => $coreVersion));
 
     $this->get('session')->getFlashBag()->add('notice', 'Your site has had the core version updated! (' . $requestTime . ' secs)');
 
     return $this->redirect('/sites/' . $id);
-  }
-
-  /**
-   * Update the site details.
-   *
-   * @param $id
-   * @param $siteData
-   */
-  protected function updateSite($id, $siteData) {
-    $dm = $this->getDoctrineManager();
-    $site = $this->getDoctrineRepository($dm)->find($id);
-
-    foreach ($siteData as $key => $value) {
-      $method = 'set' . ucfirst($key);
-      if (!method_exists($site, $method)) {
-        $this->get('session')->getFlashBag()->add('error', "Error: $method not valid on site object.");
-        continue;
-      }
-      $site->$method($value);
-    }
-
-    $dm->flush();
-  }
-
-  /**
-   * Get the list of sites.
-   *
-   * @return mixed
-   */
-  protected function getSitesList() {
-    $repository = $this->getDoctrineRepository();
-
-    return $repository->findAll();
-  }
-
-  /**
-   * Get the specific site data.
-   *
-   * @param int $id
-   *   The site id.
-   *
-   * @return \Deeson\SiteStatusBundle\Document\Site
-   */
-  protected function getSiteData($id) {
-    $repository = $this->getDoctrineRepository();
-
-    return $repository->find($id);
-  }
-
-  /**
-   * Get the doctrine mongodb manager object.
-   *
-   * @return \Doctrine\ODM\MongoDB\DocumentManager
-   */
-  protected function getDoctrineManager() {
-    return $this->get('doctrine_mongodb')->getManager();
-  }
-
-  /**
-   * Get the Doctrine ObjectRepository for the respective collection.
-   *
-   * @param \Doctrine\ODM\MongoDB\DocumentManager $dm
-   *
-   * @return \Doctrine\Common\Persistence\ObjectRepository
-   */
-  protected function getDoctrineRepository($dm = NULL) {
-    if (is_null($dm)) {
-      $dm = $this->getDoctrineManager();
-    }
-
-    return $dm->getRepository('DeesonSiteStatusBundle:Site');
   }
 }

@@ -10,9 +10,9 @@ sites_add:
     path:    /sites/add
     defaults: { _controller: DeesonSiteStatusBundle:Sites:add }
 
-sites_details:
+sites_show:
     path:    /sites/{id}
-    defaults: { _controller: DeesonSiteStatusBundle:Sites:detail }
+    defaults: { _controller: DeesonSiteStatusBundle:Sites:show }
 
 sites_delete:
     path:    /sites/{id}/delete
@@ -21,3 +21,11 @@ sites_delete:
 sites_update_core:
     path:    /sites/{id}/update-core
     defaults: { _controller: DeesonSiteStatusBundle:Sites:updatecore }
+
+modules_list:
+    path:    /modules
+    defaults: { _controller: DeesonSiteStatusBundle:Modules:index }
+
+modules_show:
+    path:    /modules/{id}
+    defaults: { _controller: DeesonSiteStatusBundle:Modules:show }

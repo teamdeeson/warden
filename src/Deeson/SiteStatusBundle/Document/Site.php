@@ -9,7 +9,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
  *     collection="sites"
  * )
  */
-class Site {
+class Site extends BaseDocument {
 
   /**
    * @Mongodb\Id
@@ -124,6 +124,5 @@ class Site {
   public function setCoreVersion($coreVersion) {
     $this->coreVersion = $coreVersion;
   }
-
 
 }
