@@ -1,0 +1,15 @@
+{% extends 'DeesonSiteStatusBundle::layout.html.twig' %}
+
+{% block title %}View module: {{ module.getName() }}{% endblock %}
+
+{% block content_header '' %}
+
+{% block content %}
+
+    <p>This is a details of a module</p>
+
+    <p>Name: {{ module.getName() }}</p>
+
+    <a href="/modules"><< Back</a>
+
+{% endblock %}

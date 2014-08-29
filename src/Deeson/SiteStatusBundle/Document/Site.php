@@ -12,11 +12,6 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 class Site extends BaseDocument {
 
   /**
-   * @Mongodb\Id
-   */
-  protected $id;
-
-  /**
    * @Mongodb\String
    */
   protected $name;
@@ -40,20 +35,6 @@ class Site extends BaseDocument {
    * @Mongodb\String
    */
   protected $systemStatusEncryptToken;
-
-  /**
-   * @return mixed
-   */
-  public function getId() {
-    return $this->id;
-  }
-
-  /**
-   * @param mixed $id
-   */
-  public function setId($id) {
-    $this->id = $id;
-  }
 
   /**
    * @return mixed

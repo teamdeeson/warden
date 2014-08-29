@@ -30,3 +30,7 @@ services:
     site_manager:
         class: Deeson\SiteStatusBundle\Managers\SiteManager
         arguments: [@doctrine_mongodb]
+
+    module_manager:
+        class: Deeson\SiteStatusBundle\Managers\ModuleManager
+        arguments: [@doctrine_mongodb]

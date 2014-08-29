@@ -1,0 +1,46 @@
+<?php
+
+namespace Deeson\SiteStatusBundle\Controller;
+
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+
+class ModulesController extends Controller {
+
+  /**
+   * Default action for listing the modules available.
+   *
+   * @return \Symfony\Component\HttpFoundation\Response
+   */
+  public function IndexAction() {
+    /** @var ModuleManager $manager */
+    $manager = $this->get('module_manager');
+    $modules = $manager->getAllEntities();
+
+    $params = array(
+      'modules' => $modules,
+    );
+
+    return $this->render('DeesonSiteStatusBundle:Modules:index.html.twig', $params);
+  }
+
+  /**
+   * Show the detail of the specific module
+   *
+   * @param int $id
+   *   The id of the site to view
+   *
+   * @return \Symfony\Component\HttpFoundation\Response
+   */
+  public function ShowAction($id) {
+    /** @var ModuleManager $manager */
+    $manager = $this->get('module_manager');
+    $module = $manager->getEntityById($id);
+
+    $params = array(
+      'module' => $module,
+    );
+
+    return $this->render('DeesonSiteStatusBundle:Modules:show.html.twig', $params);
+  }
+
+}

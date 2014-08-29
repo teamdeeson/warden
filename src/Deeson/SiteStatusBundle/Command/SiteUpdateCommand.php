@@ -2,15 +2,16 @@
 
 namespace Deeson\SiteStatusBundle\Command;
 
+use Deeson\SiteStatusBundle\Document\Module;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Deeson\SiteStatusBundle\Managers\SiteManager;
+use Deeson\SiteStatusBundle\Managers\ModuleManager;
 
 class SiteUpdateCommand extends ContainerAwareCommand {
-
-  protected $dm;
 
   protected function configure() {
     $this->setName('deeson:site-status:update')
@@ -19,9 +20,12 @@ class SiteUpdateCommand extends ContainerAwareCommand {
   }
 
   protected function execute(InputInterface $input, OutputInterface $output) {
-    $this->dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
-    $repository = $this->dm->getRepository('DeesonSiteStatusBundle:Site');
-    $sites = $repository->findAll();
+    /** @var SiteManager $siteManager */
+    $siteManager = $this->getContainer()->get('site_manager');
+    /** @var ModuleManager $moduleManager */
+    $moduleManager = $this->getContainer()->get('module_manager');
+
+    $sites = $siteManager->getAllEntities();
 
     foreach ($sites as $site) {
       /** @var \Deeson\SiteStatusBundle\Document\Site $site */
@@ -38,25 +42,26 @@ class SiteUpdateCommand extends ContainerAwareCommand {
       $requestTime = $statusService->getRequestTime();
 
       //$output->writeln('modules: ' . print_r($moduleData, TRUE));
+
+      foreach ($moduleData as $name => $version) {
+        $moduleExists = $moduleManager->exists($name);
+
+        if ($moduleExists) {
+          continue;
+        }
+
+        /** @var \Deeson\SiteStatusBundle\Document\Module $module */
+        $module = $moduleManager->makeNewItem();
+        $module->setName($name);
+        $moduleManager->saveEntity($module);
+      }
+
       $output->writeln('request time: ' . $requestTime);
 
-      $this->updateSite($site, array('coreVersion' => $coreVersion));
+      $siteManager->updateEntity($site->getId(), array('coreVersion' => $coreVersion));
 
       $output->writeln('Update version: ' . $coreVersion);
     }
-  }
-
-  protected function updateSite($site, $siteData) {
-    foreach ($siteData as $key => $value) {
-      $method = 'set' . ucfirst($key);
-      if (!method_exists($site, $method)) {
-        //$this->get('session')->getFlashBag()->add('error', "Error: $method not valid on site object.");
-        continue;
-      }
-      $site->$method($value);
-    }
-
-    $this->dm->flush();
   }
 
 }

@@ -14,15 +14,7 @@
         </div>
     {% endfor %}
 
-    {% block content_header %}
-        <ul id="menu">
-            {% block content_header_more %}
-                <li><a href="{{ path('_demo') }}">Demo Home</a></li>
-            {% endblock %}
-        </ul>
-
-        <div style="clear: both"></div>
-    {% endblock %}
+    <a href="/sites">Sites</a> | <a href="/modules">Modules</a>
 
     <div class="block">
         {% block content %}{% endblock %}

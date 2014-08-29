@@ -41,7 +41,7 @@ class SitesController extends Controller {
       'site' => $site,
     );
 
-    return $this->render('DeesonSiteStatusBundle:Sites:detail.html.twig', $params);
+    return $this->render('DeesonSiteStatusBundle:Sites:show.html.twig', $params);
   }
 
   /**
@@ -57,7 +57,7 @@ class SitesController extends Controller {
     /** @var SiteManager $manager */
     $manager = $this->get('site_manager');
 
-    if (!$manager->siteExists($siteUrl)) {
+    if (!$manager->exists($siteUrl)) {
       $site = $manager->makeNewItem();
       $site->setUrl($siteUrl);
       $site->setSystemStatusToken($systemStatusToken);

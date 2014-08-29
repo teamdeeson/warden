@@ -2,29 +2,28 @@
 
 namespace Deeson\SiteStatusBundle\Managers;
 
-use Deeson\SiteStatusBundle\Document\Site;
+use Deeson\SiteStatusBundle\Document\Module;
 
-class SiteManager extends BaseManager {
+class ModuleManager extends BaseManager {
 
   /**
-   * Return boolean of whether a site with this URL already exists.
+   * Returns a boolean of whether a module with this name already exists.
    *
-   * @param string $url
+   * @param string $name
    *
    * @return bool
    */
-  public function exists($url) {
-    $result = $this->getRepository()->findBy(array('url' => $url));
+  public function exists($name) {
+    $result = $this->getRepository()->findBy(array('name' => $name));
     return $result->count() > 0;
   }
 
   /**
    * @return string
    *   The type of this manager.
-   *   e.g. 'Site'
    */
   public function getType() {
-    return 'Site';
+    return 'Module';
   }
 
   /**
@@ -33,6 +32,7 @@ class SiteManager extends BaseManager {
    * @return Site
    */
   public function makeNewItem() {
-    return new Site();
+    return new Module();
   }
+
 }
