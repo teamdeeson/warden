@@ -37,6 +37,11 @@ class Site extends BaseDocument {
   protected $systemStatusEncryptToken;
 
   /**
+   * @Mongodb\Hash
+   */
+  protected $modules;
+
+  /**
    * @return mixed
    */
   public function getName() {
@@ -104,6 +109,20 @@ class Site extends BaseDocument {
    */
   public function setCoreVersion($coreVersion) {
     $this->coreVersion = $coreVersion;
+  }
+
+  /**
+   * @return mixed
+   */
+  public function getModules() {
+    return $this->modules;
+  }
+
+  /**
+   * @param mixed $modules
+   */
+  public function setModules($modules) {
+    $this->modules = $modules;
   }
 
 }

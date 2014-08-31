@@ -16,7 +16,7 @@ class StatusRequestService {
    *
    * @var int
    */
-  protected $connectionTimeout = 10;
+  protected $connectionTimeout = 20;
 
   /**
    * The array of headers to be used when making a curl connection.

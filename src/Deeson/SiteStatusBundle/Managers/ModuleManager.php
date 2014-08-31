@@ -13,7 +13,7 @@ class ModuleManager extends BaseManager {
    *
    * @return bool
    */
-  public function exists($name) {
+  public function nameExists($name) {
     $result = $this->getRepository()->findBy(array('name' => $name));
     return $result->count() > 0;
   }

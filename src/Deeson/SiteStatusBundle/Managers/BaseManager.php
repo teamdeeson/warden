@@ -47,7 +47,15 @@ abstract class BaseManager {
     return $result;
   }
 
-  public function updateEntity($id, $data) {
+  public function getEntitiesBy(array $criteria, array $orderBy = null, $limit = null, $offset = null) {
+    $result = $this->getRepository()->findBy($criteria, $orderBy, $limit, $offset);
+    if (empty($result)) {
+      throw new EntityNotFoundException("No entities found for {$this->getType()}");
+    }
+    return $result;
+  }
+
+  public function updateEntity($id, array $data) {
     $entity = $this->getEntityById($id);
 
     foreach ($data as $key => $value) {

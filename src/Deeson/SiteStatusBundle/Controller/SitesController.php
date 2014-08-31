@@ -5,8 +5,10 @@ namespace Deeson\SiteStatusBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Deeson\SiteStatusBundle\Managers\SiteManager;
+use Deeson\SiteStatusBundle\Services\StatusRequestService;
 
 class SitesController extends Controller {
+
   /**
    * Default action for listing the sites available.
    *
@@ -15,7 +17,7 @@ class SitesController extends Controller {
   public function IndexAction() {
     /** @var SiteManager $manager */
     $manager = $this->get('site_manager');
-    $sites = $manager->getAllEntities();
+    $sites = $manager->getEntitiesBy(array(), array('url' => 'asc'));
 
     $params = array(
       'sites' => $sites,
@@ -57,7 +59,7 @@ class SitesController extends Controller {
     /** @var SiteManager $manager */
     $manager = $this->get('site_manager');
 
-    if (!$manager->exists($siteUrl)) {
+    if (!$manager->urlExists($siteUrl)) {
       $site = $manager->makeNewItem();
       $site->setUrl($siteUrl);
       $site->setSystemStatusToken($systemStatusToken);
@@ -97,8 +99,6 @@ class SitesController extends Controller {
    * @return \Symfony\Component\HttpFoundation\RedirectResponse
    */
   public function UpdateCoreAction($id) {
-    //$requestTime = 0;
-    //$coreVersion = '';
     $manager = $this->get('site_manager');
     $site = $manager->getEntityById($id);
 
@@ -109,12 +109,17 @@ class SitesController extends Controller {
     $statusService->requestSiteStatusData();
 
     $coreVersion = $statusService->getCoreVersion();
-    //$moduleData = $statusRequest->getModuleData();
+    $moduleData = $statusService->getModuleData();
+    ksort($moduleData);
     $requestTime = $statusService->getRequestTime();
 
     /** @var SiteManager $manager */
     $manager = $this->get('site_manager');
-    $manager->updateEntity($id, array('coreVersion' => $coreVersion));
+    $siteData = array(
+      'coreVersion' => $coreVersion,
+      'modules' => $moduleData,
+    );
+    $manager->updateEntity($site->getId(), $siteData);
 
     $this->get('session')->getFlashBag()->add('notice', 'Your site has had the core version updated! (' . $requestTime . ' secs)');
 

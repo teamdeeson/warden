@@ -6,7 +6,7 @@
 
 {% block content %}
 
-    <p>This is a details of a site</p>
+    <p>This is a details of a site:</p>
 
     <p>URL: {{ site.getUrl() }}</p>
     <p>Core Version: {{ site.getCoreVersion() }}</p>
@@ -14,6 +14,14 @@
     <p>System Status Encrypt Token: {{ site.getSystemStatusEncryptToken() }}</p>
 
     <a href="/sites/{{ site.getId() }}/update-core">Get Core Version</a>
+    <br />
+    <br />
+    <p>Modules:</p>
+    <ul>
+        {% for name, module in site.getModules() %}
+        <li>{{ name }}: {{ module.version }}</li>
+        {% endfor %}
+    </ul>
     <br />
     <br />
 

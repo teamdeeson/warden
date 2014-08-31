@@ -13,7 +13,7 @@ class SiteManager extends BaseManager {
    *
    * @return bool
    */
-  public function exists($url) {
+  public function urlExists($url) {
     $result = $this->getRepository()->findBy(array('url' => $url));
     return $result->count() > 0;
   }

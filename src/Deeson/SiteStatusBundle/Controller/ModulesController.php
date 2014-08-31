@@ -3,6 +3,7 @@
 namespace Deeson\SiteStatusBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Deeson\SiteStatusBundle\Managers\ModuleManager;
 
 class ModulesController extends Controller {
 
@@ -14,7 +15,7 @@ class ModulesController extends Controller {
   public function IndexAction() {
     /** @var ModuleManager $manager */
     $manager = $this->get('module_manager');
-    $modules = $manager->getAllEntities();
+    $modules = $manager->getEntitiesBy(array(), array('name' => 'asc'));
 
     $params = array(
       'modules' => $modules,

@@ -39,12 +39,13 @@ class SiteUpdateCommand extends ContainerAwareCommand {
 
       $coreVersion = $statusService->getCoreVersion();
       $moduleData = $statusService->getModuleData();
+      ksort($moduleData);
       $requestTime = $statusService->getRequestTime();
 
       //$output->writeln('modules: ' . print_r($moduleData, TRUE));
 
       foreach ($moduleData as $name => $version) {
-        $moduleExists = $moduleManager->exists($name);
+        $moduleExists = $moduleManager->nameExists($name);
 
         if ($moduleExists) {
           continue;
@@ -58,7 +59,11 @@ class SiteUpdateCommand extends ContainerAwareCommand {
 
       $output->writeln('request time: ' . $requestTime);
 
-      $siteManager->updateEntity($site->getId(), array('coreVersion' => $coreVersion));
+      $siteData = array(
+        'coreVersion' => $coreVersion,
+        'modules' => $moduleData,
+      );
+      $siteManager->updateEntity($site->getId(), $siteData);
 
       $output->writeln('Update version: ' . $coreVersion);
     }
