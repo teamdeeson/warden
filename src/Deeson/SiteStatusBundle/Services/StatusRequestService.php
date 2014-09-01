@@ -170,8 +170,8 @@ class StatusRequestService {
     }
     else {
       // This request isn't encrypted so don't do anything with it but generate an alert?
-      throw new StatusRequestException('Request is not encrypted!');
-      $systemStatusDataObject = $requestDataObject->system_status;
+      //throw new StatusRequestException('Request is not encrypted!');
+      $systemStatusDataObject = $requestDataObject;
     }
 
     return $systemStatusDataObject;

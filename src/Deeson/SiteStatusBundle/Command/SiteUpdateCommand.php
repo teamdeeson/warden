@@ -15,8 +15,9 @@ class SiteUpdateCommand extends ContainerAwareCommand {
 
   protected function configure() {
     $this->setName('deeson:site-status:update')
-      ->setDescription('Update the site status details');
+      ->setDescription('Update the site status details')
       //->addArgument()
+      ->addOption('import-new', NULL, InputOption::VALUE_NONE, 'If set will only import data on newly created sites');
   }
 
   protected function execute(InputInterface $input, OutputInterface $output) {
@@ -25,7 +26,12 @@ class SiteUpdateCommand extends ContainerAwareCommand {
     /** @var ModuleManager $moduleManager */
     $moduleManager = $this->getContainer()->get('module_manager');
 
-    $sites = $siteManager->getAllEntities();
+    if ($input->getOption('import-new')) {
+      $sites = $siteManager->getEntitiesBy(array('isNew' => TRUE));
+    }
+    else {
+      $sites = $siteManager->getAllEntities();
+    }
 
     foreach ($sites as $site) {
       /** @var \Deeson\SiteStatusBundle\Document\Site $site */

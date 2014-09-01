@@ -33,6 +33,8 @@ class SiteManager extends BaseManager {
    * @return Site
    */
   public function makeNewItem() {
-    return new Site();
+    $site = new Site();
+    $site->setIsNew(TRUE);
+    return $site;
   }
 }

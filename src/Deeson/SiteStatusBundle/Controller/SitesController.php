@@ -116,6 +116,7 @@ class SitesController extends Controller {
     /** @var SiteManager $manager */
     $manager = $this->get('site_manager');
     $siteData = array(
+      'isNew' => FALSE,
       'coreVersion' => $coreVersion,
       'modules' => $moduleData,
     );

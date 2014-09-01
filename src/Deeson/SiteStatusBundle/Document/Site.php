@@ -17,6 +17,11 @@ class Site extends BaseDocument {
   protected $name;
 
   /**
+   * @Mongodb\Boolean
+   */
+  protected $isNew;
+
+  /**
    * @Mongodb\String
    */
   protected $url;
@@ -123,6 +128,20 @@ class Site extends BaseDocument {
    */
   public function setModules($modules) {
     $this->modules = $modules;
+  }
+
+  /**
+   * @return mixed
+   */
+  public function getIsNew() {
+    return $this->isNew;
+  }
+
+  /**
+   * @param boolean $isNew
+   */
+  public function setIsNew($isNew) {
+    $this->isNew = $isNew;
   }
 
 }
