@@ -66,6 +66,7 @@ class SiteUpdateCommand extends ContainerAwareCommand {
       $output->writeln('request time: ' . $requestTime);
 
       $siteData = array(
+        'isNew' => FALSE,
         'coreVersion' => $coreVersion,
         'modules' => $moduleData,
       );
