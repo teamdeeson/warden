@@ -1,5 +1,5 @@
-deeson_site_status_homepage:
-    path:     /hello/{name}
+_dashboard:
+    pattern:  /
     defaults: { _controller: DeesonSiteStatusBundle:Default:index }
 
 sites_list:

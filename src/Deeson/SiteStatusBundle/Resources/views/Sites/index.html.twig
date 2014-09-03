@@ -11,7 +11,7 @@
     {% if sites %}
 
     {% for site in sites %}
-    <a href="/sites/{{ site.getId() }}">{{ site.getUrl() }}</a> - {{ site.getCoreVersion() }} {% if site.getIsNew() %}(new){% endif %}<br />
+    <a href="/sites/{{ site.getId() }}">{{ site.getUrl() }}</a> - {{ site.getCoreVersion() }} ({{ site.getLatestCoreVersion() }}, {% if site.compareCoreVersion() %}Y{% else %}N{% endif %}) {% if site.getIsNew() %}(new){% endif %}<br />
     {% endfor %}
 
     {% else %}

@@ -118,6 +118,7 @@ class SitesController extends Controller {
     $siteData = array(
       'isNew' => FALSE,
       'coreVersion' => $coreVersion,
+      'latestCoreVersion' => 7.31, // @todo updated by the d.o. update service
       'modules' => $moduleData,
     );
     $manager->updateEntity($site->getId(), $siteData);

@@ -17,15 +17,25 @@ class Module extends BaseDocument {
   protected $name;
 
   /**
+   * @Mongodb\String
+   */
+  protected $projectName;
+
+  /**
    * @Mongodb\Float
    */
   protected $latestVersion;
 
   /**
+   * @Mongodb\hash
+   */
+  protected $sites;
+
+  /**
    * @return mixed
    */
   public function getName() {
-    return $this->name;
+    return empty($this->name) ? 'UNKNOWN' : $this->name;
   }
 
   /**
@@ -33,6 +43,20 @@ class Module extends BaseDocument {
    */
   public function setName($name) {
     $this->name = $name;
+  }
+
+  /**
+   * @return mixed
+   */
+  public function getProjectName() {
+    return $this->projectName;
+  }
+
+  /**
+   * @param mixed $projectName
+   */
+  public function setProjectName($projectName) {
+    $this->projectName = $projectName;
   }
 
   /**
@@ -47,6 +71,44 @@ class Module extends BaseDocument {
    */
   public function setLatestVersion($latestVersion) {
     $this->latestVersion = $latestVersion;
+  }
+
+  /**
+   * @return mixed
+   */
+  public function getSites() {
+    return $this->sites;
+  }
+
+  /**
+   * @param mixed $sites
+   */
+  public function setSites($sites) {
+    $this->sites = $sites;
+  }
+
+  /**
+   * Add new site to the list of sites for this module.
+   *
+   * @param $url
+   * @param $version
+   */
+  public function addSite($url, $version) {
+    $moduleSites = $this->getSites();
+    $moduleSites[] = array(
+      'url' => $url,
+      'version' => $version
+    );
+    $this->setSites($moduleSites);
+  }
+
+  /**
+   * Get the count of the number of sites.
+   *
+   * @return int
+   */
+  public function getSiteCount() {
+    return count($this->sites);
   }
 
 }

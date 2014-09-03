@@ -14,7 +14,7 @@ class ModuleManager extends BaseManager {
    * @return bool
    */
   public function nameExists($name) {
-    $result = $this->getRepository()->findBy(array('name' => $name));
+    $result = $this->getRepository()->findBy(array('projectName' => $name));
     return $result->count() > 0;
   }
 
@@ -33,6 +33,18 @@ class ModuleManager extends BaseManager {
    */
   public function makeNewItem() {
     return new Module();
+  }
+
+  /**
+   * Find module by name.
+   *
+   * @param $name
+   *
+   * @return object
+   * @throws EntityNotFoundException
+   */
+  public function findByProjectName($name) {
+    return $this->getEntityBy(array('projectName' => $name));
   }
 
 }

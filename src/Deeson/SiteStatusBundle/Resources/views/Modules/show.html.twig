@@ -8,7 +8,14 @@
 
     <p>This is a details of a module</p>
 
-    <p>Name: {{ module.getName() }}</p>
+    <p>Name: {{ module.getName() }} ({{ module.getProjectName() }})</p>
+
+    <p>Sites:</p>
+    <ul>
+        {% for site in module.getSites() %}
+        <li>{{ site.url }} - {{ site.version }}</li>
+        {% endfor %}
+    </ul>
 
     <a href="/modules"><< Back</a>
 

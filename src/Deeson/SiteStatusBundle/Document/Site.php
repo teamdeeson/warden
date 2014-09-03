@@ -27,7 +27,7 @@ class Site extends BaseDocument {
   protected $url;
 
   /**
-   * @Mongodb\String
+   * @Mongodb\Hash
    */
   protected $coreVersion;
 
@@ -106,14 +106,28 @@ class Site extends BaseDocument {
    * @return mixed
    */
   public function getCoreVersion() {
-    return (empty($this->coreVersion)) ? 'Not Imported Yet!' : $this->coreVersion;
+    return (empty($this->coreVersion['current'])) ? 'Not Imported Yet!' : $this->coreVersion['current'];
   }
 
   /**
    * @param mixed $coreVersion
    */
   public function setCoreVersion($coreVersion) {
-    $this->coreVersion = $coreVersion;
+    $this->coreVersion['current'] = $coreVersion;
+  }
+
+  /**
+   * @return mixed
+   */
+  public function getLatestCoreVersion() {
+    return (empty($this->coreVersion['latest'])) ? 'Not Imported Yet!' : $this->coreVersion['latest'];
+  }
+
+  /**
+   * @param mixed $latestVersion
+   */
+  public function setLatestCoreVersion($latestVersion) {
+    $this->coreVersion['latest'] = $latestVersion;
   }
 
   /**
@@ -127,7 +141,18 @@ class Site extends BaseDocument {
    * @param mixed $modules
    */
   public function setModules($modules) {
-    $this->modules = $modules;
+    $moduleList = array();
+    foreach ($modules as $name => $version) {
+      $moduleList[] = array(
+        'name' => $name,
+        'version' => $version['version'],
+        /*'version' => array(
+          'current' => $version['version'],
+          'latest' => $version['version'],
+        ),*/
+      );
+    }
+    $this->modules = $moduleList;
   }
 
   /**
@@ -142,6 +167,10 @@ class Site extends BaseDocument {
    */
   public function setIsNew($isNew) {
     $this->isNew = $isNew;
+  }
+
+  public function compareCoreVersion() {
+    return is_float($this->getCoreVersion()) && $this->getCoreVersion() == $this->getLatestCoreVersion();
   }
 
 }

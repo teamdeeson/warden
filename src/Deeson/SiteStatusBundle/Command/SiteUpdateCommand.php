@@ -2,7 +2,6 @@
 
 namespace Deeson\SiteStatusBundle\Command;
 
-use Deeson\SiteStatusBundle\Document\Module;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -14,7 +13,7 @@ use Deeson\SiteStatusBundle\Managers\ModuleManager;
 class SiteUpdateCommand extends ContainerAwareCommand {
 
   protected function configure() {
-    $this->setName('deeson:site-status:update')
+    $this->setName('deeson:site-status:update-sites')
       ->setDescription('Update the site status details')
       //->addArgument()
       ->addOption('import-new', NULL, InputOption::VALUE_NONE, 'If set will only import data on newly created sites');
@@ -48,8 +47,6 @@ class SiteUpdateCommand extends ContainerAwareCommand {
       ksort($moduleData);
       $requestTime = $statusService->getRequestTime();
 
-      //$output->writeln('modules: ' . print_r($moduleData, TRUE));
-
       foreach ($moduleData as $name => $version) {
         $moduleExists = $moduleManager->nameExists($name);
 
@@ -59,7 +56,7 @@ class SiteUpdateCommand extends ContainerAwareCommand {
 
         /** @var \Deeson\SiteStatusBundle\Document\Module $module */
         $module = $moduleManager->makeNewItem();
-        $module->setName($name);
+        $module->setProjectName($name);
         $moduleManager->saveEntity($module);
       }
 

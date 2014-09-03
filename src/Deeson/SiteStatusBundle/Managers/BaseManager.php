@@ -55,6 +55,14 @@ abstract class BaseManager {
     return $result;
   }
 
+  public function getEntityBy(array $criteria) {
+    $result = $this->getRepository()->findOneBy($criteria);
+    if (empty($result)) {
+      throw new EntityNotFoundException("No entities found for {$this->getType()}");
+    }
+    return $result;
+  }
+
   public function updateEntity($id, array $data) {
     $entity = $this->getEntityById($id);
 
@@ -102,7 +110,16 @@ abstract class BaseManager {
    * @return \Doctrine\Common\Persistence\ObjectRepository
    */
   protected function getRepository() {
-    return $this->doctrine->getRepository('DeesonSiteStatusBundle:' . $this->getType());
+    return $this->doctrine->getRepository($this->getRepositoryName());
+  }
+
+  /**
+   * The Mongodb repository name.
+   *
+   * @return string
+   */
+  protected function getRepositoryName() {
+    return 'DeesonSiteStatusBundle:' . $this->getType();
   }
 
 }

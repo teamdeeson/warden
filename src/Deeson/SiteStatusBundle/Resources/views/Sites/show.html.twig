@@ -9,7 +9,7 @@
     <p>This is a details of a site:</p>
 
     <p>URL: {{ site.getUrl() }}</p>
-    <p>Core Version: {{ site.getCoreVersion() }}</p>
+    <p>Core Version: {{ site.getCoreVersion() }} ({{ site.getLatestCoreVersion() }}, {% if site.compareCoreVersion() %}Y{% else %}N{% endif %})</p>
     <p>System Status Token: {{ site.getSystemStatusToken() }}</p>
     <p>System Status Encrypt Token: {{ site.getSystemStatusEncryptToken() }}</p>
 
@@ -18,8 +18,8 @@
     <br />
     <p>Modules:</p>
     <ul>
-        {% for name, module in site.getModules() %}
-        <li>{{ name }}: {{ module.version }}</li>
+        {% for module in site.getModules() %}
+        <li>{{ module.name }}: {{ module.version }}</li>
         {% endfor %}
     </ul>
     <br />

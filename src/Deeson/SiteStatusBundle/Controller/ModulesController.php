@@ -15,7 +15,7 @@ class ModulesController extends Controller {
   public function IndexAction() {
     /** @var ModuleManager $manager */
     $manager = $this->get('module_manager');
-    $modules = $manager->getEntitiesBy(array(), array('name' => 'asc'));
+    $modules = $manager->getEntitiesBy(array(), array('projectName' => 'asc'));
 
     $params = array(
       'modules' => $modules,
