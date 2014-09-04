@@ -15,7 +15,7 @@ class ModulesController extends Controller {
   public function IndexAction() {
     /** @var ModuleManager $manager */
     $manager = $this->get('module_manager');
-    $modules = $manager->getEntitiesBy(array(), array('projectName' => 'asc'));
+    $modules = $manager->getDocumentsBy(array(), array('projectName' => 'asc'));
 
     $params = array(
       'modules' => $modules,
@@ -35,7 +35,7 @@ class ModulesController extends Controller {
   public function ShowAction($id) {
     /** @var ModuleManager $manager */
     $manager = $this->get('module_manager');
-    $module = $manager->getEntityById($id);
+    $module = $manager->getDocumentById($id);
 
     $params = array(
       'module' => $module,

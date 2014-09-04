@@ -41,10 +41,10 @@ class ModuleManager extends BaseManager {
    * @param $name
    *
    * @return object
-   * @throws EntityNotFoundException
+   * @throws DocumentNotFoundException
    */
   public function findByProjectName($name) {
-    return $this->getEntityBy(array('projectName' => $name));
+    return $this->getDocumentBy(array('projectName' => $name));
   }
 
 }

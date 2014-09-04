@@ -3,7 +3,8 @@
 namespace Deeson\SiteStatusBundle\Managers;
 
 use Deeson\SiteStatusBundle\Document\BaseDocument;
-use Deeson\SiteStatusBundle\Exception\EntityMethodNotFoundException;
+use Deeson\SiteStatusBundle\Exception\DocumentMethodNotFoundException;
+use Deeson\SiteStatusBundle\Exception\DocumentNotFoundException;
 
 abstract class BaseManager {
 
@@ -22,55 +23,92 @@ abstract class BaseManager {
   }
 
   /**
-   * @param $id
+   * Get a specific Mongodb document by id.
    *
-   * @return object
-   * @throws EntityNotFoundException
+   * @param $id
+   *   The Mongodb Object Id.
+   *
+   * @return Mongodb document object
+   * @throws DocumentNotFoundException
    */
-  public function getEntityById($id) {
+  public function getDocumentById($id) {
     $result = $this->getRepository()->find($id);
     if (empty($result)) {
-      throw new EntityNotFoundException("No {$this->getType()} with id $id");
+      throw new DocumentNotFoundException("No {$this->getType()} with id $id");
     }
     return $result;
   }
 
   /**
+   * Get all the Mongodb documents.
+   *
    * @return array
-   * @throws EntityNotFoundException
+   *   Mongodb document objects.
+   * @throws DocumentNotFoundException
    */
-  public function getAllEntities() {
+  public function getAllDocuments() {
     $result = $this->getRepository()->findAll();
     if (empty($result)) {
-      throw new EntityNotFoundException("No entities found for {$this->getType()}");
+      return array();
+      //throw new DocumentNotFoundException("No documents found for {$this->getType()}");
     }
     return $result;
   }
 
-  public function getEntitiesBy(array $criteria, array $orderBy = null, $limit = null, $offset = null) {
+  /**
+   * Get all Mongodb documents by a criteria.
+   *
+   * @param array $criteria
+   * @param array $orderBy
+   * @param null $limit
+   * @param null $offset
+   *
+   * @return array
+   *   Mongodb document objects.
+   * @throws \Deeson\SiteStatusBundle\Exception\DocumentNotFoundException
+   */
+  public function getDocumentsBy(array $criteria, array $orderBy = null, $limit = null, $offset = null) {
     $result = $this->getRepository()->findBy($criteria, $orderBy, $limit, $offset);
     if (empty($result)) {
-      throw new EntityNotFoundException("No entities found for {$this->getType()}");
+      throw new DocumentNotFoundException("No documents found for {$this->getType()}");
     }
     return $result;
   }
 
-  public function getEntityBy(array $criteria) {
+  /**
+   * Get one document based on a criteria.
+   *
+   * @param array $criteria
+   *
+   * @return Mongodb document object.
+   * @throws \Deeson\SiteStatusBundle\Exception\DocumentNotFoundException
+   */
+  public function getDocumentBy(array $criteria) {
     $result = $this->getRepository()->findOneBy($criteria);
     if (empty($result)) {
-      throw new EntityNotFoundException("No entities found for {$this->getType()}");
+      throw new DocumentNotFoundException("No documents found for {$this->getType()}");
     }
     return $result;
   }
 
-  public function updateEntity($id, array $data) {
-    $entity = $this->getEntityById($id);
+  /**
+   * Updates the Mongodb document.
+   *
+   * @param int $id
+   *   The Mongodb document Object Id
+   * @param array $data
+   *   Array of data to update on the object. The array key is the column and
+   *   the array value is the value to be set.
+   *
+   * @throws \Deeson\SiteStatusBundle\Exception\DocumentMethodNotFoundException
+   */
+  public function updateDocument($id, array $data) {
+    $entity = $this->getDocumentById($id);
 
     foreach ($data as $key => $value) {
       $method = 'set' . ucfirst($key);
       if (!method_exists($entity, $method)) {
-        throw new EntityMethodNotFoundException("$method is not a valid method for {$this->getType()}");
-        continue;
+        throw new DocumentMethodNotFoundException("$method is not a valid method for {$this->getType()}");
       }
       $entity->$method($value);
     }
@@ -78,15 +116,27 @@ abstract class BaseManager {
     $this->doctrine->getManager()->flush();
   }
 
-  public function saveEntity($entity) {
-    $this->doctrine->getManager()->persist($entity);
+  /**
+   * Save the Mongodb document.
+   *
+   * @param $document
+   *   Mongodb document object.
+   */
+  public function saveDocument($document) {
+    $this->doctrine->getManager()->persist($document);
     $this->doctrine->getManager()->flush();
   }
 
-  public function deleteEntity($id) {
-    $entity = $this->getEntityById($id);
+  /**
+   * Delete the Mongodb document.
+   *
+   * @param int $id
+   *   The Mongodb Object Id.
+   */
+  public function deleteDocument($id) {
+    $document = $this->getDocumentById($id);
 
-    $this->doctrine->getManager()->remove($entity);
+    $this->doctrine->getManager()->remove($document);
     $this->doctrine->getManager()->flush();
   }
 

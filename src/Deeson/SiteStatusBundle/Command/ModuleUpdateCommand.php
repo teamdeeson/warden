@@ -23,7 +23,7 @@ class ModuleUpdateCommand extends ContainerAwareCommand {
     /** @var ModuleManager $moduleManager */
     $moduleManager = $this->getContainer()->get('module_manager');
 
-    $sites = $siteManager->getAllEntities();
+    $sites = $siteManager->getAllDocuments();
 
     foreach ($sites as $site) {
       /** @var \Deeson\SiteStatusBundle\Document\Site $site */
@@ -32,18 +32,27 @@ class ModuleUpdateCommand extends ContainerAwareCommand {
       foreach ($site->getModules() as $module) {
         /** @var \Deeson\SiteStatusBundle\Document\Module $moduleObj */
         $moduleObj = $moduleManager->findByProjectName($module['name']);
-        $sites = $moduleObj->getSites();
+        $moduleSites = $moduleObj->getSites();
 
         // Check if the site URL is already in the list for this module.
-        if (is_array($sites) && in_array($site->getUrl(), $sites)) {
-          continue;
+        if (is_array($moduleSites)) {
+          $alreadyExists = FALSE;
+          foreach ($moduleSites as $moduleSite) {
+            if ($moduleSite['url'] == $site->getUrl()) {
+              $alreadyExists = TRUE;
+              break;
+            }
+          }
+          if ($alreadyExists) {
+            continue;
+          }
         }
 
         $moduleObj->addSite($site->getUrl(), $module['version']);
         $data = array(
           'sites' => $moduleObj->getSites()
         );
-        $moduleManager->updateEntity($moduleObj->getId(), $data);
+        $moduleManager->updateDocument($moduleObj->getId(), $data);
       }
     }
   }

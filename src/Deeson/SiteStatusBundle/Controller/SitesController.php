@@ -17,7 +17,7 @@ class SitesController extends Controller {
   public function IndexAction() {
     /** @var SiteManager $manager */
     $manager = $this->get('site_manager');
-    $sites = $manager->getEntitiesBy(array(), array('url' => 'asc'));
+    $sites = $manager->getDocumentsBy(array(), array('url' => 'asc'));
 
     $params = array(
       'sites' => $sites,
@@ -37,7 +37,7 @@ class SitesController extends Controller {
   public function ShowAction($id) {
     /** @var SiteManager $manager */
     $manager = $this->get('site_manager');
-    $site = $manager->getEntityById($id);
+    $site = $manager->getDocumentById($id);
 
     $params = array(
       'site' => $site,
@@ -64,7 +64,7 @@ class SitesController extends Controller {
       $site->setUrl($siteUrl);
       $site->setSystemStatusToken($systemStatusToken);
       $site->setSystemStatusEncryptToken($systemStatusEncryptToken);
-      $manager->saveEntity($site);
+      $manager->saveDocument($site);
       $this->get('session')->getFlashBag()->add('notice', 'Your site has now been registered.');
     }
     else {
@@ -85,7 +85,7 @@ class SitesController extends Controller {
   public function DeleteAction($id) {
     /** @var SiteManager $manager */
     $manager = $this->get('site_manager');
-    $manager->deleteEntity($id);
+    $manager->deleteDocument($id);
 
     return $this->redirect('/sites');
   }
@@ -99,8 +99,9 @@ class SitesController extends Controller {
    * @return \Symfony\Component\HttpFoundation\RedirectResponse
    */
   public function UpdateCoreAction($id) {
+    /** @var SiteManager $manager */
     $manager = $this->get('site_manager');
-    $site = $manager->getEntityById($id);
+    $site = $manager->getDocumentById($id);
 
     /** @var StatusRequestService $statusService */
     $statusService = $this->get('site_status_service');
@@ -121,7 +122,7 @@ class SitesController extends Controller {
       'latestCoreVersion' => 7.31, // @todo updated by the d.o. update service
       'modules' => $moduleData,
     );
-    $manager->updateEntity($site->getId(), $siteData);
+    $manager->updateDocument($site->getId(), $siteData);
 
     $this->get('session')->getFlashBag()->add('notice', 'Your site has had the core version updated! (' . $requestTime . ' secs)');
 

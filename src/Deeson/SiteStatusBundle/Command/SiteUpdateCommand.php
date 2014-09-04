@@ -26,10 +26,10 @@ class SiteUpdateCommand extends ContainerAwareCommand {
     $moduleManager = $this->getContainer()->get('module_manager');
 
     if ($input->getOption('import-new')) {
-      $sites = $siteManager->getEntitiesBy(array('isNew' => TRUE));
+      $sites = $siteManager->getDocumentsBy(array('isNew' => TRUE));
     }
     else {
-      $sites = $siteManager->getAllEntities();
+      $sites = $siteManager->getAllDocuments();
     }
 
     foreach ($sites as $site) {
@@ -57,7 +57,7 @@ class SiteUpdateCommand extends ContainerAwareCommand {
         /** @var \Deeson\SiteStatusBundle\Document\Module $module */
         $module = $moduleManager->makeNewItem();
         $module->setProjectName($name);
-        $moduleManager->saveEntity($module);
+        $moduleManager->saveDocument($module);
       }
 
       $output->writeln('request time: ' . $requestTime);
@@ -67,7 +67,7 @@ class SiteUpdateCommand extends ContainerAwareCommand {
         'coreVersion' => $coreVersion,
         'modules' => $moduleData,
       );
-      $siteManager->updateEntity($site->getId(), $siteData);
+      $siteManager->updateDocument($site->getId(), $siteData);
 
       $output->writeln('Update version: ' . $coreVersion);
     }
