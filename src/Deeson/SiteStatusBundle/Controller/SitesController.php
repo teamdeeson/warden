@@ -6,6 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Deeson\SiteStatusBundle\Managers\SiteManager;
 use Deeson\SiteStatusBundle\Services\StatusRequestService;
+use Deeson\SiteStatusBundle\Document\Site;
 
 class SitesController extends Controller {
 
@@ -91,23 +92,24 @@ class SitesController extends Controller {
   }
 
   /**
-   * Updates the core version for this site.
+   * Updates the core & module versions for this site.
    *
    * @param int $id
    *   The site id to update the core version for.
    *
    * @return \Symfony\Component\HttpFoundation\RedirectResponse
    */
-  public function UpdateCoreAction($id) {
+  public function RefreshAction($id) {
     /** @var SiteManager $manager */
     $manager = $this->get('site_manager');
+    /** @var Site $site */
     $site = $manager->getDocumentById($id);
 
     /** @var StatusRequestService $statusService */
     $statusService = $this->get('site_status_service');
     //$statusService->setConnectionTimeout(10);
     $statusService->setSite($site);
-    $statusService->requestSiteStatusData();
+    $statusService->processRequest();
 
     $coreVersion = $statusService->getCoreVersion();
     $moduleData = $statusService->getModuleData();

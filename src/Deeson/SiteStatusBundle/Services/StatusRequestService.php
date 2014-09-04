@@ -4,26 +4,7 @@ namespace Deeson\SiteStatusBundle\Services;
 
 use Deeson\SiteStatusBundle\Exception\StatusRequestException;
 
-class StatusRequestService {
-
-  /**
-   * @var \Buzz\Browser
-   */
-  protected $buzz;
-
-  /**
-   * The connection timeout in seconds.
-   *
-   * @var int
-   */
-  protected $connectionTimeout = 20;
-
-  /**
-   * The array of headers to be used when making a curl connection.
-   *
-   * @var array
-   */
-  protected $connectionHeaders = array();
+class StatusRequestService extends BaseRequestService {
 
   /**
    * Drupal core version.
@@ -40,49 +21,15 @@ class StatusRequestService {
   protected $moduleData = array();
 
   /**
-   * @var int
-   */
-  protected $requestTime = 0;
-
-  /**
    * @var \Deeson\SiteStatusBundle\Document\Site $site
    */
   protected $site = NULL;
-
-  /**
-   * Constructor
-   */
-  public function __construct($buzz) {
-    $this->buzz = $buzz;
-  }
-
-  /**
-   * Set the connection timeout.
-   *
-   * @param int $timeout
-   */
-  public function setConnectionTimeout($timeout) {
-    $this->connectionTimeout = $timeout;
-  }
 
   /**
    * @param \Deeson\SiteStatusBundle\Document\Site $site
    */
   public function setSite($site) {
     $this->site = $site;
-  }
-
-  /**
-   * Get the status data for the site.
-   *
-   * @return stdclass object.
-   */
-  public function requestSiteStatusData() {
-    $dataRequest = $this->getRequestData();
-    $systemStatusDataObject = $this->processSiteData($dataRequest);
-
-    $this->coreVersion = $systemStatusDataObject->system_status->core->drupal->version;
-    $this->moduleData = json_decode(json_encode($systemStatusDataObject->system_status->contrib), TRUE);
   }
 
   /**
@@ -104,62 +51,21 @@ class StatusRequestService {
   }
 
   /**
-   * Get the connection request time.
-   *
-   * @return int
-   */
-  public function getRequestTime() {
-    return $this->requestTime;
-  }
-
-  /**
    * Get the site status URL.
    *
-   * @param string $url
-   * @param string $token
-   *
-   * @return string
+   * @return mixed
    */
-  protected function getSiteStatusUrl($url, $token) {
-    return $url . '/admin/reports/system_status/' . $token;
+  protected function getRequestUrl() {
+    return $this->site->getUrl() . '/admin/reports/system_status/' . $this->site->getSystemStatusToken();
   }
 
   /**
-   * Set the connection timeout on the buzz client.
+   * Processes the data that has come back from the request.
    *
-   * @param int $timeout
+   * @param $requestData
+   *   Data that has come back from the request.
    */
-  protected function setClientTimeout($timeout) {
-    $this->buzz->getClient()->setTimeout($timeout);
-  }
-
-  /**
-   * @return string
-   */
-  protected function getRequestData() {
-    $siteStatusUrl = $this->getSiteStatusUrl($this->site->getUrl(), $this->site->getSystemStatusToken());
-    $this->setClientTimeout($this->connectionTimeout);
-
-    $startTime = $this->getMicrotimeFloat();
-
-    $request = $this->buzz->get($siteStatusUrl, $this->connectionHeaders);
-    $requestData = $request->getContent();
-
-    $endTime = $this->getMicrotimeFloat();
-    $this->requestTime = $endTime - $startTime;
-
-    return $requestData;
-  }
-
-  /**
-   * Process the data returned from the request.
-   *
-   * @param string $requestData
-   *
-   * @return stdClass object
-   *   The data from the request.
-   */
-  protected function processSiteData($requestData) {
+  protected function processRequestData($requestData) {
     //printf('<pre>req: %s</pre>', print_r($data_request, true));
     $requestDataObject = json_decode($requestData);
     //printf('<pre>req obj: %s</pre>', print_r($data_request_object, true));
@@ -174,7 +80,8 @@ class StatusRequestService {
       $systemStatusDataObject = $requestDataObject;
     }
 
-    return $systemStatusDataObject;
+    $this->coreVersion = $systemStatusDataObject->system_status->core->drupal->version;
+    $this->moduleData = json_decode(json_encode($systemStatusDataObject->system_status->contrib), TRUE);
   }
 
   /**
@@ -195,16 +102,6 @@ class StatusRequestService {
     $plaintextDec = mcrypt_decrypt(MCRYPT_RIJNDAEL_128, $key, $cipherTextDec, MCRYPT_MODE_CBC, $ivDec);
 
     return utf8_decode(trim($plaintextDec));
-  }
-
-  /**
-   * Get the microtime.
-   *
-   * @return float
-   */
-  protected function getMicrotimeFloat() {
-    list($usec, $sec) = explode(' ', microtime());
-    return ((float)$usec + (float)$sec);
   }
 
 }

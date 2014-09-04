@@ -28,7 +28,7 @@ abstract class BaseManager {
    * @param $id
    *   The Mongodb Object Id.
    *
-   * @return Mongodb document object
+   * @return BaseDocument
    * @throws DocumentNotFoundException
    */
   public function getDocumentById($id) {
