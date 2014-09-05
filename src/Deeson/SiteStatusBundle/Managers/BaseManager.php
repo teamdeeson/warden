@@ -92,7 +92,7 @@ abstract class BaseManager {
   }
 
   /**
-   * Updates the Mongodb document.
+   * Updates the Mongodb document based upon the Mongodb Id.
    *
    * @param int $id
    *   The Mongodb document Object Id
@@ -102,7 +102,7 @@ abstract class BaseManager {
    *
    * @throws \Deeson\SiteStatusBundle\Exception\DocumentMethodNotFoundException
    */
-  public function updateDocument($id, array $data) {
+  public function updateDocumentById($id, array $data) {
     $entity = $this->getDocumentById($id);
 
     foreach ($data as $key => $value) {
@@ -113,6 +113,13 @@ abstract class BaseManager {
       $entity->$method($value);
     }
 
+    $this->doctrine->getManager()->flush();
+  }
+
+  /**
+   * Update the Mongodb document.
+   */
+  public function updateDocument() {
     $this->doctrine->getManager()->flush();
   }
 

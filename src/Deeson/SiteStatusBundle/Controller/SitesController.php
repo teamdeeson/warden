@@ -118,16 +118,18 @@ class SitesController extends Controller {
 
     /** @var SiteManager $manager */
     $manager = $this->get('site_manager');
-    $siteData = array(
-      'isNew' => FALSE,
-      'coreVersion' => $coreVersion,
-      'latestCoreVersion' => 7.31, // @todo updated by the d.o. update service
-      'modules' => $moduleData,
-    );
-    $manager->updateDocument($site->getId(), $siteData);
+    $site->setIsNew(FALSE);
+    $site->setCoreVersion($coreVersion);
+    $site->setLatestCoreVersion(7.31); // @todo updated by the d.o. update service
+    $site->setModules($moduleData);
+    $manager->updateDocument();
 
     $this->get('session')->getFlashBag()->add('notice', 'Your site has had the core version updated! (' . $requestTime . ' secs)');
 
     return $this->redirect('/sites/' . $id);
+  }
+
+  public function drupalRefreshAction($id) {
+    diE('here - ' . $id);
   }
 }

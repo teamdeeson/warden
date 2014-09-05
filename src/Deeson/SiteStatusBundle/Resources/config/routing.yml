@@ -22,6 +22,10 @@ sites_update_refresh:
     path:    /sites/{id}/refresh
     defaults: { _controller: DeesonSiteStatusBundle:Sites:refresh }
 
+drupal_update_refresh:
+    path:    /sites/{id}/drupal-refresh
+    defaults: { _controller: DeesonSiteStatusBundle:Sites:drupalRefresh }
+
 modules_list:
     path:    /modules
     defaults: { _controller: DeesonSiteStatusBundle:Modules:index }

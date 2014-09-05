@@ -14,7 +14,8 @@ class ModuleUpdateCommand extends ContainerAwareCommand {
 
   protected function configure() {
     $this->setName('deeson:site-status:update-modules')
-      ->setDescription('Update the module details');
+      ->setDescription('Update the module details')
+      ->addOption('import-new', NULL, InputOption::VALUE_NONE, 'If set will only import data on newly created modules');
   }
 
   protected function execute(InputInterface $input, OutputInterface $output) {
@@ -23,16 +24,21 @@ class ModuleUpdateCommand extends ContainerAwareCommand {
     /** @var ModuleManager $moduleManager */
     $moduleManager = $this->getContainer()->get('module_manager');
 
-    $sites = $siteManager->getAllDocuments();
+    if ($input->getOption('import-new')) {
+      $sites = $siteManager->getDocumentsBy(array('isNew' => TRUE));
+    }
+    else {
+      $sites = $siteManager->getAllDocuments();
+    }
 
     foreach ($sites as $site) {
       /** @var \Deeson\SiteStatusBundle\Document\Site $site */
       $output->writeln('Updating site: ' . $site->getId() . ' - ' . $site->getUrl());
 
-      foreach ($site->getModules() as $module) {
-        /** @var \Deeson\SiteStatusBundle\Document\Module $moduleObj */
-        $moduleObj = $moduleManager->findByProjectName($module['name']);
-        $moduleSites = $moduleObj->getSites();
+      foreach ($site->getModules() as $siteModule) {
+        /** @var \Deeson\SiteStatusBundle\Document\Module $module */
+        $module = $moduleManager->findByProjectName($siteModule['name']);
+        $moduleSites = $module->getSites();
 
         // Check if the site URL is already in the list for this module.
         if (is_array($moduleSites)) {
@@ -48,11 +54,8 @@ class ModuleUpdateCommand extends ContainerAwareCommand {
           }
         }
 
-        $moduleObj->addSite($site->getUrl(), $module['version']);
-        $data = array(
-          'sites' => $moduleObj->getSites()
-        );
-        $moduleManager->updateDocument($moduleObj->getId(), $data);
+        $module->addSite($site->getUrl(), $siteModule['version']);
+        $moduleManager->updateDocument();
       }
     }
   }

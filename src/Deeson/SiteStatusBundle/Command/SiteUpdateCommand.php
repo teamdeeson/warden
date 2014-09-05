@@ -2,6 +2,7 @@
 
 namespace Deeson\SiteStatusBundle\Command;
 
+use Deeson\SiteStatusBundle\Services\StatusRequestService;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -40,7 +41,7 @@ class SiteUpdateCommand extends ContainerAwareCommand {
       $statusService = $this->getContainer()->get('site_status_service');
       //$statusService->setConnectionTimeout(10);
       $statusService->setSite($site);
-      $statusService->requestSiteStatusData();
+      $statusService->processRequest();
 
       $coreVersion = $statusService->getCoreVersion();
       $moduleData = $statusService->getModuleData();
@@ -62,12 +63,11 @@ class SiteUpdateCommand extends ContainerAwareCommand {
 
       $output->writeln('request time: ' . $requestTime);
 
-      $siteData = array(
-        'isNew' => FALSE,
-        'coreVersion' => $coreVersion,
-        'modules' => $moduleData,
-      );
-      $siteManager->updateDocument($site->getId(), $siteData);
+      $site->setIsNew(FALSE);
+      $site->setCoreVersion($coreVersion);
+      $site->setLatestCoreVersion(7.31); // @todo updated by the d.o. update service
+      $site->setModules($moduleData);
+      $siteManager->updateDocument();
 
       $output->writeln('Update version: ' . $coreVersion);
     }
