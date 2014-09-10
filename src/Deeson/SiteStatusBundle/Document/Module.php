@@ -2,6 +2,7 @@
 
 namespace Deeson\SiteStatusBundle\Document;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 
 /**
@@ -22,12 +23,17 @@ class Module extends BaseDocument {
   protected $projectName;
 
   /**
-   * @Mongodb\Float
+   * @Mongodb\Boolean
+   */
+  protected $isNew = FALSE;
+
+  /**
+   * @Mongodb\Hash
    */
   protected $latestVersion;
 
   /**
-   * @Mongodb\hash
+   * @Mongodb\Hash
    */
   protected $sites;
 
@@ -60,17 +66,41 @@ class Module extends BaseDocument {
   }
 
   /**
-   * @return mixed
+   * @param mixed $isNew
    */
-  public function getLatestVersion() {
-    return empty($this->latestVersion) ? '-' : $this->latestVersion;
+  public function setIsNew($isNew) {
+    $this->isNew = $isNew;
   }
 
   /**
-   * @param mixed $latestVersion
+   * @return mixed
    */
-  public function setLatestVersion($latestVersion) {
-    $this->latestVersion = $latestVersion;
+  public function getIsNew() {
+    return $this->isNew;
+  }
+
+  /**
+   * @return mixed
+   */
+  public function getLatestVersion() {
+    return empty($this->latestVersion) ? array() : $this->latestVersion;
+  }
+
+  /**
+   * @param $version
+   *
+   * @return string
+   */
+  public function getLatestVersionByVersion($version) {
+    return empty($this->latestVersion[$version]) ? '-' : $this->latestVersion[$version];
+  }
+
+  /**
+   * @param $version
+   * @param $latestVersion
+   */
+  public function setLatestVersion($version, $latestVersion) {
+    $this->latestVersion[$version] = $latestVersion;
   }
 
   /**
@@ -97,7 +127,7 @@ class Module extends BaseDocument {
     $moduleSites = $this->getSites();
     $moduleSites[] = array(
       'url' => $url,
-      'version' => $version
+      'version' => $version,
     );
     $this->setSites($moduleSites);
   }
@@ -109,6 +139,18 @@ class Module extends BaseDocument {
    */
   public function getSiteCount() {
     return count($this->sites);
+  }
+
+  /**
+   * Compare the supplied module version with the latest module version.
+   *
+   * @param string $version
+   *
+   * @return bool
+   */
+  public function compareVersion($version) {
+    $majorVersion = substr($version, 0, 1);
+    return $version == $this->getLatestVersionByVersion($majorVersion);
   }
 
 }

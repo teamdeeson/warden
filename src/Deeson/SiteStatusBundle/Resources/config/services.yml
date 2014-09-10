@@ -27,6 +27,10 @@ services:
         class: Deeson\SiteStatusBundle\Services\StatusRequestService
         arguments: ['@buzz.browser']
 
+    drupal_update_service:
+        class: Deeson\SiteStatusBundle\Services\DrupalUpdateRequestService
+        arguments: ['@buzz.browser']
+
     site_manager:
         class: Deeson\SiteStatusBundle\Managers\SiteManager
         arguments: [@doctrine_mongodb]

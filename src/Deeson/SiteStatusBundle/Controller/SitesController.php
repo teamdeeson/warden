@@ -120,7 +120,6 @@ class SitesController extends Controller {
     $manager = $this->get('site_manager');
     $site->setIsNew(FALSE);
     $site->setCoreVersion($coreVersion);
-    $site->setLatestCoreVersion(7.31); // @todo updated by the d.o. update service
     $site->setModules($moduleData);
     $manager->updateDocument();
 

@@ -2,6 +2,8 @@
 
 namespace Deeson\SiteStatusBundle\Command;
 
+use Deeson\SiteStatusBundle\Document\Module;
+use Deeson\SiteStatusBundle\Document\Site;
 use Deeson\SiteStatusBundle\Services\StatusRequestService;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
@@ -34,7 +36,7 @@ class SiteUpdateCommand extends ContainerAwareCommand {
     }
 
     foreach ($sites as $site) {
-      /** @var \Deeson\SiteStatusBundle\Document\Site $site */
+      /** @var Site $site */
       $output->writeln('Updating site: ' . $site->getId() . ' - ' . $site->getUrl());
 
       /** @var StatusRequestService $statusService */
@@ -55,7 +57,7 @@ class SiteUpdateCommand extends ContainerAwareCommand {
           continue;
         }
 
-        /** @var \Deeson\SiteStatusBundle\Document\Module $module */
+        /** @var Module $module */
         $module = $moduleManager->makeNewItem();
         $module->setProjectName($name);
         $moduleManager->saveDocument($module);
@@ -65,7 +67,6 @@ class SiteUpdateCommand extends ContainerAwareCommand {
 
       $site->setIsNew(FALSE);
       $site->setCoreVersion($coreVersion);
-      $site->setLatestCoreVersion(7.31); // @todo updated by the d.o. update service
       $site->setModules($moduleData);
       $siteManager->updateDocument();
 

@@ -146,11 +146,28 @@ class Site extends BaseDocument {
       $moduleList[] = array(
         'name' => $name,
         'version' => $version['version'],
+        'latestVersion' => '',
+        'isSecurity' => 0,
         /*'version' => array(
           'current' => $version['version'],
-          'latest' => $version['version'],
+          'latest' => '',
+          'isSecurity' => 0,
         ),*/
       );
+    }
+    $this->modules = $moduleList;
+  }
+
+  public function setModulesLatestVersion($moduleLatestVersions) {
+    $moduleList = $this->modules;
+    foreach ($moduleList as $key => $module) {
+      if (!isset($moduleLatestVersions[$module['name']])) {
+        continue;
+      }
+      $updateModule = $moduleLatestVersions[$module['name']];
+
+      $moduleList[$key]['latestVersion'] = $updateModule['version'];
+      $moduleList[$key]['isSecurity'] = $updateModule['isSecurity'];
     }
     $this->modules = $moduleList;
   }

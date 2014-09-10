@@ -13,13 +13,13 @@
     <p>System Status Token: {{ site.getSystemStatusToken() }}</p>
     <p>System Status Encrypt Token: {{ site.getSystemStatusEncryptToken() }}</p>
 
-    <a href="/sites/{{ site.getId() }}/refresh">Refresh site data</a>
+    <a href="/sites/{{ site.getId() }}/refresh">Refresh site data</a> | <a href="/sites/{{ site.getId() }}/drupal-refresh">Refresh D.O. data</a>
     <br />
     <br />
     <p>Modules:</p>
     <ul>
         {% for module in site.getModules() %}
-        <li>{{ module.name }}: {{ module.version }}</li>
+        <li>{{ module.name }}: {{ module.version }} ({{ module.latestVersion }}, {{ module.isSecurity }})</li>
         {% endfor %}
     </ul>
     <br />
