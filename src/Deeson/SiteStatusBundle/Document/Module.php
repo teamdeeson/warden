@@ -2,7 +2,6 @@
 
 namespace Deeson\SiteStatusBundle\Document;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 
 /**
@@ -25,7 +24,7 @@ class Module extends BaseDocument {
   /**
    * @Mongodb\Boolean
    */
-  protected $isNew = FALSE;
+  protected $isNew = TRUE;
 
   /**
    * @Mongodb\Hash
@@ -33,7 +32,8 @@ class Module extends BaseDocument {
   protected $latestVersion;
 
   /**
-   * @Mongodb\Hash
+   * @var string
+   * @MongoDB\Collection
    */
   protected $sites;
 
@@ -92,15 +92,21 @@ class Module extends BaseDocument {
    * @return string
    */
   public function getLatestVersionByVersion($version) {
-    return empty($this->latestVersion[$version]) ? '-' : $this->latestVersion[$version];
+    return empty($this->latestVersion[$version]['version']) ? '-' : $this->latestVersion[$version]['version'];
   }
 
   /**
-   * @param $version
-   * @param $latestVersion
+   * Sets the latest version and if this is a security update or not.
+   *
+   * @param int $version
+   * @param string $latestVersion
+   * @param bool $security
    */
-  public function setLatestVersion($version, $latestVersion) {
-    $this->latestVersion[$version] = $latestVersion;
+  public function setLatestVersion($version, $latestVersion = '', $security = FALSE) {
+    $this->latestVersion[$version] = array(
+      'version' => $latestVersion,
+      'security' => $security,
+    );
   }
 
   /**
@@ -149,8 +155,12 @@ class Module extends BaseDocument {
    * @return bool
    */
   public function compareVersion($version) {
-    $majorVersion = substr($version, 0, 1);
+    $majorVersion = $this->getMajorVersion($version);
     return $version == $this->getLatestVersionByVersion($majorVersion);
+  }
+
+  public function getMajorVersion($version) {
+    return substr($version, 0, 1);
   }
 
 }

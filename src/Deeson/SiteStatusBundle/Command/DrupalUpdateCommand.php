@@ -51,14 +51,12 @@ class DrupalUpdateCommand extends ContainerAwareCommand {
     // see if it is a security release and flag if so
     // @todo refactor this!
 
-    $modules = $moduleManager->getAllDocuments();
-    //$modules = array($moduleManager->getDocumentById('5409c58f942a380a970041e1'));
     $moduleLatestVersion = array();
-    // @todo get distinct core version number(s)
-    $majorVersions = array('6', '7');
+    $majorVersions = $siteManager->getAllMajorVersionReleases();
 
-    foreach ($modules as $module) {
-      foreach ($majorVersions as $version) {
+    foreach ($majorVersions as $version) {
+      $modules = $moduleManager->getAllByVersion($version);
+      foreach ($modules as $module) {
         /** @var Module $module */
         $output->writeln('Updating - ' . $module->getProjectName() . ' for version: ' . $version);
 
@@ -72,24 +70,21 @@ class DrupalUpdateCommand extends ContainerAwareCommand {
         $securityToken = ($this->isSecurityRelease ? 'Y' : 'N');
         $output->writeln("\tsecurity: $securityToken");
 
-        $moduleLatestVersion[$module->getProjectName()][$version] = array(
+        $moduleLatestVersion[$version][$module->getProjectName()] = array(
           'version' => $this->latestReleaseVersion,
           'isSecurity' => ($this->isSecurityRelease ? 1 : 0),
         );
 
         $module->setName($this->drupalUpdateService->getModuleName());
-        $module->setIsNew(TRUE);
-        $module->setLatestVersion($version, $this->latestReleaseVersion);
+        $module->setIsNew(FALSE);
+        $module->setLatestVersion($version, $this->latestReleaseVersion, $this->isSecurityRelease);
         $moduleManager->updateDocument();
       }
-      //print_r($moduleLatestVersion);
-      //die();
     }
 
     foreach ($majorVersions as $version) {
       // Update the core after the modules to update the versions of the modules
       // for a site.
-
       $output->writeln('Updating - Drupal version: ' . $version);
 
       try {
@@ -99,12 +94,7 @@ class DrupalUpdateCommand extends ContainerAwareCommand {
         return;
       }
 
-      //print "version: {$this->latestReleaseVersion}\n";
-      //printf("security: %s\n", ($this->isSecurityRelease ? 'Y' : 'N'));
-      //die();
-
-      $sites = $siteManager->getAllDocuments();
-
+      $sites = $siteManager->getAllByVersion($version);
       foreach ($sites as $site) {
         /** @var Site $site */
         $output->writeln('Updating site: ' . $site->getId() . ' - ' . $site->getUrl());
@@ -116,13 +106,9 @@ class DrupalUpdateCommand extends ContainerAwareCommand {
 
         $site->setLatestCoreVersion($this->latestReleaseVersion);
         $site->setModulesLatestVersion($moduleLatestVersion[$version]);
-        // @todo update the site modules with the latest version
         $siteManager->updateDocument();
-        //die();
       }
     }
-
-    //die();
   }
 
   /**

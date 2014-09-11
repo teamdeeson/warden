@@ -37,7 +37,12 @@ class ModuleUpdateCommand extends ContainerAwareCommand {
 
       foreach ($site->getModules() as $siteModule) {
         /** @var \Deeson\SiteStatusBundle\Document\Module $module */
-        $module = $moduleManager->findByProjectName($siteModule['name']);
+        try {
+          $module = $moduleManager->findByProjectName($siteModule['name']);
+        } catch (\Deeson\SiteStatusBundle\Exception\DocumentNotFoundException $e) {
+          $output->writeln('Error getting module [' . $siteModule['name'] . ']: ' . $e->getMessage());
+          continue;
+        }
         $moduleSites = $module->getSites();
 
         // Check if the site URL is already in the list for this module.

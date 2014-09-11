@@ -19,7 +19,7 @@
     <p>Modules:</p>
     <ul>
         {% for module in site.getModules() %}
-        <li>{{ module.name }}: {{ module.version }} ({{ module.latestVersion }}, {{ module.isSecurity }})</li>
+        <li>{{ module.name }}: {{ module.version }} ({{ module.latestVersion }}, {{ module.isSecurity }}) - out of date: {% if module.version == module.latestVersion %}N{% else %}Y{% endif %}</li>
         {% endfor %}
     </ul>
     <br />

@@ -11,7 +11,7 @@
     <p>Name: {{ module.getName() }} ({{ module.getProjectName() }})</p>
     <p>Latest Versions: <br/>
     {% for version, moduleVersion in module.getLatestVersion() %}
-        {{ version }} - {{ moduleVersion }}<br/>
+        {{ version }} - {{ moduleVersion.version }} ({% if moduleVersion.security == false %}N{% else %}Y{% endif %})<br/>
     {% endfor %}
     </p>
 

@@ -14,12 +14,18 @@ abstract class BaseManager {
   protected $doctrine;
 
   /**
+   * @var \Doctrine\ODM\MongoDB\DocumentManager
+   */
+  protected $doctrineManager;
+
+  /**
    * @var string
    */
   protected $type;
 
   public function __construct($doctrine) {
     $this->doctrine = $doctrine;
+    $this->doctrineManager = $this->doctrine->getManager();
   }
 
   /**
@@ -120,7 +126,7 @@ abstract class BaseManager {
    * Update the Mongodb document.
    */
   public function updateDocument() {
-    $this->doctrine->getManager()->flush();
+    $this->doctrineManager->flush();
   }
 
   /**
@@ -130,8 +136,8 @@ abstract class BaseManager {
    *   Mongodb document object.
    */
   public function saveDocument($document) {
-    $this->doctrine->getManager()->persist($document);
-    $this->doctrine->getManager()->flush();
+    $this->doctrineManager->persist($document);
+    $this->doctrineManager->flush();
   }
 
   /**
@@ -143,8 +149,42 @@ abstract class BaseManager {
   public function deleteDocument($id) {
     $document = $this->getDocumentById($id);
 
-    $this->doctrine->getManager()->remove($document);
-    $this->doctrine->getManager()->flush();
+    $this->doctrineManager->remove($document);
+    $this->doctrineManager->flush();
+  }
+
+  public function createIndexQuery($limit = 0, $offset = 0, $start_date = 0, $end_date = 0, $showDeleted = FALSE, array $filters = array()) {
+    $documentName = $this->getRepositoryName();
+    $qb = $this->doctrineManager->createQueryBuilder($documentName);
+
+    /*if (!empty($limit)) {
+      $qb->limit($limit);
+    }
+
+    if (!empty($offset)) {
+      $qb->skip($offset);
+    }
+
+    if (!empty($start_date)) {
+      $qb->addAnd($qb->expr()->field('bridgeAudit')->gte(new \MongoDate($start_date)));
+    }
+
+    if (!empty($end_date)) {
+      $qb->addAnd($qb->expr()->field('bridgeAudit')->lt(new \MongoDate($end_date)));
+    }
+
+    if (!$showDeleted) {
+      $qb->addAnd($qb->expr()->field('deleted')->equals(FALSE));
+    }*/
+
+    /*$fields = $this->doctrineManager->getClassMetadata($documentName)->getFieldNames();
+    foreach ($filters as $field => $value) {
+      if (in_array($field, $fields)) {
+        $qb->addAnd($qb->expr()->field($field)->equals($value));
+      }
+    }*/
+
+    return $qb;
   }
 
   /**

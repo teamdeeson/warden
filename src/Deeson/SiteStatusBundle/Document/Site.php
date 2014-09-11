@@ -19,7 +19,7 @@ class Site extends BaseDocument {
   /**
    * @Mongodb\Boolean
    */
-  protected $isNew;
+  protected $isNew = TRUE;
 
   /**
    * @Mongodb\String
@@ -42,7 +42,7 @@ class Site extends BaseDocument {
   protected $systemStatusEncryptToken;
 
   /**
-   * @Mongodb\Hash
+   * @Mongodb\Collection
    */
   protected $modules;
 
@@ -113,7 +113,11 @@ class Site extends BaseDocument {
    * @param mixed $coreVersion
    */
   public function setCoreVersion($coreVersion) {
-    $this->coreVersion['current'] = $coreVersion;
+    $majorRelease = substr($coreVersion, 0, 1);
+    $this->coreVersion = array(
+      'release' => $majorRelease,
+      'current' => $coreVersion,
+    );
   }
 
   /**
@@ -159,7 +163,7 @@ class Site extends BaseDocument {
   }
 
   public function setModulesLatestVersion($moduleLatestVersions) {
-    $moduleList = $this->modules;
+    $moduleList = $this->getModules();
     foreach ($moduleList as $key => $module) {
       if (!isset($moduleLatestVersions[$module['name']])) {
         continue;

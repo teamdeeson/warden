@@ -66,9 +66,10 @@ class StatusRequestService extends BaseRequestService {
    *   Data that has come back from the request.
    */
   protected function processRequestData($requestData) {
-    //printf('<pre>req: %s</pre>', print_r($data_request, true));
+    //printf('<pre>req: %s</pre>', print_r($requestData, true));
     $requestDataObject = json_decode($requestData);
-    //printf('<pre>req obj: %s</pre>', print_r($data_request_object, true));
+    //printf('<pre>req obj: %s</pre>', print_r($requestDataObject, true));
+    //die();
 
     if (is_string($requestDataObject->system_status) && $requestDataObject->system_status == 'encrypted') {
       $systemStatusData = $this->decrypt($requestDataObject->data, $this->site->getSystemStatusEncryptToken());
@@ -79,8 +80,10 @@ class StatusRequestService extends BaseRequestService {
       //throw new StatusRequestException('Request is not encrypted!');
       $systemStatusDataObject = $requestDataObject;
     }
+    //printf('<pre>%s</pre>', print_r($systemStatusDataObject, true));
+    //die();
 
-    $this->coreVersion = $systemStatusDataObject->system_status->core->drupal->version;
+    $this->coreVersion = isset($systemStatusDataObject->system_status->core->drupal) ? $systemStatusDataObject->system_status->core->drupal->version : '';
     $this->moduleData = json_decode(json_encode($systemStatusDataObject->system_status->contrib), TRUE);
   }
 

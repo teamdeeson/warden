@@ -60,6 +60,8 @@ class SiteUpdateCommand extends ContainerAwareCommand {
         /** @var Module $module */
         $module = $moduleManager->makeNewItem();
         $module->setProjectName($name);
+        $majorVersion = $module->getMajorVersion($version['version']);
+        $module->setLatestVersion($majorVersion);
         $moduleManager->saveDocument($module);
       }
 

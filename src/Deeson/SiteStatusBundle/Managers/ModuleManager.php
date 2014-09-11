@@ -3,6 +3,7 @@
 namespace Deeson\SiteStatusBundle\Managers;
 
 use Deeson\SiteStatusBundle\Document\Module;
+use Deeson\SiteStatusBundle\Exception\DocumentNotFoundException;
 
 class ModuleManager extends BaseManager {
 
@@ -44,7 +45,22 @@ class ModuleManager extends BaseManager {
    * @throws DocumentNotFoundException
    */
   public function findByProjectName($name) {
-    return $this->getDocumentBy(array('projectName' => $name));
+    try {
+      return $this->getDocumentBy(array('projectName' => $name));
+    } catch (DocumentNotFoundException $e) {
+      throw new DocumentNotFoundException($e->getMessage());
+    }
   }
 
+  public function getAllByVersion($version) {
+    $qb = $this->createIndexQuery();
+    $qb->field('latestVersion.' . $version)->exists(TRUE);
+    $cursor = $qb->getQuery()->execute();
+
+    $results = array();
+    foreach ($cursor as $result) {
+      $results[] = $result;
+    }
+    return $results;
+  }
 }

@@ -14,7 +14,7 @@ class SiteManager extends BaseManager {
    * @return bool
    */
   public function urlExists($url) {
-    $result = $this->getRepository()->findBy(array('url' => $url));
+    $result = $this->getDocumentsBy(array('url' => $url));
     return $result->count() > 0;
   }
 
@@ -33,8 +33,37 @@ class SiteManager extends BaseManager {
    * @return Site
    */
   public function makeNewItem() {
-    $site = new Site();
-    $site->setIsNew(TRUE);
-    return $site;
+    return new Site();
+  }
+
+  /**
+   *
+   *
+   * @param int $version
+   *
+   * @return array
+   */
+  public function getAllByVersion($version) {
+    return $this->getDocumentsBy(array('coreVersion.release' => $version));
+    //'/^' . $version . '.x.*/'
+  }
+
+  /**
+   * Gets the list of major release versions that are being used on registered sites.
+   *
+   * @return array
+   */
+  public function getAllMajorVersionReleases() {
+    $qb = $this->createIndexQuery();
+    $qb->distinct('coreVersion.release');
+
+    $cursor = $qb->getQuery()->execute();
+
+    $results = array();
+    foreach ($cursor as $result) {
+      $results[] = $result;
+    }
+
+    return $results;
   }
 }
