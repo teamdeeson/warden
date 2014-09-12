@@ -1,6 +1,6 @@
 _dashboard:
     pattern:  /
-    defaults: { _controller: DeesonSiteStatusBundle:Default:index }
+    defaults: { _controller: DeesonSiteStatusBundle:Dashboard:index }
 
 sites_list:
     path:    /sites
@@ -14,6 +14,10 @@ sites_show:
     path:    /sites/{id}
     defaults: { _controller: DeesonSiteStatusBundle:Sites:show }
 
+sites_edit:
+    path:    /sites/{id}/edit
+    defaults: { _controller: DeesonSiteStatusBundle:Sites:edit }
+
 sites_delete:
     path:    /sites/{id}/delete
     defaults: { _controller: DeesonSiteStatusBundle:Sites:delete }
@@ -21,10 +25,6 @@ sites_delete:
 sites_update_refresh:
     path:    /sites/{id}/refresh
     defaults: { _controller: DeesonSiteStatusBundle:Sites:refresh }
-
-drupal_update_refresh:
-    path:    /sites/{id}/drupal-refresh
-    defaults: { _controller: DeesonSiteStatusBundle:Sites:drupalRefresh }
 
 modules_list:
     path:    /modules

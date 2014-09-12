@@ -1,0 +1,23 @@
+{% extends 'DeesonSiteStatusBundle::layout.html.twig' %}
+
+{% block title %}Site Status Dashboard{% endblock %}
+
+{% block content_header '' %}
+
+{% block content %}
+
+    <p>This is the sites dashboard page.</p>
+
+    <ul>
+        {% for site in sites %}
+        <li>
+            <a href="/sites/{{ site.getId() }}">{{ site.getUrl() }}</a> - {{ site.getCoreVersion() }} - {{ site.getLatestCoreVersion() }}
+            <br />
+            {% for module in siteModules[site.getId()] %}
+                {{ module.name }},
+            {% endfor %}
+        </li>
+        {% endfor %}
+    </ul>
+
+{% endblock %}

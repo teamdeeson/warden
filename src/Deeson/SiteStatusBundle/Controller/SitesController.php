@@ -128,7 +128,15 @@ class SitesController extends Controller {
     return $this->redirect('/sites/' . $id);
   }
 
-  public function drupalRefreshAction($id) {
-    diE('here - ' . $id);
+  public function EditAction($id) {
+    /** @var SiteManager $manager */
+    $manager = $this->get('site_manager');
+    $site = $manager->getDocumentById($id);
+
+    $params = array(
+      'site' => $site,
+    );
+
+    return $this->render('DeesonSiteStatusBundle:Sites:edit.html.twig', $params);
   }
 }

@@ -106,14 +106,14 @@ class Site extends BaseDocument {
    * @return mixed
    */
   public function getCoreVersion() {
-    return (empty($this->coreVersion['current'])) ? 'Not Imported Yet!' : $this->coreVersion['current'];
+    return (empty($this->coreVersion['current'])) ? '0' : $this->coreVersion['current'];
   }
 
   /**
    * @param mixed $coreVersion
    */
   public function setCoreVersion($coreVersion) {
-    $majorRelease = substr($coreVersion, 0, 1);
+    $majorRelease = Module::getMajorVersion($coreVersion);
     $this->coreVersion = array(
       'release' => $majorRelease,
       'current' => $coreVersion,
@@ -124,7 +124,7 @@ class Site extends BaseDocument {
    * @return mixed
    */
   public function getLatestCoreVersion() {
-    return (empty($this->coreVersion['latest'])) ? 'Not Imported Yet!' : $this->coreVersion['latest'];
+    return (empty($this->coreVersion['latest'])) ? '0' : $this->coreVersion['latest'];
   }
 
   /**
@@ -150,8 +150,8 @@ class Site extends BaseDocument {
       $moduleList[] = array(
         'name' => $name,
         'version' => $version['version'],
-        'latestVersion' => '',
-        'isSecurity' => 0,
+        //'latestVersion' => '',
+        //'isSecurity' => 0,
         /*'version' => array(
           'current' => $version['version'],
           'latest' => '',
@@ -162,6 +162,19 @@ class Site extends BaseDocument {
     $this->modules = $moduleList;
   }
 
+  public function getModuleLatestVersion($module) {
+    return (!isset($module['latestVersion'])) ? '' : $module['latestVersion'];
+  }
+
+  public function getModuleIsSecurity($module) {
+    return (!isset($module['isSecurity'])) ? 0 : $module['isSecurity'];
+  }
+
+  /**
+   * Sets the latest versions of each of the modules for the site.
+   *
+   * @param $moduleLatestVersions
+   */
   public function setModulesLatestVersion($moduleLatestVersions) {
     $moduleList = $this->getModules();
     foreach ($moduleList as $key => $module) {
@@ -190,6 +203,11 @@ class Site extends BaseDocument {
     $this->isNew = $isNew;
   }
 
+  /**
+   * Compare the current core version with the latest core version.
+   *
+   * @return bool
+   */
   public function compareCoreVersion() {
     return is_float($this->getCoreVersion()) && $this->getCoreVersion() == $this->getLatestCoreVersion();
   }

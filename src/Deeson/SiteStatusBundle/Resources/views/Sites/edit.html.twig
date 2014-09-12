@@ -1,0 +1,25 @@
+{% extends 'DeesonSiteStatusBundle::layout.html.twig' %}
+
+{% block title %}Edit site: {{ site.getUrl() }}{% endblock %}
+
+{% block content_header '' %}
+
+{% block content %}
+
+    <p>Edit the details of site:</p>
+
+    <p>URL: {{ site.getUrl() }}</p>
+    <p>Core Version: {{ site.getCoreVersion() }} ({{ site.getLatestCoreVersion() }}, {% if site.compareCoreVersion() %}Y{% else %}N{% endif %})</p>
+    <p>System Status Token: {{ site.getSystemStatusToken() }}</p>
+    <p>System Status Encrypt Token: {{ site.getSystemStatusEncryptToken() }}</p>
+
+    <a href="/sites/{{ site.getId() }}/refresh">Refresh site data</a>
+    <br />
+    <br />
+
+    <a href="/sites/{{ site.getId() }}"><< Back</a>
+    <br />
+    <br />
+    <a href="/sites/{{ site.getId() }}/delete">DELETE</a>
+
+{% endblock %}

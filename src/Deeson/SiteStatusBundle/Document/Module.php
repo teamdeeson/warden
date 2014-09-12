@@ -155,11 +155,18 @@ class Module extends BaseDocument {
    * @return bool
    */
   public function compareVersion($version) {
-    $majorVersion = $this->getMajorVersion($version);
+    $majorVersion = self::getMajorVersion($version);
     return $version == $this->getLatestVersionByVersion($majorVersion);
   }
 
-  public function getMajorVersion($version) {
+  /**
+   * Get the major drupal version from the module version.
+   *
+   * @param $version
+   *
+   * @return string
+   */
+  public static function getMajorVersion($version) {
     return substr($version, 0, 1);
   }
 
