@@ -27,16 +27,15 @@ class ModulesController extends Controller {
   /**
    * Show the detail of the specific module
    *
-   * @param int $id
-   *   The id of the site to view
+   * @param string $projectName
+   *   The projectName of the site to view
    *
    * @return \Symfony\Component\HttpFoundation\Response
    */
-  public function ShowAction($id) {
+  public function ShowAction($projectName) {
     /** @var ModuleManager $manager */
     $manager = $this->get('module_manager');
-    $module = $manager->getDocumentById($id);
-    // @todo get by module name instead of id?
+    $module = $manager->getDocumentBy(array('projectName' => $projectName));
 
     $params = array(
       'module' => $module,

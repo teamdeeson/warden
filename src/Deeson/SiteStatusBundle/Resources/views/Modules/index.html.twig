@@ -11,7 +11,7 @@
     {% if modules %}
 
     {% for module in modules %}
-    <a href="/modules/{{ module.getId() }}">{{ module.getName() }}</a> ({{ module.getProjectName() }}) ({{ module.getSiteCount() }})<br />
+    <a href="/modules/{{ module.getProjectName() }}">{{ module.getName() }}</a> ({{ module.getProjectName() }}) ({{ module.getSiteCount() }})<br />
     {% endfor %}
 
     {% else %}

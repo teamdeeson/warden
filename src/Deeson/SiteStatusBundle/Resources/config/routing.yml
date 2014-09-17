@@ -31,5 +31,5 @@ modules_list:
     defaults: { _controller: DeesonSiteStatusBundle:Modules:index }
 
 modules_show:
-    path:    /modules/{id}
+    path:    /modules/{projectName}
     defaults: { _controller: DeesonSiteStatusBundle:Modules:show }
