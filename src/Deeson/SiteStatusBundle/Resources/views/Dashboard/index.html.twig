@@ -11,10 +11,10 @@
     <ul>
         {% for site in sites %}
         <li>
-            <a href="/sites/{{ site.getId() }}">{{ site.getUrl() }}</a> - {{ site.getCoreVersion() }} - {{ site.getLatestCoreVersion() }}
+            <a href="/sites/{{ site.id }}">{{ site.url }}</a> - {{ site.coreVersion }} - {{ site.latestCoreVersion }}
             <br />
-            {% for module in siteModules[site.getId()] %}
-                {{ module.name }},
+            {% for module in site.modules %}
+                <a href="/modules/{{ module.name }}">{{ module.name }}</a>,
             {% endfor %}
         </li>
         {% endfor %}
