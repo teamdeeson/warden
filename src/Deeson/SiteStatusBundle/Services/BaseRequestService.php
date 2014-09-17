@@ -69,12 +69,12 @@ abstract class BaseRequestService {
 
     $request = $this->buzz->get($this->getRequestUrl(), $this->connectionHeaders);
     // @todo check request header, if not 200 throw exception.
-    $headers = $request->getHeaders();
+    /*$headers = $request->getHeaders();
     if (trim($headers[0]) !== 'HTTP/1.0 200 OK') {
       print 'invalid response'."\n";
       print_r($headers);
       //return;
-    }
+    }*/
     $requestData = $request->getContent();
 
     $endTime = $this->getMicrotimeFloat();
