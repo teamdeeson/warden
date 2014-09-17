@@ -70,7 +70,7 @@ class DrupalUpdateCommand extends ContainerAwareCommand {
 
         $moduleLatestVersion[$version][$module->getProjectName()] = array(
           'version' => $this->latestReleaseVersion,
-          'isSecurity' => ($this->isSecurityRelease ? 1 : 0),
+          'isSecurity' => ($this->isSecurityRelease ? TRUE : FALSE),
         );
 
         $module->setName($this->drupalUpdateService->getModuleName());

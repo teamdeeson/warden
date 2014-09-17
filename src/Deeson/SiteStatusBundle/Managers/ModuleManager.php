@@ -51,7 +51,16 @@ class ModuleManager extends BaseManager {
     }
   }
 
+  /**
+   * Returns a list of sites for the specific version.
+   *
+   * @param $version
+   *
+   * @return array
+   * @throws \Doctrine\ODM\MongoDB\MongoDBException
+   */
   public function getAllByVersion($version) {
+    /** @var \Doctrine\ODM\MongoDB\Query\Builder $qb */
     $qb = $this->createIndexQuery();
     $qb->field('latestVersion.' . $version)->exists(TRUE);
 

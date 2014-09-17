@@ -150,8 +150,6 @@ class Site extends BaseDocument {
       $moduleList[] = array(
         'name' => $name,
         'version' => $version['version'],
-        //'latestVersion' => '',
-        //'isSecurity' => 0,
         /*'version' => array(
           'current' => $version['version'],
           'latest' => '',
@@ -162,12 +160,26 @@ class Site extends BaseDocument {
     $this->modules = $moduleList;
   }
 
+  /**
+   * Gets a modules latest version for the site.
+   *
+   * @param $module
+   *
+   * @return string
+   */
   public function getModuleLatestVersion($module) {
     return (!isset($module['latestVersion'])) ? '' : $module['latestVersion'];
   }
 
+  /**
+   * Returns if the provided module has a security release.
+   *
+   * @param $module
+   *
+   * @return boolean
+   */
   public function getModuleIsSecurity($module) {
-    return (!isset($module['isSecurity'])) ? 0 : $module['isSecurity'];
+    return (!isset($module['isSecurity'])) ? FALSE : $module['isSecurity'];
   }
 
   /**

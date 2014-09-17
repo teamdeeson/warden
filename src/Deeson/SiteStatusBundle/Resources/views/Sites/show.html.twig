@@ -14,7 +14,7 @@
     <p>Modules:</p>
     <ul>
         {% for module in site.getModules() %}
-        <li>{{ module.name }}: {{ module.version }} ({{ site.getModuleLatestVersion(module) }}, {{ site.getModuleIsSecurity(module) }}) - out of date: {% if module.version == site.getModuleLatestVersion(module) %}N{% else %}Y{% endif %}</li>
+        <li>{{ module.name }}: {{ module.version }} ({{ site.getModuleLatestVersion(module) }}, {% if site.getModuleIsSecurity(module) %}Y{% else %}N{% endif %}) - out of date: {% if module.version == site.getModuleLatestVersion(module) %}N{% else %}Y{% endif %}</li>
         {% endfor %}
     </ul>
     <br />
