@@ -37,7 +37,7 @@ class SiteManager extends BaseManager {
   }
 
   /**
-   *
+   * Gets all the sites for a specific version.
    *
    * @param int $version
    *
@@ -69,5 +69,49 @@ class SiteManager extends BaseManager {
     sort($results);
 
     return $results;
+  }
+
+  /**
+   * Gets all the sites that have a error against them.
+   *
+   * A site could have an error for any one of the following reasons:
+   *
+   *  - Core version is out of date and have security releases.
+   *  - Module versions are out of date and have security releases.
+   *
+   * @return array
+   * @throws \Doctrine\ODM\MongoDB\MongoDBException
+   */
+  public function getAllSitesWithErrors() {
+    /** @var \Doctrine\ODM\MongoDB\Query\Builder $qb */
+    $qb = $this->createIndexQuery();
+    $qb->field('isNew')->equals(FALSE);
+    $qb->field('coreVersion.current')->notEqual('coreVersion.latestRelease');
+
+    $cursor = $qb->getQuery()->execute();
+
+    if ($cursor->count() < 1) {
+      return array();
+    }
+
+    $sites = array();
+    foreach ($cursor as $result) {
+      $modules = array();
+      foreach ($result->getModules() as $module) {
+        if (!isset($module['latestVersion']) || $module['version'] == $module['latestVersion']) {
+          continue;
+        }
+        $modules[] = $module;
+      }
+      $sites[] = array(
+        'id' => $result->getId(),
+        'url' => $result->getUrl(),
+        'coreVersion' => $result->getCoreVersion(),
+        'latestCoreVersion' => $result->getLatestCoreVersion(),
+        'modules' => $modules,
+      );
+    }
+
+    return $sites;
   }
 }
