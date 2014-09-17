@@ -125,7 +125,7 @@ class SitesController extends Controller {
 
     $this->get('session')->getFlashBag()->add('notice', 'Your site has had the core version updated! (' . $requestTime . ' secs)');
 
-    return $this->redirect('/sites/' . $id);
+    return $this->redirect('/sites/' . $id . '/edit');
   }
 
   public function EditAction($id) {

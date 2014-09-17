@@ -54,8 +54,11 @@ class SiteManager extends BaseManager {
    * @return array
    */
   public function getAllMajorVersionReleases() {
+    /** @var \Doctrine\ODM\MongoDB\Query\Builder $qb */
     $qb = $this->createIndexQuery();
     $qb->distinct('coreVersion.release');
+    $qb->field('coreVersion.release')->notEqual('0');
+    //$qb->sort('coreVersion.release', 'ASC');
 
     $cursor = $qb->getQuery()->execute();
 
@@ -63,6 +66,7 @@ class SiteManager extends BaseManager {
     foreach ($cursor as $result) {
       $results[] = $result;
     }
+    sort($results);
 
     return $results;
   }

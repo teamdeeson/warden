@@ -36,6 +36,7 @@ class ModulesController extends Controller {
     /** @var ModuleManager $manager */
     $manager = $this->get('module_manager');
     $module = $manager->getDocumentById($id);
+    // @todo get by module name instead of id?
 
     $params = array(
       'module' => $module,

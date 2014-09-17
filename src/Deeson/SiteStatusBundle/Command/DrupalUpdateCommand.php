@@ -32,7 +32,8 @@ class DrupalUpdateCommand extends ContainerAwareCommand {
 
   protected function configure() {
     $this->setName('deeson:site-status:drupal-update')
-      ->setDescription('Update core & all the modules with the latest versions from Drupal.org');
+      ->setDescription('Update core & all the modules with the latest versions from Drupal.org')
+      ->addOption('import-new', NULL, InputOption::VALUE_NONE, 'If set will only import data on newly created sites');
   }
 
   protected function execute(InputInterface $input, OutputInterface $output) {
@@ -44,11 +45,8 @@ class DrupalUpdateCommand extends ContainerAwareCommand {
     /** @var ModuleManager $moduleManager */
     $moduleManager = $this->getContainer()->get('module_manager');
 
-    // loop over all modules
-    // for each module get unique major versions (e.g. 6.x/ 7.x)
-    // request data from d.o for module and version
-    // update module with latest version
-    // see if it is a security release and flag if so
+    //$updateNewOnly = isset($input->getOption('import-new'));
+
     // @todo refactor this!
 
     $moduleLatestVersion = array();
@@ -91,7 +89,6 @@ class DrupalUpdateCommand extends ContainerAwareCommand {
         $this->processDrupalUpdateData('drupal', $version);
       } catch (\Exception $e) {
         $output->writeln(' - Unable to update module version [' . $version . ']: ' . $e->getMessage());
-        return;
       }
 
       $sites = $siteManager->getAllByVersion($version);

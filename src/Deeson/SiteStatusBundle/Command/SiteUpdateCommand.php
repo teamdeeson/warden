@@ -35,6 +35,7 @@ class SiteUpdateCommand extends ContainerAwareCommand {
       $sites = $siteManager->getAllDocuments();
     }
 
+    //$count = 0;
     foreach ($sites as $site) {
       /** @var Site $site */
       $output->writeln('Updating site: ' . $site->getId() . ' - ' . $site->getUrl());
@@ -51,19 +52,47 @@ class SiteUpdateCommand extends ContainerAwareCommand {
       $requestTime = $statusService->getRequestTime();
 
       foreach ($moduleData as $name => $version) {
-        $moduleExists = $moduleManager->nameExists($name);
+        $majorVersion = Module::getMajorVersion($version['version']);
+        $moduleExists = $moduleManager->nameExists($name, $majorVersion);
 
-        if ($moduleExists) {
+        $moduleExistsCount = $moduleExists->count();
+        /** @var Module $module */
+        $module = $moduleExists->getNext();
+
+        // @todo check not only name but version as well
+        //printf('<pre>%s</pre>', print_r($module, true));
+        //die();
+        print "\n- module: $name";
+//print "\n\tcount: " . $moduleExistsCount;
+        //print "\n\tversion: $majorVersion";
+        //print "\n\tversion exists: " . (isset($module->getLatestVersion()->$majorVersion) ? 'Y' : 'N');
+        //die();
+        if ($moduleExistsCount > 0 && isset($module->getLatestVersion()->$majorVersion)) {
+          print "\n\tSKIP THIS - have version!";
           continue;
         }
-
-        /** @var Module $module */
-        $module = $moduleManager->makeNewItem();
+        elseif ($moduleExistsCount < 1) {
+          print "\n\tSKIP THIS - no module!";
+          continue;
+        }
+        if ($moduleExistsCount > 0) {
+          print "\n\tupdate an existing one\n";
+        }
+        else {
+          print "\n\tcreate new one\n";
+          $module = $moduleManager->makeNewItem();
+        }
+        //die();
         $module->setProjectName($name);
-        $majorVersion = Module::getMajorVersion($version['version']);
         $module->setLatestVersion($majorVersion);
         $moduleManager->saveDocument($module);
       }
+
+      /*print $count;
+      if ($count > 1) {
+        break;
+      }
+      $count++;*/
 
       $output->writeln('request time: ' . $requestTime);
 

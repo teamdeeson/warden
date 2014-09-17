@@ -83,7 +83,8 @@ class StatusRequestService extends BaseRequestService {
     //printf('<pre>%s</pre>', print_r($systemStatusDataObject, true));
     //die();
 
-    $this->coreVersion = isset($systemStatusDataObject->system_status->core->drupal) ? $systemStatusDataObject->system_status->core->drupal->version : '';
+    // @todo if no core version - try to detect it from the module versions.
+    $this->coreVersion = isset($systemStatusDataObject->system_status->core->drupal) ? $systemStatusDataObject->system_status->core->drupal->version : '0';
     $this->moduleData = json_decode(json_encode($systemStatusDataObject->system_status->contrib), TRUE);
   }
 

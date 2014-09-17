@@ -15,8 +15,7 @@ class ModuleManager extends BaseManager {
    * @return bool
    */
   public function nameExists($name) {
-    $result = $this->getRepository()->findBy(array('projectName' => $name));
-    return $result->count() > 0;
+    return $this->getRepository()->findBy(array('projectName' => $name));
   }
 
   /**
@@ -55,6 +54,7 @@ class ModuleManager extends BaseManager {
   public function getAllByVersion($version) {
     $qb = $this->createIndexQuery();
     $qb->field('latestVersion.' . $version)->exists(TRUE);
+
     $cursor = $qb->getQuery()->execute();
 
     $results = array();
