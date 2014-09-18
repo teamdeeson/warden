@@ -2,7 +2,7 @@
 
 namespace Deeson\SiteStatusBundle\Services;
 
-use Deeson\SiteStatusBundle\Document\Module;
+use Deeson\SiteStatusBundle\Document\ModuleDocument;
 use Deeson\SiteStatusBundle\Exception\StatusRequestException;
 
 class StatusRequestService extends BaseRequestService {
@@ -95,7 +95,7 @@ class StatusRequestService extends BaseRequestService {
       }
       else {
         foreach ($systemStatusDataObject->system_status->contrib as $module) {
-          $coreVersion = Module::getMajorVersion((string) $module->version);
+          $coreVersion = ModuleDocument::getMajorVersion((string) $module->version);
           break;
         }
       }

@@ -2,7 +2,7 @@
 
 namespace Deeson\SiteStatusBundle\Managers;
 
-use Deeson\SiteStatusBundle\Document\Module;
+use Deeson\SiteStatusBundle\Document\ModuleDocument;
 use Deeson\SiteStatusBundle\Exception\DocumentNotFoundException;
 
 class ModuleManager extends BaseManager {
@@ -32,7 +32,7 @@ class ModuleManager extends BaseManager {
    * @return Site
    */
   public function makeNewItem() {
-    return new Module();
+    return new ModuleDocument();
   }
 
   /**

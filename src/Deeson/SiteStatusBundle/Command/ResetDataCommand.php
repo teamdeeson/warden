@@ -2,7 +2,7 @@
 
 namespace Deeson\SiteStatusBundle\Command;
 
-use Deeson\SiteStatusBundle\Document\Module;
+use Deeson\SiteStatusBundle\Document\ModuleDocument;
 use Deeson\SiteStatusBundle\Document\Site;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
@@ -36,7 +36,7 @@ class ResetDataCommand extends ContainerAwareCommand {
 
     $modules = $moduleManager->getAllDocuments();
     foreach ($modules as $module) {
-      /** @var Module $module */
+      /** @var ModuleDocument $module */
       $moduleManager->deleteDocument($module->getId());
     }
 

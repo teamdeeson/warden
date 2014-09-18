@@ -2,7 +2,7 @@
 
 namespace Deeson\SiteStatusBundle\Command;
 
-use Deeson\SiteStatusBundle\Document\Module;
+use Deeson\SiteStatusBundle\Document\ModuleDocument;
 use Deeson\SiteStatusBundle\Document\Site;
 use Deeson\SiteStatusBundle\Services\DrupalUpdateRequestService;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -50,7 +50,7 @@ class DrupalUpdateCommand extends ContainerAwareCommand {
     foreach ($majorVersions as $version) {
       $modules = $moduleManager->getAllByVersion($version);
       foreach ($modules as $module) {
-        /** @var Module $module */
+        /** @var ModuleDocument $module */
         $output->writeln('Updating - ' . $module->getProjectName() . ' for version: ' . $version);
 
         try {

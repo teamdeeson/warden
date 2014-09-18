@@ -36,7 +36,7 @@ class ModuleUpdateCommand extends ContainerAwareCommand {
       $output->writeln('Updating site: ' . $site->getId() . ' - ' . $site->getUrl());
 
       foreach ($site->getModules() as $siteModule) {
-        /** @var \Deeson\SiteStatusBundle\Document\Module $module */
+        /** @var \Deeson\SiteStatusBundle\Document\ModuleDocument $module */
         try {
           $module = $moduleManager->findByProjectName($siteModule['name']);
         } catch (\Deeson\SiteStatusBundle\Exception\DocumentNotFoundException $e) {

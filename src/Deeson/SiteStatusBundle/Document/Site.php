@@ -113,7 +113,7 @@ class Site extends BaseDocument {
    * @param mixed $coreVersion
    */
   public function setCoreVersion($coreVersion) {
-    $majorRelease = Module::getMajorVersion($coreVersion);
+    $majorRelease = ModuleDocument::getMajorVersion($coreVersion);
     $this->coreVersion = array(
       'release' => $majorRelease,
       'current' => $coreVersion,
@@ -206,7 +206,7 @@ class Site extends BaseDocument {
 
       $versionType = 'recommended';
       if (isset($moduleVersions['other'])) {
-        $latestVersion = Module::getRelevantLatestVersion($module['version'], $moduleVersions['other']['version']);
+        $latestVersion = ModuleDocument::getRelevantLatestVersion($module['version'], $moduleVersions['other']['version']);
         if ($latestVersion) {
           $versionType = 'other';
         }

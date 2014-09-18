@@ -9,7 +9,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
  *     collection="modules"
  * )
  */
-class Module extends BaseDocument {
+class ModuleDocument extends BaseDocument {
 
   /**
    * @Mongodb\String

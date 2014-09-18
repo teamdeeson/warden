@@ -2,7 +2,7 @@
 
 namespace Deeson\SiteStatusBundle\Command;
 
-use Deeson\SiteStatusBundle\Document\Module;
+use Deeson\SiteStatusBundle\Document\ModuleDocument;
 use Deeson\SiteStatusBundle\Document\Site;
 use Deeson\SiteStatusBundle\Services\StatusRequestService;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -51,11 +51,11 @@ class SiteUpdateCommand extends ContainerAwareCommand {
       $requestTime = $statusService->getRequestTime();
 
       foreach ($moduleData as $name => $version) {
-        $majorVersion = Module::getMajorVersion($version['version']);
+        $majorVersion = ModuleDocument::getMajorVersion($version['version']);
         $moduleExists = $moduleManager->nameExists($name, $majorVersion);
 
         $moduleExistsCount = $moduleExists->count();
-        /** @var Module $module */
+        /** @var ModuleDocument $module */
         $module = $moduleExists->getNext();
 
         //printf('<pre>%s</pre>', print_r($module, true));
