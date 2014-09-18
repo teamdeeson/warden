@@ -19,7 +19,8 @@ class ModulesController extends Controller {
     /** @var SiteManager $siteManager */
     $siteManager = $this->get('site_manager');
 
-    $sitesTotalCount = $siteManager->getAllDocumentCount();
+    $sites = $siteManager->getAllDocuments();
+    $sitesTotalCount = (is_array($sites)) ? 0 : $sites->count();
     $modules = $moduleManager->getDocumentsBy(array('isNew' => FALSE), array('projectName' => 'asc'));
 
     $moduleList = array();
