@@ -23,7 +23,7 @@ class ModuleManager extends BaseManager {
    *   The type of this manager.
    */
   public function getType() {
-    return 'Module';
+    return 'ModuleDocument';
   }
 
   /**
