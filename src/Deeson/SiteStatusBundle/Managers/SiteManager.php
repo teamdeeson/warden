@@ -85,8 +85,11 @@ class SiteManager extends BaseManager {
   public function getAllSitesWithErrors() {
     /** @var \Doctrine\ODM\MongoDB\Query\Builder $qb */
     $qb = $this->createIndexQuery();
-    $qb->field('isNew')->equals(FALSE);
-    $qb->field('coreVersion.current')->notEqual('coreVersion.latestRelease');
+    $qb->addAnd($qb->expr()->field('isNew')->equals(FALSE));
+    $qb->addAnd($qb->expr()->field('coreVersion.current')->notEqual(''));
+    $qb->addAnd($qb->expr()->field('coreVersion.latest')->exists(TRUE));
+    $qb->addAnd($qb->expr()->field('coreVersion.latest')->notEqual(''));
+    $qb->addAnd($qb->expr()->field('coreVersion.current')->notEqual('coreVersion.latest'));
 
     $cursor = $qb->getQuery()->execute();
 

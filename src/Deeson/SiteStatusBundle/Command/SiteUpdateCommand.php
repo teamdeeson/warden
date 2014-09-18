@@ -35,7 +35,6 @@ class SiteUpdateCommand extends ContainerAwareCommand {
       $sites = $siteManager->getAllDocuments();
     }
 
-    //$count = 0;
     foreach ($sites as $site) {
       /** @var Site $site */
       $output->writeln('Updating site: ' . $site->getId() . ' - ' . $site->getUrl());
@@ -59,40 +58,30 @@ class SiteUpdateCommand extends ContainerAwareCommand {
         /** @var Module $module */
         $module = $moduleExists->getNext();
 
-        // @todo check not only name but version as well
         //printf('<pre>%s</pre>', print_r($module, true));
         //die();
-        print "\n- module: $name";
-//print "\n\tcount: " . $moduleExistsCount;
+        //print "\n- module: $name";
+        //print "\n\tcount: " . $moduleExistsCount;
         //print "\n\tversion: $majorVersion";
-        //print "\n\tversion exists: " . (isset($module->getLatestVersion()->$majorVersion) ? 'Y' : 'N');
+        $moduleLatestVersion = ($moduleExistsCount > 0) ? $module->getLatestVersion() : array();
+        //print "\n\tversion exists: " . (isset($moduleLatestVersion[$majorVersion]) ? 'Y' : 'N');
         //die();
-        if ($moduleExistsCount > 0 && isset($module->getLatestVersion()->$majorVersion)) {
-          print "\n\tSKIP THIS - have version!";
+        if ($moduleExistsCount > 0 && isset($moduleLatestVersion[$majorVersion])) {
+          //print "\n\tSKIP THIS - have version!\n";
           continue;
         }
-        elseif ($moduleExistsCount < 1) {
-          print "\n\tSKIP THIS - no module!";
-          continue;
-        }
-        if ($moduleExistsCount > 0) {
-          print "\n\tupdate an existing one\n";
-        }
-        else {
-          print "\n\tcreate new one\n";
+        if ($moduleExistsCount < 1) {
+          //print "\n\tNO MODULE AT ALL - create new one\n";
           $module = $moduleManager->makeNewItem();
         }
-        //die();
+        elseif ($moduleExistsCount > 0 && !isset($moduleLatestVersion[$majorVersion])) {
+          //print "\n\tModule, but no version - update an existing one\n";
+        }
+
         $module->setProjectName($name);
         $module->setLatestVersion($majorVersion);
         $moduleManager->saveDocument($module);
       }
-
-      /*print $count;
-      if ($count > 1) {
-        break;
-      }
-      $count++;*/
 
       $output->writeln('request time: ' . $requestTime);
 

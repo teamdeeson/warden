@@ -129,9 +129,18 @@ class Site extends BaseDocument {
 
   /**
    * @param mixed $latestVersion
+   * @param boolean $isSecurity
    */
-  public function setLatestCoreVersion($latestVersion) {
+  public function setLatestCoreVersion($latestVersion, $isSecurity = FALSE) {
     $this->coreVersion['latest'] = $latestVersion;
+    $this->coreVersion['isSecurity'] = $isSecurity;
+  }
+
+  /**
+   * @return boolean
+   */
+  public function getIsSecurityCoreVersion() {
+    return (empty($this->coreVersion['isSecurity'])) ? FALSE : $this->coreVersion['isSecurity'];
   }
 
   /**
@@ -188,17 +197,25 @@ class Site extends BaseDocument {
    * @param $moduleLatestVersions
    */
   public function setModulesLatestVersion($moduleLatestVersions) {
-    $moduleList = $this->getModules();
-    foreach ($moduleList as $key => $module) {
+    $siteModuleList = $this->getModules();
+    foreach ($siteModuleList as $key => $module) {
       if (!isset($moduleLatestVersions[$module['name']])) {
         continue;
       }
-      $updateModule = $moduleLatestVersions[$module['name']];
+      $moduleVersions = $moduleLatestVersions[$module['name']];
 
-      $moduleList[$key]['latestVersion'] = $updateModule['version'];
-      $moduleList[$key]['isSecurity'] = $updateModule['isSecurity'];
+      $versionType = 'recommended';
+      if (isset($moduleVersions['other'])) {
+        $latestVersion = Module::getRelevantLatestVersion($module['version'], $moduleVersions['other']['version']);
+        if ($latestVersion) {
+          $versionType = 'other';
+        }
+      }
+
+      $siteModuleList[$key]['latestVersion'] = $moduleVersions[$versionType]['version'];
+      $siteModuleList[$key]['isSecurity'] = $moduleVersions[$versionType]['isSecurity'];
     }
-    $this->modules = $moduleList;
+    $this->modules = $siteModuleList;
   }
 
   /**

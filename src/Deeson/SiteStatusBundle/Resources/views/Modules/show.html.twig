@@ -11,14 +11,21 @@
     <p>Name: {{ module.getName() }} ({{ module.getProjectName() }})</p>
     <p>Latest Versions: <br/>
     {% for version, moduleVersion in module.getLatestVersion() %}
-        {{ version }} - {{ moduleVersion.version }} ({% if moduleVersion.security == false %}N{% else %}Y{% endif %})<br/>
+        {{ version }}:
+        {% if moduleVersion.recommended is defined %}
+           Recommended - {{ moduleVersion.recommended.version }} ({% if moduleVersion.recommended.isSecurity %}Y{% else %}N{% endif %})
+        {% endif %}
+        {% if moduleVersion.other is defined %}
+            , Other - {{ moduleVersion.other.version }} ({% if moduleVersion.other.isSecurity %}Y{% else %}N{% endif %})
+        {% endif %}
+        <br/>
     {% endfor %}
     </p>
 
     <p>Sites:</p>
     <ul>
         {% for site in module.getSites() %}
-        <li>{{ site.url }} - {{ site.version }} - out of date: {% if module.compareVersion(site.version) %}N{% else %}Y{% endif %}</li>
+        <li><a href="/sites/{{ site.id }}">{{ site.url }}</a> - {{ site.version }} - out of date: {% if module.compareVersion(site.version) %}N{% else %}Y{% endif %}</li>
         {% endfor %}
     </ul>
 

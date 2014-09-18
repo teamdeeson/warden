@@ -19,9 +19,15 @@ class DrupalUpdateRequestService extends BaseRequestService {
    */
   protected $moduleRequestVersion;
 
+  /**
+   * @var string
+   */
   protected $moduleName;
 
-  protected $moduleLatestRelease;
+  /**
+   * @var string
+   */
+  protected $moduleVersions;
 
   /**
    * @param string $moduleVersion
@@ -40,17 +46,16 @@ class DrupalUpdateRequestService extends BaseRequestService {
   /**
    * @return mixed
    */
-  public function getModuleLatestRelease() {
-    return $this->moduleLatestRelease;
-  }
-
-  /**
-   * @return mixed
-   */
   public function getModuleName() {
     return $this->moduleName;
   }
 
+  /**
+   * @return string
+   */
+  public function getModuleVersions() {
+    return $this->moduleVersions;
+  }
 
   /**
    * Processes the data that has come back from the request.
@@ -72,12 +77,45 @@ class DrupalUpdateRequestService extends BaseRequestService {
     //$title = $requestXmlObject->xpath('/project');
     //$title = (string) $requestXmlObject->title;
     //print_r($title);
-    //$release = $requestXmlObject->xpath('/project/releases/release[1]');
-    $release = $requestXmlObject->releases->release[0];
-    //print_r($release);
 
+    $recommendedMajorVersion = (string) $requestXmlObject->recommended_major;
+    $supportedMajor = (string) $requestXmlObject->supported_majors;
+    $supportedMajorVersions = explode(',', $supportedMajor);
+
+    $releaseVersions = array();
+    foreach ($requestXmlObject->releases->release as $release) {
+      if (in_array($release->version_major, $supportedMajorVersions)) {
+        $releaseVersions[] = $release;
+        $key = array_search($release->version_major, $supportedMajorVersions);
+        unset($supportedMajorVersions[$key]);
+      }
+      if (count($supportedMajorVersions) < 1) {
+        break;
+      }
+    }
+
+    $versions = array();
+    foreach ($releaseVersions as $release) {
+      $isSecurityRelease = FALSE;
+      if (isset($release->terms)) {
+        foreach ($release->terms->term as $term) {
+          if (strtolower($term->value) == 'security update') {
+            $isSecurityRelease = TRUE;
+            break;
+          }
+        }
+      }
+
+      $versionType = ($release->version_major == $recommendedMajorVersion) ? 'recommended' : 'other';
+
+      $versions[$versionType] = array(
+        'version' => (string) $release->version,
+        'isSecurity' => $isSecurityRelease,
+      );
+    }
+
+    $this->moduleVersions = $versions;
     $this->moduleName = (string) $requestXmlObject->title;
-    $this->moduleLatestRelease = $release;
   }
 
   /**

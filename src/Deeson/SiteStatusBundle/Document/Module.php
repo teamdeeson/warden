@@ -92,21 +92,30 @@ class Module extends BaseDocument {
    * @return string
    */
   public function getLatestVersionByVersion($version) {
-    return empty($this->latestVersion[$version]['version']) ? '-' : $this->latestVersion[$version]['version'];
+    return empty($this->latestVersion[$version]['recommended']['version']) ? 0 : $this->latestVersion[$version]['recommended']['version'];
   }
 
   /**
-   * Sets the latest version and if this is a security update or not.
+   * @param $version
    *
-   * @param int $version
-   * @param string $latestVersion
-   * @param bool $security
+   * @return string
    */
-  public function setLatestVersion($version, $latestVersion = '', $security = FALSE) {
-    $this->latestVersion[$version] = array(
-      'version' => $latestVersion,
-      'security' => $security,
-    );
+  public function getOtherVersionByVersion($version) {
+    return empty($this->latestVersion[$version]['other']['version']) ? 0 : $this->latestVersion[$version]['other']['version'];
+  }
+
+  /**
+   * Sets the latest version information for the module.
+   *
+   * The version information includes the 'recommended' and 'other' release
+   * versions (if they are available) as well as if each is a security update
+   * or not.
+   *
+   * @param int $majorVersion
+   * @param array $version
+   */
+  public function setLatestVersion($majorVersion, $version = array()) {
+    $this->latestVersion[$majorVersion] = $version;
   }
 
   /**
@@ -129,9 +138,10 @@ class Module extends BaseDocument {
    * @param $url
    * @param $version
    */
-  public function addSite($url, $version) {
+  public function addSite($siteId, $url, $version) {
     $moduleSites = $this->getSites();
     $moduleSites[] = array(
+      'id' => $siteId,
       'url' => $url,
       'version' => $version,
     );
@@ -156,7 +166,38 @@ class Module extends BaseDocument {
    */
   public function compareVersion($version) {
     $majorVersion = self::getMajorVersion($version);
-    return $version == $this->getLatestVersionByVersion($majorVersion);
+    $recommendedVersion = $this->getLatestVersionByVersion($majorVersion);
+    $otherVersion = $this->getOtherVersionByVersion($majorVersion);
+
+    $latestVersion = self::getRelevantLatestVersion($version, $otherVersion, TRUE);
+    if (!$latestVersion) {
+      $latestVersion = $recommendedVersion;
+    }
+    return $version == $latestVersion;
+  }
+
+  public static function getRelevantLatestVersion($version, $otherVersion = 0, $compareFullVersions = FALSE) {
+    if ($otherVersion > 0) {
+      preg_match('/([1-9]).x-([0-9]+).([a-z0-9\-]+)/', $version, $versionMatches);
+      //printf('<pre>version: %s</pre>', print_r($versionMatches, true));
+      preg_match('/([1-9]).x-([0-9]+).([a-z0-9\-]+)/', $otherVersion, $otherMatches);
+      //printf('<pre>other: %s</pre>', print_r($otherMatches, true));
+      //preg_match('/([1-9]).x-([1-9]+).([a-z0-9\-])/', $recommendedVersion, $recommendedMatches);
+      //printf('<pre>%s</pre>', print_r($recommendedMatches, true));
+      //print "<br>$version, $otherVersion <br>";
+
+      //print "$otherMatches[2] == $versionMatches[2]<br>";
+      if ($otherMatches[1] == $versionMatches[1] && $otherMatches[2] == $versionMatches[2]) {
+        if ($compareFullVersions) {
+          return ($otherMatches[3] == $versionMatches[3]) ? $otherVersion : FALSE;
+        }
+        else {
+          return $otherVersion;
+        }
+      }
+    }
+
+    return FALSE;
   }
 
   /**

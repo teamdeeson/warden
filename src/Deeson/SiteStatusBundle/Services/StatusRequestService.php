@@ -2,6 +2,7 @@
 
 namespace Deeson\SiteStatusBundle\Services;
 
+use Deeson\SiteStatusBundle\Document\Module;
 use Deeson\SiteStatusBundle\Exception\StatusRequestException;
 
 class StatusRequestService extends BaseRequestService {
@@ -83,8 +84,25 @@ class StatusRequestService extends BaseRequestService {
     //printf('<pre>%s</pre>', print_r($systemStatusDataObject, true));
     //die();
 
-    // @todo if no core version - try to detect it from the module versions.
-    $this->coreVersion = isset($systemStatusDataObject->system_status->core->drupal) ? $systemStatusDataObject->system_status->core->drupal->version : '0';
+    // Get the core version from the site.
+    if (isset($systemStatusDataObject->system_status->core->drupal)) {
+      $this->coreVersion = $systemStatusDataObject->system_status->core->drupal->version;
+    }
+    else {
+      // No core data available - probably on pressflow!
+      if (isset($requestDataObject->drupal_version)) {
+        $coreVersion = $requestDataObject->drupal_version;
+      }
+      else {
+        foreach ($systemStatusDataObject->system_status->contrib as $module) {
+          $coreVersion = Module::getMajorVersion((string) $module->version);
+          break;
+        }
+      }
+      $this->coreVersion = $coreVersion . '.x';
+    }
+
+    //$this->coreVersion = isset($systemStatusDataObject->system_status->core->drupal) ? $systemStatusDataObject->system_status->core->drupal->version : '0';
     $this->moduleData = json_decode(json_encode($systemStatusDataObject->system_status->contrib), TRUE);
   }
 

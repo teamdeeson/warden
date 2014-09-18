@@ -59,7 +59,7 @@ class ModuleUpdateCommand extends ContainerAwareCommand {
           }
         }
 
-        $module->addSite($site->getUrl(), $siteModule['version']);
+        $module->addSite($site->getId(), $site->getUrl(), $siteModule['version']);
         $moduleManager->updateDocument();
       }
     }
