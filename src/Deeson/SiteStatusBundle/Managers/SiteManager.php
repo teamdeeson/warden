@@ -2,7 +2,7 @@
 
 namespace Deeson\SiteStatusBundle\Managers;
 
-use Deeson\SiteStatusBundle\Document\Site;
+use Deeson\SiteStatusBundle\Document\SiteDocument;
 
 class SiteManager extends BaseManager {
 
@@ -24,16 +24,16 @@ class SiteManager extends BaseManager {
    *   e.g. 'Site'
    */
   public function getType() {
-    return 'Site';
+    return 'SiteDocument';
   }
 
   /**
    * Create a new empty type of the object.
    *
-   * @return Site
+   * @return SiteDocument
    */
   public function makeNewItem() {
-    return new Site();
+    return new SiteDocument();
   }
 
   /**

@@ -6,7 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Deeson\SiteStatusBundle\Managers\SiteManager;
 use Deeson\SiteStatusBundle\Services\StatusRequestService;
-use Deeson\SiteStatusBundle\Document\Site;
+use Deeson\SiteStatusBundle\Document\SiteDocument;
 
 class SitesController extends Controller {
 
@@ -102,7 +102,7 @@ class SitesController extends Controller {
   public function RefreshAction($id) {
     /** @var SiteManager $manager */
     $manager = $this->get('site_manager');
-    /** @var Site $site */
+    /** @var SiteDocument $site */
     $site = $manager->getDocumentById($id);
 
     /** @var StatusRequestService $statusService */

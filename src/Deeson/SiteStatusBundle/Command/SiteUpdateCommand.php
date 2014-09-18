@@ -3,7 +3,7 @@
 namespace Deeson\SiteStatusBundle\Command;
 
 use Deeson\SiteStatusBundle\Document\ModuleDocument;
-use Deeson\SiteStatusBundle\Document\Site;
+use Deeson\SiteStatusBundle\Document\SiteDocument;
 use Deeson\SiteStatusBundle\Services\StatusRequestService;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
@@ -36,7 +36,7 @@ class SiteUpdateCommand extends ContainerAwareCommand {
     }
 
     foreach ($sites as $site) {
-      /** @var Site $site */
+      /** @var SiteDocument $site */
       $output->writeln('Updating site: ' . $site->getId() . ' - ' . $site->getUrl());
 
       /** @var StatusRequestService $statusService */

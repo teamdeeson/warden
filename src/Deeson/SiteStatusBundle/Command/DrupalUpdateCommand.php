@@ -3,7 +3,7 @@
 namespace Deeson\SiteStatusBundle\Command;
 
 use Deeson\SiteStatusBundle\Document\ModuleDocument;
-use Deeson\SiteStatusBundle\Document\Site;
+use Deeson\SiteStatusBundle\Document\SiteDocument;
 use Deeson\SiteStatusBundle\Services\DrupalUpdateRequestService;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
@@ -84,7 +84,7 @@ class DrupalUpdateCommand extends ContainerAwareCommand {
       $moduleVersions = $this->moduleVersions['recommended'];
       $sites = $siteManager->getAllByVersion($version);
       foreach ($sites as $site) {
-        /** @var Site $site */
+        /** @var SiteDocument $site */
         $output->writeln('Updating site: ' . $site->getId() . ' - ' . $site->getUrl());
 
         if (!isset($moduleLatestVersion[$version])) {

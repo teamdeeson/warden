@@ -9,7 +9,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
  *     collection="sites"
  * )
  */
-class Site extends BaseDocument {
+class SiteDocument extends BaseDocument {
 
   /**
    * @Mongodb\String

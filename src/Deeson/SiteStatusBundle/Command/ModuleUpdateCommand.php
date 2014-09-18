@@ -32,7 +32,7 @@ class ModuleUpdateCommand extends ContainerAwareCommand {
     }
 
     foreach ($sites as $site) {
-      /** @var \Deeson\SiteStatusBundle\Document\Site $site */
+      /** @var \Deeson\SiteStatusBundle\Document\SiteDocument $site */
       $output->writeln('Updating site: ' . $site->getId() . ' - ' . $site->getUrl());
 
       foreach ($site->getModules() as $siteModule) {

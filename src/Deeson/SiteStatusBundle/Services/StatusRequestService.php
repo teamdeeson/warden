@@ -22,12 +22,12 @@ class StatusRequestService extends BaseRequestService {
   protected $moduleData = array();
 
   /**
-   * @var \Deeson\SiteStatusBundle\Document\Site $site
+   * @var \Deeson\SiteStatusBundle\Document\SiteDocument $site
    */
   protected $site = NULL;
 
   /**
-   * @param \Deeson\SiteStatusBundle\Document\Site $site
+   * @param \Deeson\SiteStatusBundle\Document\SiteDocument $site
    */
   public function setSite($site) {
     $this->site = $site;
