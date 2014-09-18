@@ -6,12 +6,11 @@
 
 {% block content %}
 
-    <p>This is the sites dashboard page.</p>
-
-    <ul>
+    {% if sites %}
+    {#<ul>
         {% for site in sites %}
         <li>
-            <a href="/sites/{{ site.id }}">{{ site.url }}</a> - {{ site.coreVersion }} - {{ site.latestCoreVersion }}
+            <a href="/sites/{{ site.id }}">{{ site.url }}</a> - {{ site.coreVersion }} - {{ site.latestCoreVersion }} (Security: {% if site.isSecurity %}Y{% else %}N{% endif %})
             <br />
             {% for module in site.modules %}
                 <a href="/modules/{{ module.name }}">{{ module.name }}</a>,
@@ -19,5 +18,44 @@
         </li>
         {% endfor %}
     </ul>
+
+    <hr/>#}
+
+    <table border="1" width="100%">
+        <thead>
+            <tr>
+                <td width="50%">Site</td>
+                <td>Core Version</td>
+                <td>Latest Core Version [Security Update]</td>
+            </tr>
+        </thead>
+        <tbody>
+        {% for site in sites %}
+        <tr>
+            <td><a href="/sites/{{ site.id }}">{{ site.url }}</a></td>
+            <td>{{ site.coreVersion }}</td>
+            <td>
+                {{ site.latestCoreVersion }}
+                [{% if site.isSecurity %}Y{% else %}N{% endif %}]
+            </td>
+        </tr>
+        {% if site.modules %}
+        <tr>
+            <td colspan="3">
+                {% for module in site.modules %}
+                    <a href="/modules/{{ module.name }}">{{ module.name }}</a>,
+                {% endfor %}
+            </td>
+        </tr>
+        {% endif %}
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {% else %}
+
+    <p>There are currently no sites with any problems.</p>
+
+    {% endif %}
 
 {% endblock %}

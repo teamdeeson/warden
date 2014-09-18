@@ -111,6 +111,7 @@ class SiteManager extends BaseManager {
         'url' => $result->getUrl(),
         'coreVersion' => $result->getCoreVersion(),
         'latestCoreVersion' => $result->getLatestCoreVersion(),
+        'isSecurity' => $result->getIsSecurityCoreVersion(),
         'modules' => $modules,
       );
     }
