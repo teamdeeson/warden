@@ -61,6 +61,10 @@ abstract class BaseManager {
     return $result;
   }
 
+  public function getAllDocumentCount() {
+    return $this->createIndexQuery()->getQuery()->execute()->count();
+  }
+
   /**
    * Get all Mongodb documents by a criteria.
    *

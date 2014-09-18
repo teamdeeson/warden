@@ -6,8 +6,6 @@
 
 {% block content %}
 
-    <p>This is a details of a module</p>
-
     <p>Name: {{ module.getName() }} ({{ module.getProjectName() }})</p>
     <p>Latest Versions: <br/>
     {% for version, moduleVersion in module.getLatestVersion() %}
@@ -22,12 +20,25 @@
     {% endfor %}
     </p>
 
-    <p>Sites:</p>
-    <ul>
+    <p>Sites using this module:</p>
+    <table border="1" width="100%">
+        <thead>
+            <tr>
+                <td width="50%">Site</td>
+                <td>Core Version</td>
+            </tr>
+        </thead>
+        <tbody>
         {% for site in module.getSites() %}
-        <li><a href="/sites/{{ site.id }}">{{ site.url }}</a> - {{ site.version }} - out of date: {% if module.compareVersion(site.version) %}N{% else %}Y{% endif %}</li>
+        <tr>
+            <td><a href="/sites/{{ site.id }}">{{ site.url }}</a></td>
+            <td>{{ site.version }} ({% if module.compareVersion(site.version) %}N{% else %}Y{% endif %})</td>
+        </tr>
         {% endfor %}
-    </ul>
+        </tbody>
+    </table>
+    <br />
+    <br />
 
     <a href="/modules"><< Back</a>
 

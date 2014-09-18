@@ -6,17 +6,34 @@
 
 {% block content %}
 
-    <p>This is a list of sites</p>
-
     {% if sites %}
 
-    {% for site in sites %}
-    <a href="/sites/{{ site.getId() }}">{{ site.getUrl() }}</a> - {{ site.getCoreVersion() }} ({{ site.getLatestCoreVersion() }}, {% if site.compareCoreVersion() %}Y{% else %}N{% endif %}) {% if site.getIsNew() %}(new){% endif %}<br />
-    {% endfor %}
+    <table border="1" width="100%">
+        <thead>
+            <tr>
+                <td width="50%">Site</td>
+                <td>Core Version</td>
+                <td>Latest Core Version (Out of Date) [Security Update]</td>
+            </tr>
+        </thead>
+        <tbody>
+        {% for site in sites %}
+        <tr>
+            <td><a href="/sites/{{ site.getId() }}">{{ site.getUrl() }}</a> {% if site.getIsNew() %}(new){% endif %}</td>
+            <td>{{ site.getCoreVersion() }}</td>
+            <td>
+                {{ site.getLatestCoreVersion() }}
+                ({% if site.compareCoreVersion() %}Y{% else %}N{% endif %})
+                [{% if site.getIsSecurityCoreVersion() %}Y{% else %}N{% endif %}]
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 
     {% else %}
 
-        <p>There are currently no sites registered.</p>
+    <p>There are currently no sites registered.</p>
 
     {% endif %}
 

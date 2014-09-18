@@ -38,6 +38,11 @@ class Module extends BaseDocument {
   protected $sites;
 
   /**
+   * @var int
+   */
+  protected $usagePercentage;
+
+  /**
    * @return mixed
    */
   public function getName() {
@@ -155,6 +160,20 @@ class Module extends BaseDocument {
    */
   public function getSiteCount() {
     return count($this->sites);
+  }
+
+  /**
+   * @return int
+   */
+  public function getUsagePercentage() {
+    return $this->usagePercentage;
+  }
+
+  /**
+   * @param int $sitesTotalCount
+   */
+  public function setUsagePercentage($sitesTotalCount) {
+    $this->usagePercentage = number_format($this->getSiteCount() / $sitesTotalCount * 100, 2);
   }
 
   /**

@@ -6,17 +6,28 @@
 
 {% block content %}
 
-    <p>This is a list of modules</p>
-
     {% if modules %}
 
-    {% for module in modules %}
-    <a href="/modules/{{ module.getProjectName() }}">{{ module.getName() }}</a> ({{ module.getProjectName() }}) ({{ module.getSiteCount() }})<br />
-    {% endfor %}
+    <table border="1" width="100%">
+        <thead>
+            <tr>
+                <td width="50%">Module</td>
+                <td>Number of sites (Site usage)</td>
+            </tr>
+        </thead>
+        <tbody>
+        {% for module in modules %}
+        <tr>
+            <td><a href="/modules/{{ module.getProjectName() }}">{{ module.getName() }}</a> ({{ module.getProjectName() }})</td>
+            <td>{{ module.getSiteCount() }} ({{ module.getUsagePercentage() }}%)</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 
     {% else %}
 
-        <p>There are currently no modules registered.</p>
+    <p>There are currently no modules registered.</p>
 
     {% endif %}
 

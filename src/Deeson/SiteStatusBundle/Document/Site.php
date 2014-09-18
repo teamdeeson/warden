@@ -233,12 +233,44 @@ class Site extends BaseDocument {
   }
 
   /**
+   * Get a list of site modules that require updating.
+   *
+   * @return array
+   */
+  public function getModulesRequiringUpdates() {
+    $siteModuleList = $this->getModules();
+    $modulesList = array();
+    foreach ($siteModuleList as $module) {
+      if (isset($module['latestVersion']) && $module['latestVersion'] == $module['version']) {
+        continue;
+      }
+
+      $severity = 1;
+      if (isset($module['isSecurity'])) {
+        $severity = !$module['isSecurity'];
+      }
+
+      $modulesList[$severity][] = $module;
+    }
+    ksort($modulesList);
+
+    $modulesForUpdating = array();
+    foreach ($modulesList as $moduleSeverity) {
+      foreach ($moduleSeverity as $module) {
+        $modulesForUpdating[] = $module;
+      }
+    }
+
+    return $modulesForUpdating;
+  }
+
+  /**
    * Compare the current core version with the latest core version.
    *
    * @return bool
    */
   public function compareCoreVersion() {
-    return is_float($this->getCoreVersion()) && $this->getCoreVersion() == $this->getLatestCoreVersion();
+    return $this->getCoreVersion() == $this->getLatestCoreVersion();
   }
 
 }

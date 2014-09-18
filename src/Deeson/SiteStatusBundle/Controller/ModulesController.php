@@ -2,6 +2,7 @@
 
 namespace Deeson\SiteStatusBundle\Controller;
 
+use Deeson\SiteStatusBundle\Managers\SiteManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Deeson\SiteStatusBundle\Managers\ModuleManager;
 
@@ -14,8 +15,26 @@ class ModulesController extends Controller {
    */
   public function IndexAction() {
     /** @var ModuleManager $manager */
-    $manager = $this->get('module_manager');
-    $modules = $manager->getDocumentsBy(array('isNew' => FALSE), array('projectName' => 'asc'));
+    $moduleManager = $this->get('module_manager');
+    /** @var SiteManager $siteManager */
+    $siteManager = $this->get('site_manager');
+
+    $sitesTotalCount = $siteManager->getAllDocumentCount();
+    $modules = $moduleManager->getDocumentsBy(array('isNew' => FALSE), array('projectName' => 'asc'));
+
+    $moduleList = array();
+    foreach ($modules as $module) {
+      $module->setUsagePercentage($sitesTotalCount);
+      $moduleList[$module->getSiteCount()][] = $module;
+    }
+    krsort($moduleList);
+
+    $modules = array();
+    foreach ($moduleList as $count) {
+      foreach ($count as $module) {
+        $modules[] = $module;
+      }
+    }
 
     $params = array(
       'modules' => $modules,

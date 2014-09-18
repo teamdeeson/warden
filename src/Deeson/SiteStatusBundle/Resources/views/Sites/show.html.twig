@@ -5,24 +5,74 @@
 {% block content_header '' %}
 
 {% block content %}
+    <style type="text/css">
+        .security {
+            background: #aa3333;
+            color: #fff;
+        }
+
+        .outOfDate {
+            background: #ffcc00;
+            color: #fff;
+        }
+    </style>
+
 
     <p>This is a details of a site:</p>
 
     <p>URL: {{ site.getUrl() }}</p>
-    <p>Core Version: {{ site.getCoreVersion() }} ({{ site.getLatestCoreVersion() }}, {% if site.compareCoreVersion() %}Y{% else %}N{% endif %})</p>
+    <p>Core Version: {{ site.getCoreVersion() }}</p>
+    <p>Current Core Version: {{ site.getLatestCoreVersion() }} {% if site.compareCoreVersion() %}{% else %}(Currently out of date {% if site.getIsSecurityCoreVersion() %} - SECURITY!!!{% endif %}){% endif %}</p>
 
-    <p>Modules:</p>
-    <ul>
-        {% for module in site.getModules() %}
-        <li><a href="/modules/{{ module.name }}">{{ module.name }}</a>: {{ module.version }} ({{ site.getModuleLatestVersion(module) }}, {% if site.getModuleIsSecurity(module) %}Y{% else %}N{% endif %}) - out of date: {% if module.version == site.getModuleLatestVersion(module) %}N{% else %}Y{% endif %}</li>
+    {% if site.getModulesRequiringUpdates() %}
+    <p>Modules Requiring Updates:</p>
+    <table border="1" width="100%">
+        <thead>
+             <tr>
+                 <td width="50%">Name</td>
+                 <td>Version</td>
+                 <td>Latest Version</td>
+            </tr>
+        </thead>
+        <tbody>
+        {% for module in site.getModulesRequiringUpdates() %}
+            <tr class="{% if site.getModuleIsSecurity(module) %}security{% else %}{% if module.version != site.getModuleLatestVersion(module) %}outOfDate{% endif %}{% endif %}">
+                <td><a href="/modules/{{ module.name }}">{{ module.name }}</a></td>
+                <td>{{ module.version }}</td>
+                <td>{{ site.getModuleLatestVersion(module) }}</td>
+            </tr>
         {% endfor %}
-    </ul>
+        </tbody>
+    </table>
+    <br />
+    <br />
+    {% endif %}
+
+    <p>Installed Modules:</p>
+    <table border="1" width="100%">
+        <thead>
+             <tr>
+                 <td width="50%">Name</td>
+                 <td>Version</td>
+                 {#<td>Latest Version (Out of date) [Is Security Update]</td>#}
+            </tr>
+        </thead>
+        <tbody>
+        {% for module in site.getModules() %}
+            <tr>
+                <td><a href="/modules/{{ module.name }}">{{ module.name }}</a></td>
+                <td>{{ module.version }}</td>
+                {#<td>{{ site.getModuleLatestVersion(module) }} ({% if module.version == site.getModuleLatestVersion(module) %}N{% else %}Y{% endif %}) [{% if site.getModuleIsSecurity(module) %}Y{% else %}N{% endif %}]</td>#}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
     <br />
     <br />
 
     <a href="/sites"><< Back</a>
+    {#<br />
     <br />
-    <br />
-    <a href="/sites/{{ site.getId() }}/edit">EDIT</a>
+    <a href="/sites/{{ site.getId() }}/edit">EDIT</a>#}
 
 {% endblock %}
