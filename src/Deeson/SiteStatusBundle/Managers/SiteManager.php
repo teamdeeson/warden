@@ -84,12 +84,22 @@ class SiteManager extends BaseManager {
    */
   public function getAllSitesWithErrors() {
     /** @var \Doctrine\ODM\MongoDB\Query\Builder $qb */
-    $qb = $this->createIndexQuery();
+    /*$qb = $this->createIndexQuery();
     $qb->addAnd($qb->expr()->field('isNew')->equals(FALSE));
     $qb->addAnd($qb->expr()->field('coreVersion.current')->notEqual(''));
     $qb->addAnd($qb->expr()->field('coreVersion.latest')->exists(TRUE));
     $qb->addAnd($qb->expr()->field('coreVersion.latest')->notEqual(''));
-    $qb->addAnd($qb->expr()->field('coreVersion.current')->notEqual('coreVersion.latest'));
+    //$qb->addAnd($qb->expr()->field('coreVersion.current')->notEqual('coreVersion.latest'));
+    //$qb->addOr(
+      //$qb->addAnd($qb->expr()->field('coreVersion.release')->equals('6'))
+      //  ->addAnd($qb->expr()->field('coreVersion.current')->notEqual('6.33'));
+    //);
+    //$qb->addOr(
+      $qb->addAnd($qb->expr()->field('coreVersion.release')->equals('7'))
+        ->addAnd($qb->expr()->field('coreVersion.current')->notEqual('7.31'));
+    //);*/
+
+    // @todo generate the data for this via a cron command into another collection for better querying.
 
     $cursor = $qb->getQuery()->execute();
 

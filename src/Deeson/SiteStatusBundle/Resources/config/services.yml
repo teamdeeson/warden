@@ -39,6 +39,6 @@ services:
         class: Deeson\SiteStatusBundle\Managers\ModuleManager
         arguments: [@doctrine_mongodb]
 
-    need_update_manager:
-        class: Deeson\SiteStatusBundle\Managers\NeedUpdateManager
+    site_have_issue_manager:
+        class: Deeson\SiteStatusBundle\Managers\SiteHaveIssueManager
         arguments: [@doctrine_mongodb]

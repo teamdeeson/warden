@@ -2,30 +2,30 @@
 
 namespace Deeson\SiteStatusBundle\Command;
 
-use Deeson\SiteStatusBundle\Document\NeedUpdateDocument;
+use Deeson\SiteStatusBundle\Document\SiteHaveIssueDocument;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Deeson\SiteStatusBundle\Managers\SiteManager;
-use Deeson\SiteStatusBundle\Managers\NeedUpdateManager;
+use Deeson\SiteStatusBundle\Managers\SiteHaveIssueManager;
 
-class BuildNeedsUpdateCommand extends ContainerAwareCommand {
+class BuildSiteHaveIssueCommand extends ContainerAwareCommand {
 
   protected function configure() {
-    $this->setName('deeson:site-status:build-update-list')
-      ->setDescription('Builds list of sites that need updating');
+    $this->setName('deeson:site-status:build-sites-have-issues')
+      ->setDescription('Builds list of sites that have issues reported.');
   }
 
   protected function execute(InputInterface $input, OutputInterface $output) {
     /** @var SiteManager $siteManager */
     $siteManager = $this->getContainer()->get('site_manager');
-    /** @var NeedUpdateManager $needUpdateManager */
-    $needUpdateManager = $this->getContainer()->get('need_update_manager');
+    /** @var SiteHaveIssueManager $siteHaveIssueManager */
+    $siteHaveIssueManager = $this->getContainer()->get('site_have_issue_manager');
 
     // Remove all 'needupdate' documents.
-    $needUpdateManager->removeAll();
+    $siteHaveIssueManager->removeAll();
 
     // Rebuild the new ones.
     //$sites = $siteManager->getAllDocuments();
@@ -39,8 +39,8 @@ class BuildNeedsUpdateCommand extends ContainerAwareCommand {
       $output->writeln('Adding site: ' . $site->getId() . ' - ' . $site->getUrl());
       //print "\t{$site->getLatestCoreVersion()} == {$site->getCoreVersion()}\n";
 
-      /** @var NeedUpdateDocument $needUpdate */
-      $needUpdate = $needUpdateManager->makeNewItem();
+      /** @var SiteHaveIssueDocument $needUpdate */
+      $needUpdate = $siteHaveIssueManager->makeNewItem();
       $needUpdate->setSiteId($site->getId());
       $needUpdate->setUrl($site->getUrl());
       $needUpdate->setCoreVersion($site->getCoreVersion(), $site->getLatestCoreVersion(), $site->getIsSecurityCoreVersion());
@@ -56,8 +56,10 @@ class BuildNeedsUpdateCommand extends ContainerAwareCommand {
         $modulesNeedUpdate[] = $siteModule;
       }
 
+      // @todo add additional information about issues with the site.
+
       $needUpdate->setModules($modulesNeedUpdate);
-      $needUpdateManager->saveDocument($needUpdate);
+      $siteHaveIssueManager->saveDocument($needUpdate);
     }
   }
 

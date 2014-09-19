@@ -6,10 +6,10 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 
 /**
  * @MongoDB\Document(
- *     collection="need-updates"
+ *     collection="sites-have-issues"
  * )
  */
-class NeedUpdateDocument extends BaseDocument {
+class SiteHaveIssueDocument extends BaseDocument {
 
   /**
    * @Mongodb\String
@@ -46,6 +46,7 @@ class NeedUpdateDocument extends BaseDocument {
   /**
    * @param $version
    * @param $latestVersion
+   * @param $isSecurity
    */
   public function setCoreVersion($version, $latestVersion, $isSecurity) {
     $this->coreVersion = array(
