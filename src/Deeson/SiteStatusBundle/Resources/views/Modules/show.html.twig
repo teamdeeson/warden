@@ -14,7 +14,7 @@
            Recommended - {{ moduleVersion.recommended.version }} ({% if moduleVersion.recommended.isSecurity %}Y{% else %}N{% endif %})
         {% endif %}
         {% if moduleVersion.other is defined %}
-            , Other - {{ moduleVersion.other.version }} ({% if moduleVersion.other.isSecurity %}Y{% else %}N{% endif %})
+            , also available - {{ moduleVersion.other.version }} ({% if moduleVersion.other.isSecurity %}Y{% else %}N{% endif %})
         {% endif %}
         <br/>
     {% endfor %}

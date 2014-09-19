@@ -5,20 +5,6 @@
 {% block content_header '' %}
 
 {% block content %}
-    <style type="text/css">
-        .security {
-            background: #aa3333;
-            color: #fff;
-        }
-
-        .outOfDate {
-            background: #ffcc00;
-            color: #fff;
-        }
-    </style>
-
-
-    <p>This is a details of a site:</p>
 
     <p>URL: {{ site.getUrl() }}</p>
     <p>Core Version: {{ site.getCoreVersion() }}</p>
@@ -36,7 +22,7 @@
         </thead>
         <tbody>
         {% for module in site.getModulesRequiringUpdates() %}
-            <tr class="{% if site.getModuleIsSecurity(module) %}security{% else %}{% if module.version != site.getModuleLatestVersion(module) %}outOfDate{% endif %}{% endif %}">
+            <tr class="{% if site.getModuleIsSecurity(module) %}error{% else %}{% if module.version != site.getModuleLatestVersion(module) %}warning{% endif %}{% endif %}">
                 <td><a href="/modules/{{ module.name }}">{{ module.name }}</a></td>
                 <td>{{ module.version }}</td>
                 <td>{{ site.getModuleLatestVersion(module) }}</td>
