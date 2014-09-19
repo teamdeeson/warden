@@ -98,31 +98,6 @@ abstract class BaseManager {
   }
 
   /**
-   * Updates the Mongodb document based upon the Mongodb Id.
-   *
-   * @param int $id
-   *   The Mongodb document Object Id
-   * @param array $data
-   *   Array of data to update on the object. The array key is the column and
-   *   the array value is the value to be set.
-   *
-   * @throws \Deeson\SiteStatusBundle\Exception\DocumentMethodNotFoundException
-   */
-  /*public function updateDocumentById($id, array $data) {
-    $entity = $this->getDocumentById($id);
-
-    foreach ($data as $key => $value) {
-      $method = 'set' . ucfirst($key);
-      if (!method_exists($entity, $method)) {
-        throw new DocumentMethodNotFoundException("$method is not a valid method for {$this->getType()}");
-      }
-      $entity->$method($value);
-    }
-
-    $this->doctrine->getManager()->flush();
-  }*/
-
-  /**
    * Update the Mongodb document.
    */
   public function updateDocument() {
@@ -153,42 +128,23 @@ abstract class BaseManager {
     $this->doctrineManager->flush();
   }
 
-  public function removeAll() {
-    $this->createIndexQuery()->remove()->getQuery()->execute();
+  /**
+   * Deletes all contents of the collection.
+   *
+   * @throws \Doctrine\ODM\MongoDB\MongoDBException
+   */
+  public function deleteAll() {
+    $this->createQueryBuilder()->remove()->getQuery()->execute();
   }
 
-  public function createIndexQuery($limit = 0, $offset = 0, $start_date = 0, $end_date = 0, $showDeleted = FALSE, array $filters = array()) {
+  /**
+   * Creates a Doctrine Query Builder.
+   *
+   * @return \Doctrine\ODM\MongoDB\Query\Builder
+   */
+  public function createQueryBuilder() {
     $documentName = $this->getRepositoryName();
-    $qb = $this->doctrineManager->createQueryBuilder($documentName);
-
-    /*if (!empty($limit)) {
-      $qb->limit($limit);
-    }
-
-    if (!empty($offset)) {
-      $qb->skip($offset);
-    }
-
-    if (!empty($start_date)) {
-      $qb->addAnd($qb->expr()->field('bridgeAudit')->gte(new \MongoDate($start_date)));
-    }
-
-    if (!empty($end_date)) {
-      $qb->addAnd($qb->expr()->field('bridgeAudit')->lt(new \MongoDate($end_date)));
-    }
-
-    if (!$showDeleted) {
-      $qb->addAnd($qb->expr()->field('deleted')->equals(FALSE));
-    }*/
-
-    /*$fields = $this->doctrineManager->getClassMetadata($documentName)->getFieldNames();
-    foreach ($filters as $field => $value) {
-      if (in_array($field, $fields)) {
-        $qb->addAnd($qb->expr()->field($field)->equals($value));
-      }
-    }*/
-
-    return $qb;
+    return $this->doctrineManager->createQueryBuilder($documentName);
   }
 
   /**

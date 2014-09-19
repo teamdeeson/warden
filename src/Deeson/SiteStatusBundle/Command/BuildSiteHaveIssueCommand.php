@@ -25,7 +25,7 @@ class BuildSiteHaveIssueCommand extends ContainerAwareCommand {
     $siteHaveIssueManager = $this->getContainer()->get('site_have_issue_manager');
 
     // Remove all 'needupdate' documents.
-    $siteHaveIssueManager->removeAll();
+    $siteHaveIssueManager->deleteAll();
 
     // Rebuild the new ones.
     //$sites = $siteManager->getAllDocuments();

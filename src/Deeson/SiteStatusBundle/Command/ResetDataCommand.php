@@ -34,11 +34,12 @@ class ResetDataCommand extends ContainerAwareCommand {
       $siteManager->updateDocument();
     }
 
-    $modules = $moduleManager->getAllDocuments();
+    $moduleManager->deleteAll();
+    /*$modules = $moduleManager->getAllDocuments();
     foreach ($modules as $module) {
-      /** @var ModuleDocument $module */
+      /** @var ModuleDocument $module *
       $moduleManager->deleteDocument($module->getId());
-    }
+    }*/
 
     $output->writeln('Cleared out all data.');
   }

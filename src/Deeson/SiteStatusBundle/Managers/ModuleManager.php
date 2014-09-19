@@ -61,7 +61,7 @@ class ModuleManager extends BaseManager {
    */
   public function getAllByVersion($version) {
     /** @var \Doctrine\ODM\MongoDB\Query\Builder $qb */
-    $qb = $this->createIndexQuery();
+    $qb = $this->createQueryBuilder();
     $qb->field('latestVersion.' . $version)->exists(TRUE);
 
     $cursor = $qb->getQuery()->execute();
