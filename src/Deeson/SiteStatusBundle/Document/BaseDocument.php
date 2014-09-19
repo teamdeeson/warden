@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: mikedavis
- * Date: 29/08/2014
- * Time: 12:23
- */
 
 namespace Deeson\SiteStatusBundle\Document;
 

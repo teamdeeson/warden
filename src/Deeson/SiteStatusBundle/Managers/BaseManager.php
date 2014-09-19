@@ -153,6 +153,10 @@ abstract class BaseManager {
     $this->doctrineManager->flush();
   }
 
+  public function removeAll() {
+    $this->createIndexQuery()->remove()->getQuery()->execute();
+  }
+
   public function createIndexQuery($limit = 0, $offset = 0, $start_date = 0, $end_date = 0, $showDeleted = FALSE, array $filters = array()) {
     $documentName = $this->getRepositoryName();
     $qb = $this->doctrineManager->createQueryBuilder($documentName);

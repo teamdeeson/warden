@@ -2,15 +2,15 @@
 
 namespace Deeson\SiteStatusBundle\Controller;
 
-use Deeson\SiteStatusBundle\Managers\SiteManager;
+use Deeson\SiteStatusBundle\Managers\NeedUpdateManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 class DashboardController extends Controller {
 
   public function indexAction() {
-    /** @var SiteManager $manager */
-    $manager = $this->get('site_manager');
-    $sites = $manager->getAllSitesWithErrors();
+    /** @var NeedUpdateManager $needUpdateManager */
+    $needUpdateManager = $this->get('need_update_manager');
+    $sites = $needUpdateManager->getAllDocuments();
 
     $params = array(
       'sites' => $sites,
