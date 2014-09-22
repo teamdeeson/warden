@@ -114,10 +114,15 @@ class SiteDocument extends BaseDocument {
    */
   public function setCoreVersion($coreVersion) {
     $majorRelease = ModuleDocument::getMajorVersion($coreVersion);
-    $this->coreVersion += array(
+    if (!isset($this->coreVersion)) {
+      $this->coreVersion = array();
+    }
+    /*$this->coreVersion = array_merge(array(
       'release' => $majorRelease,
       'current' => $coreVersion,
-    );
+    ));*/
+    $this->coreVersion['release'] = $majorRelease;
+    $this->coreVersion['current'] = $coreVersion;
   }
 
   /**
@@ -132,12 +137,12 @@ class SiteDocument extends BaseDocument {
    * @param boolean $isSecurity
    */
   public function setLatestCoreVersion($latestVersion, $isSecurity = FALSE) {
-    $this->coreVersion += array(
+    /*$this->coreVersion += array(
       'latest' => $latestVersion,
       'isSecurity' => $isSecurity,
-    );
-    //$this->coreVersion['latest'] = $latestVersion;
-    //$this->coreVersion['isSecurity'] = $isSecurity;
+    );*/
+    $this->coreVersion['latest'] = $latestVersion;
+    $this->coreVersion['isSecurity'] = $isSecurity;
   }
 
   /**
@@ -216,12 +221,12 @@ class SiteDocument extends BaseDocument {
         }
       }
 
-      $siteModuleList[$key] += array(
+      /*$siteModuleList[$key] += array(
         'latestVersion' => $moduleVersions[$versionType]['version'],
         'isSecurity' => $moduleVersions[$versionType]['isSecurity'],
-      );
-      //$siteModuleList[$key]['latestVersion'] = $moduleVersions[$versionType]['version'];
-      //$siteModuleList[$key]['isSecurity'] = $moduleVersions[$versionType]['isSecurity'];
+      );*/
+      $siteModuleList[$key]['latestVersion'] = $moduleVersions[$versionType]['version'];
+      $siteModuleList[$key]['isSecurity'] = $moduleVersions[$versionType]['isSecurity'];
     }
     $this->modules = $siteModuleList;
   }

@@ -72,6 +72,12 @@ class StatusRequestService extends BaseRequestService {
     //printf('<pre>req obj: %s</pre>', print_r($requestDataObject, true));
     //die();
 
+    // @todo add logging of response to a file.
+    if (!isset($requestDataObject->system_status)) {
+      print "Invalid return response - access denied??";
+      return;
+    }
+
     if (is_string($requestDataObject->system_status) && $requestDataObject->system_status == 'encrypted') {
       $systemStatusData = $this->decrypt($requestDataObject->data, $this->site->getSystemStatusEncryptToken());
       $systemStatusDataObject = json_decode($systemStatusData);
