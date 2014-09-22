@@ -3,6 +3,8 @@
 namespace Deeson\SiteStatusBundle\Services;
 
 
+use Deeson\SiteStatusBundle\Document\ModuleDocument;
+
 class DrupalUpdateRequestService extends BaseRequestService {
 
   /**
@@ -129,7 +131,14 @@ class DrupalUpdateRequestService extends BaseRequestService {
         }
       }
 
-      $versionType = ($release->version_major == $recommendedMajorVersion) ? 'recommended' : 'other';
+      if ($projectStatus != ModuleDocument::MODULE_PROJECT_STATUS_PUBLISHED) {
+        $versionType = $projectStatus;
+      }
+      else {
+        $versionType = ($release->version_major == $recommendedMajorVersion) ?
+          ModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED :
+          ModuleDocument::MODULE_VERSION_TYPE_OTHER;
+      }
 
       $versions[$versionType] = array(
         'version' => (string) $release->version,

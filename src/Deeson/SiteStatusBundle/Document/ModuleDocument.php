@@ -11,6 +11,14 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
  */
 class ModuleDocument extends BaseDocument {
 
+  /** Module version types */
+  const MODULE_VERSION_TYPE_RECOMMENDED = 'recommended';
+  const MODULE_VERSION_TYPE_OTHER = 'other';
+
+  /** Module status' */
+  const MODULE_PROJECT_STATUS_PUBLISHED = 'published';
+  const MODULE_PROJECT_STATUS_UNSUPPORTED = 'unsupported';
+
   /**
    * @Mongodb\String
    */
@@ -102,7 +110,8 @@ class ModuleDocument extends BaseDocument {
    * @return string
    */
   public function getLatestVersionByVersion($version) {
-    return empty($this->latestVersion[$version]['recommended']['version']) ? 0 : $this->latestVersion[$version]['recommended']['version'];
+    return empty($this->latestVersion[$version][self::MODULE_VERSION_TYPE_RECOMMENDED]['version']) ? 0 :
+      $this->latestVersion[$version][self::MODULE_VERSION_TYPE_RECOMMENDED]['version'];
   }
 
   /**
@@ -111,7 +120,8 @@ class ModuleDocument extends BaseDocument {
    * @return string
    */
   public function getOtherVersionByVersion($version) {
-    return empty($this->latestVersion[$version]['other']['version']) ? 0 : $this->latestVersion[$version]['other']['version'];
+    return empty($this->latestVersion[$version][self::MODULE_VERSION_TYPE_OTHER]['version']) ? 0 :
+      $this->latestVersion[$version][self::MODULE_VERSION_TYPE_OTHER]['version'];
   }
 
   /**
@@ -145,6 +155,7 @@ class ModuleDocument extends BaseDocument {
   /**
    * Add new site to the list of sites for this module.
    *
+   * @param $siteId
    * @param $url
    * @param $version
    */
@@ -196,7 +207,7 @@ class ModuleDocument extends BaseDocument {
   }
 
   public function isPublished() {
-    return strtolower($this->projectStatus) == 'published';
+    return strtolower($this->projectStatus) == self::MODULE_PROJECT_STATUS_PUBLISHED;
   }
 
   /**
@@ -218,6 +229,15 @@ class ModuleDocument extends BaseDocument {
     return $version == $latestVersion;
   }
 
+  /**
+   * Get the latest relevant version.
+   *
+   * @param $version
+   * @param int $otherVersion
+   * @param bool $compareFullVersions
+   *
+   * @return bool|int
+   */
   public static function getRelevantLatestVersion($version, $otherVersion = 0, $compareFullVersions = FALSE) {
     if ($otherVersion > 0) {
       preg_match('/([1-9]).x-([0-9]+).([a-z0-9\-]+)/', $version, $versionMatches);

@@ -2,6 +2,9 @@
 
 namespace Deeson\SiteStatusBundle\Command;
 
+use Deeson\SiteStatusBundle\Document\ModuleDocument;
+use Deeson\SiteStatusBundle\Document\SiteDocument;
+use Deeson\SiteStatusBundle\Exception\DocumentNotFoundException;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -32,14 +35,14 @@ class ModuleUpdateCommand extends ContainerAwareCommand {
     }
 
     foreach ($sites as $site) {
-      /** @var \Deeson\SiteStatusBundle\Document\SiteDocument $site */
+      /** @var SiteDocument $site */
       $output->writeln('Updating site: ' . $site->getId() . ' - ' . $site->getUrl());
 
       foreach ($site->getModules() as $siteModule) {
-        /** @var \Deeson\SiteStatusBundle\Document\ModuleDocument $module */
+        /** @var ModuleDocument $module */
         try {
           $module = $moduleManager->findByProjectName($siteModule['name']);
-        } catch (\Deeson\SiteStatusBundle\Exception\DocumentNotFoundException $e) {
+        } catch (DocumentNotFoundException $e) {
           $output->writeln('Error getting module [' . $siteModule['name'] . ']: ' . $e->getMessage());
           continue;
         }

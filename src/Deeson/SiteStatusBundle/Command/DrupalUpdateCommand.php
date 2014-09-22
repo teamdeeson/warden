@@ -87,7 +87,7 @@ class DrupalUpdateCommand extends ContainerAwareCommand {
         $output->writeln(' - Unable to update module version [' . $version . ']: ' . $e->getMessage());
       }
 
-      $moduleVersions = $this->moduleVersions['recommended'];
+      $moduleVersions = $this->moduleVersions[ModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED];
       $sites = $siteManager->getAllByVersion($version);
       foreach ($sites as $site) {
         /** @var SiteDocument $site */

@@ -218,11 +218,11 @@ class SiteDocument extends BaseDocument {
       }
       $moduleVersions = $moduleLatestVersions[$module['name']];
 
-      $versionType = 'recommended';
-      if (isset($moduleVersions['other'])) {
-        $latestVersion = ModuleDocument::getRelevantLatestVersion($module['version'], $moduleVersions['other']['version']);
+      $versionType = ModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED;
+      if (isset($moduleVersions[ModuleDocument::MODULE_VERSION_TYPE_OTHER])) {
+        $latestVersion = ModuleDocument::getRelevantLatestVersion($module['version'], $moduleVersions[ModuleDocument::MODULE_VERSION_TYPE_OTHER]['version']);
         if ($latestVersion) {
-          $versionType = 'other';
+          $versionType = ModuleDocument::MODULE_VERSION_TYPE_OTHER;
         }
       }
 
