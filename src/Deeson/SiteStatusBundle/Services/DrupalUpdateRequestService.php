@@ -78,19 +78,30 @@ class DrupalUpdateRequestService extends BaseRequestService {
     //$title = (string) $requestXmlObject->title;
     //print_r($title);
 
-    $recommendedMajorVersion = (string) $requestXmlObject->recommended_major;
-    $supportedMajor = (string) $requestXmlObject->supported_majors;
-    $supportedMajorVersions = explode(',', $supportedMajor);
+    $projectStatus = (string) $requestXmlObject->project_status;
+
+    $recommendedMajorVersion = 0;
+    $supportedMajorVersions = array();
+    if (isset($requestXmlObject->recommended_major)) {
+      $recommendedMajorVersion = (string) $requestXmlObject->recommended_major;
+      $supportedMajor = (string) $requestXmlObject->supported_majors;
+      $supportedMajorVersions = explode(',', $supportedMajor);
+    }
 
     $releaseVersions = array();
     foreach ($requestXmlObject->releases->release as $release) {
-      if (in_array($release->version_major, $supportedMajorVersions)) {
-        $releaseVersions[] = $release;
-        $key = array_search($release->version_major, $supportedMajorVersions);
-        unset($supportedMajorVersions[$key]);
+      if (count($supportedMajorVersions) > 0) {
+        if (in_array($release->version_major, $supportedMajorVersions)) {
+          $releaseVersions[] = $release;
+          $key = array_search($release->version_major, $supportedMajorVersions);
+          unset($supportedMajorVersions[$key]);
+        }
+        if (count($supportedMajorVersions) < 1) {
+          break;
+        }
       }
-      if (count($supportedMajorVersions) < 1) {
-        break;
+      else {
+        $releaseVersions[] = $release;
       }
     }
 
