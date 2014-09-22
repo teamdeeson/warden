@@ -6,7 +6,8 @@
 
 {% block content %}
 
-    <p>Name: {{ module.getName() }} ({{ module.getProjectName() }})</p>
+    <p>Name: {{ module.getName() }} ({{ module.getProjectName() }})<br/>
+    Status: {{ module.getProjectStatus() }}</p>
     <p>Latest Versions: <br/>
     {% for version, moduleVersion in module.getLatestVersion() %}
         {{ version }}:

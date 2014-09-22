@@ -38,6 +38,11 @@ class ModuleDocument extends BaseDocument {
   protected $sites;
 
   /**
+   * @Mongodb\String
+   */
+  protected $projectStatus = '';
+
+  /**
    * @var int
    */
   protected $usagePercentage;
@@ -174,6 +179,24 @@ class ModuleDocument extends BaseDocument {
    */
   public function setUsagePercentage($sitesTotalCount) {
     $this->usagePercentage = number_format($this->getSiteCount() / $sitesTotalCount * 100, 2);
+  }
+
+  /**
+   * @return string
+   */
+  public function getProjectStatus() {
+    return $this->projectStatus;
+  }
+
+  /**
+   * @param string $projectStatus
+   */
+  public function setProjectStatus($projectStatus) {
+    $this->projectStatus = $projectStatus;
+  }
+
+  public function isPublished() {
+    return strtolower($this->projectStatus) == 'published';
   }
 
   /**

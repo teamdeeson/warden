@@ -25,6 +25,11 @@ class DrupalUpdateCommand extends ContainerAwareCommand {
    */
   protected $moduleVersions = array();
 
+  /**
+   * @var string
+   */
+  protected $projectStatus = '';
+
   protected function configure() {
     $this->setName('deeson:site-status:drupal-update')
       ->setDescription('Update core & all the modules with the latest versions from Drupal.org')
@@ -66,6 +71,7 @@ class DrupalUpdateCommand extends ContainerAwareCommand {
         $module->setName($this->drupalUpdateService->getModuleName());
         $module->setIsNew(FALSE);
         $module->setLatestVersion($version, $moduleVersions);
+        $module->setProjectStatus($this->projectStatus);
         $moduleManager->updateDocument();
       }
     }
@@ -114,6 +120,7 @@ class DrupalUpdateCommand extends ContainerAwareCommand {
       $this->drupalUpdateService->processRequest();
 
       $this->moduleVersions = $this->drupalUpdateService->getModuleVersions();
+      $this->projectStatus = $this->drupalUpdateService->getProjectStatus();
     } catch (\Exception $e) {
       throw new \Exception($e->getMessage());
     }

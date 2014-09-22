@@ -30,6 +30,11 @@ class DrupalUpdateRequestService extends BaseRequestService {
   protected $moduleVersions;
 
   /**
+   * @var string
+   */
+  protected $projectStatus;
+
+  /**
    * @param string $moduleVersion
    */
   public function setModuleRequestVersion($moduleVersion) {
@@ -58,6 +63,13 @@ class DrupalUpdateRequestService extends BaseRequestService {
   }
 
   /**
+   * @return string
+   */
+  public function getProjectStatus() {
+    return $this->projectStatus;
+  }
+
+  /**
    * Processes the data that has come back from the request.
    *
    * @param $requestData
@@ -82,7 +94,7 @@ class DrupalUpdateRequestService extends BaseRequestService {
 
     $recommendedMajorVersion = 0;
     $supportedMajorVersions = array();
-    if (isset($requestXmlObject->recommended_major)) {
+    if (isset($requestXmlObject->supported_majors)) {
       $recommendedMajorVersion = (string) $requestXmlObject->recommended_major;
       $supportedMajor = (string) $requestXmlObject->supported_majors;
       $supportedMajorVersions = explode(',', $supportedMajor);
@@ -125,6 +137,7 @@ class DrupalUpdateRequestService extends BaseRequestService {
       );
     }
 
+    $this->projectStatus = $projectStatus;
     $this->moduleVersions = $versions;
     $this->moduleName = (string) $requestXmlObject->title;
   }
