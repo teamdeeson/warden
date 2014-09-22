@@ -8,7 +8,7 @@
 
     <p>URL: {{ site.getUrl() }}</p>
     <p>Core Version: {{ site.getCoreVersion() }}</p>
-    <p>Current Core Version: {{ site.getLatestCoreVersion() }} {% if site.compareCoreVersion() %}{% else %}(Currently out of date {% if site.getIsSecurityCoreVersion() %} - SECURITY!!!{% endif %}){% endif %}</p>
+    <p>Current Core Version: {{ site.getLatestCoreVersion() }} {% if site.compareCoreVersion() %}{% else %}(Currently out of date {% if site.getIsSecurityCoreVersion() %} - SECURITY UPDATE!!!{% endif %}){% endif %}</p>
 
     {% if modulesRequiringUpdates %}
     <p>Modules Requiring Updates:</p>

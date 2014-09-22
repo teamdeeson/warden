@@ -7,7 +7,7 @@
 {% block content %}
 
     {% if sites %}
-    <ul>
+    {#<ul>
         {% for site in sites %}
         <li>
             <a href="/sites/{{ site.getSiteId() }}">{{ site.getUrl() }}</a> - {{ site.getCoreVersion() }} - {{ site.getLatestCoreVersion() }} (Security: {% if site.getIsSecurityCoreVersion() %}Y{% else %}N{% endif %})
@@ -19,7 +19,7 @@
         {% endfor %}
     </ul>
 
-    {#<hr/>
+    <hr/>#}
 
     <table border="1" width="100%">
         <thead>
@@ -42,6 +42,7 @@
         {% if site.modules %}
         <tr>
             <td colspan="3">
+                Modules needing updates:<br/>
                 {% for module in site.modules %}
                     <a href="/modules/{{ module.name }}">{{ module.name }}</a> {% if module.isSecurity %}(Security Update){% endif %},
                 {% endfor %}
@@ -50,7 +51,7 @@
         {% endif %}
         {% endfor %}
         </tbody>
-    </table>#}
+    </table>
 
     {% else %}
 

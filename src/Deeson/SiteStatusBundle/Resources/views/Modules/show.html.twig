@@ -11,10 +11,10 @@
     {% for version, moduleVersion in module.getLatestVersion() %}
         {{ version }}:
         {% if moduleVersion.recommended is defined %}
-           Recommended - {{ moduleVersion.recommended.version }} ({% if moduleVersion.recommended.isSecurity %}Y{% else %}N{% endif %})
+           Recommended - {{ moduleVersion.recommended.version }} {% if moduleVersion.recommended.isSecurity %}(Security Update){% endif %}
         {% endif %}
         {% if moduleVersion.other is defined %}
-            , also available - {{ moduleVersion.other.version }} ({% if moduleVersion.other.isSecurity %}Y{% else %}N{% endif %})
+            , also available - {{ moduleVersion.other.version }} {% if moduleVersion.other.isSecurity %}(Security Update){% endif %}
         {% endif %}
         <br/>
     {% endfor %}
@@ -25,7 +25,7 @@
         <thead>
             <tr>
                 <td width="50%">Site</td>
-                <td>Core Version</td>
+                <td>Core Version (Out of date)</td>
             </tr>
         </thead>
         <tbody>
