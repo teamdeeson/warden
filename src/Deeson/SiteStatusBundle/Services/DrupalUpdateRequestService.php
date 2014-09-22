@@ -133,14 +133,14 @@ class DrupalUpdateRequestService extends BaseRequestService {
         }
       }
 
-      if ($projectStatus != ModuleDocument::MODULE_PROJECT_STATUS_PUBLISHED) {
+      /*if ($projectStatus != ModuleDocument::MODULE_PROJECT_STATUS_PUBLISHED) {
         $versionType = $projectStatus;
       }
-      else {
+      else {*/
         $versionType = ($release->version_major == $recommendedMajorVersion) ?
           ModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED :
           ModuleDocument::MODULE_VERSION_TYPE_OTHER;
-      }
+      //}
 
       $versions[$versionType] = array(
         'version' => (string) $release->version,
