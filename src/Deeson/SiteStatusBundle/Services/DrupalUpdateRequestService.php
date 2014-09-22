@@ -115,7 +115,9 @@ class DrupalUpdateRequestService extends BaseRequestService {
         }
       }
       else {
+        // This isn't a supported version, so just return the latest release.
         $releaseVersions[] = $release;
+        break;
       }
     }
 
