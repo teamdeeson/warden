@@ -44,6 +44,7 @@ class BuildSiteHaveIssueCommand extends ContainerAwareCommand {
       $needUpdate->setSiteId($site->getId());
       $needUpdate->setUrl($site->getUrl());
       $needUpdate->setCoreVersion($site->getCoreVersion(), $site->getLatestCoreVersion(), $site->getIsSecurityCoreVersion());
+      $needUpdate->setAdditionalIssues($site->getAdditionalIssues());
 
       $modulesNeedUpdate = array();
       foreach ($site->getModules() as $siteModule) {
@@ -53,10 +54,12 @@ class BuildSiteHaveIssueCommand extends ContainerAwareCommand {
         if ($siteModule['version'] == $siteModule['latestVersion']) {
           continue;
         }
+        if (is_null($siteModule['version'])) {
+          continue;
+        }
+
         $modulesNeedUpdate[] = $siteModule;
       }
-
-      // @todo add additional information about issues with the site.
 
       $needUpdate->setModules($modulesNeedUpdate);
       $siteHaveIssueManager->saveDocument($needUpdate);

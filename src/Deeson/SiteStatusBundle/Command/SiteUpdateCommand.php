@@ -49,6 +49,7 @@ class SiteUpdateCommand extends ContainerAwareCommand {
       $moduleData = $statusService->getModuleData();
       ksort($moduleData);
       $requestTime = $statusService->getRequestTime();
+      $additionalIssues = $statusService->getAdditionalIssues();
 
       foreach ($moduleData as $name => $version) {
         $majorVersion = ModuleDocument::getMajorVersion($version['version']);
@@ -58,24 +59,12 @@ class SiteUpdateCommand extends ContainerAwareCommand {
         /** @var ModuleDocument $module */
         $module = $moduleExists->getNext();
 
-        //printf('<pre>%s</pre>', print_r($module, true));
-        //die();
-        //print "\n- module: $name";
-        //print "\n\tcount: " . $moduleExistsCount;
-        //print "\n\tversion: $majorVersion";
         $moduleLatestVersion = ($moduleExistsCount > 0) ? $module->getLatestVersion() : array();
-        //print "\n\tversion exists: " . (isset($moduleLatestVersion[$majorVersion]) ? 'Y' : 'N');
-        //die();
         if ($moduleExistsCount > 0 && isset($moduleLatestVersion[$majorVersion])) {
-          //print "\n\tSKIP THIS - have version!\n";
           continue;
         }
         if ($moduleExistsCount < 1) {
-          //print "\n\tNO MODULE AT ALL - create new one\n";
           $module = $moduleManager->makeNewItem();
-        }
-        elseif ($moduleExistsCount > 0 && !isset($moduleLatestVersion[$majorVersion])) {
-          //print "\n\tModule, but no version - update an existing one\n";
         }
 
         $module->setProjectName($name);
@@ -88,6 +77,7 @@ class SiteUpdateCommand extends ContainerAwareCommand {
       $site->setIsNew(FALSE);
       $site->setCoreVersion($coreVersion);
       $site->setModules($moduleData);
+      $site->setAdditionalIssues($additionalIssues);
       $siteManager->updateDocument();
 
       $output->writeln('Update version: ' . $coreVersion);

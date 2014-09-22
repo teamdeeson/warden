@@ -27,6 +27,13 @@ class StatusRequestService extends BaseRequestService {
   protected $site = NULL;
 
   /**
+   * List of any additional errors that have come through from the site.
+   *
+   * @var array
+   */
+  protected $additionalIssues = array();
+
+  /**
    * @param \Deeson\SiteStatusBundle\Document\SiteDocument $site
    */
   public function setSite($site) {
@@ -58,6 +65,13 @@ class StatusRequestService extends BaseRequestService {
    */
   protected function getRequestUrl() {
     return $this->site->getUrl() . '/admin/reports/system_status/' . $this->site->getSystemStatusToken();
+  }
+
+  /**
+   * @return array
+   */
+  public function getAdditionalIssues() {
+    return $this->additionalIssues;
   }
 
   /**

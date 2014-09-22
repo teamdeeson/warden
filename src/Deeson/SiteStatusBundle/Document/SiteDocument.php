@@ -47,6 +47,11 @@ class SiteDocument extends BaseDocument {
   protected $modules;
 
   /**
+   * @Mongodb\Hash
+   */
+  protected $additionalIssues;
+
+  /**
    * @return mixed
    */
   public function getName() {
@@ -221,6 +226,10 @@ class SiteDocument extends BaseDocument {
         }
       }
 
+      if (!isset($moduleVersions[$versionType])) {
+        print "ERROR : module (" . $module['name'] .") version is not valid: " . print_r(array($versionType, $moduleVersions), TRUE);
+        continue;
+      }
       /*$siteModuleList[$key] += array(
         'latestVersion' => $moduleVersions[$versionType]['version'],
         'isSecurity' => $moduleVersions[$versionType]['isSecurity'],
@@ -279,6 +288,21 @@ class SiteDocument extends BaseDocument {
     }
 
     return $modulesForUpdating;
+  }
+
+  /**
+   * @return mixed
+   */
+  public function getAdditionalIssues() {
+    return !empty($this->additionalIssues) ? $this->additionalIssues : array();
+  }
+
+  /**
+   * @param mixed $additionalIssues
+   */
+  public function setAdditionalIssues($additionalIssues) {
+    // @todo format of these issues??
+    $this->additionalIssues = array_merge($this->getAdditionalIssues(), $additionalIssues);
   }
 
   /**

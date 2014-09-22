@@ -37,6 +37,11 @@ class SiteHaveIssueDocument extends BaseDocument {
   protected $modules;
 
   /**
+   * @Mongodb\Hash
+   */
+  protected $additionalIssues;
+
+  /**
    * @return mixed
    */
   public function getCoreVersion() {
@@ -124,6 +129,21 @@ class SiteHaveIssueDocument extends BaseDocument {
    */
   public function setUrl($url) {
     $this->url = $url;
+  }
+
+  /**
+   * @return mixed
+   */
+  public function getAdditionalIssues() {
+    return !empty($this->additionalIssues) ? $this->additionalIssues : array();
+  }
+
+  /**
+   * @param mixed $additionalIssues
+   */
+  public function setAdditionalIssues($additionalIssues) {
+    // @todo format of these issues - same as how it is stored in SiteDocument??
+    $this->additionalIssues = $additionalIssues;
   }
 
 }
