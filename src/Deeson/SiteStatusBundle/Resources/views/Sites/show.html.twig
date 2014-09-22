@@ -10,7 +10,7 @@
     <p>Core Version: {{ site.getCoreVersion() }}</p>
     <p>Current Core Version: {{ site.getLatestCoreVersion() }} {% if site.compareCoreVersion() %}{% else %}(Currently out of date {% if site.getIsSecurityCoreVersion() %} - SECURITY!!!{% endif %}){% endif %}</p>
 
-    {% if site.getModulesRequiringUpdates() %}
+    {% if modulesRequiringUpdates %}
     <p>Modules Requiring Updates:</p>
     <table border="1" width="100%">
         <thead>
@@ -21,7 +21,7 @@
             </tr>
         </thead>
         <tbody>
-        {% for module in site.getModulesRequiringUpdates() %}
+        {% for module in modulesRequiringUpdates %}
             <tr class="{% if site.getModuleIsSecurity(module) %}error{% else %}{% if module.version != site.getModuleLatestVersion(module) %}warning{% endif %}{% endif %}">
                 <td><a href="/modules/{{ module.name }}">{{ module.name }}</a></td>
                 <td>{{ module.version }}</td>

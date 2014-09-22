@@ -258,6 +258,10 @@ class SiteDocument extends BaseDocument {
         continue;
       }
 
+      if (is_null($module['version'])) {
+        continue;
+      }
+
       $severity = 1;
       if (isset($module['isSecurity'])) {
         $severity = !$module['isSecurity'];

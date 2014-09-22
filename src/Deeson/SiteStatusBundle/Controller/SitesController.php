@@ -39,9 +39,11 @@ class SitesController extends Controller {
     /** @var SiteManager $manager */
     $manager = $this->get('site_manager');
     $site = $manager->getDocumentById($id);
+    $modulesRequiringUpdates = $site->getModulesRequiringUpdates();
 
     $params = array(
       'site' => $site,
+      'modulesRequiringUpdates' => $modulesRequiringUpdates,
     );
 
     return $this->render('DeesonSiteStatusBundle:Sites:show.html.twig', $params);
