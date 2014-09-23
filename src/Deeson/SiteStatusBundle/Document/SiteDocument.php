@@ -133,6 +133,13 @@ class SiteDocument extends BaseDocument {
   /**
    * @return mixed
    */
+  public function getCoreReleaseVersion() {
+    return (empty($this->coreVersion['release'])) ? '0' : $this->coreVersion['release'];
+  }
+
+  /**
+   * @return mixed
+   */
   public function getLatestCoreVersion() {
     return (empty($this->coreVersion['latest'])) ? '0' : $this->coreVersion['latest'];
   }

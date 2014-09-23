@@ -105,6 +105,9 @@ class DrupalUpdateCommand extends ContainerAwareCommand {
           $output->writeln("\tNo module version for version: " . $version);
           continue;
         }
+        if ($site->getCoreReleaseVersion() != $version) {
+          continue;
+        }
 
         if ($updateNewSitesOnly) {
           $site->setIsNew(FALSE);
