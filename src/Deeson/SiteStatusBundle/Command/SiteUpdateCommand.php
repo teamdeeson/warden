@@ -74,7 +74,7 @@ class SiteUpdateCommand extends ContainerAwareCommand {
 
       $output->writeln('request time: ' . $requestTime);
 
-      $site->setIsNew(FALSE);
+      //$site->setIsNew(FALSE);
       $site->setCoreVersion($coreVersion);
       $site->setModules($moduleData);
       $site->setAdditionalIssues($additionalIssues);

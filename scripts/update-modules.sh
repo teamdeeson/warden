@@ -1,3 +1,8 @@
 #! /bin/bash
 
-php app/console deeson:site-status:update-modules
+NEWONLY=""
+if [[ -n "$1" ]]; then
+  NEWONLY='--import-new'
+fi
+
+php app/console deeson:site-status:update-modules ${NEWONLY}

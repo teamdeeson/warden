@@ -45,7 +45,7 @@ class DrupalUpdateCommand extends ContainerAwareCommand {
     /** @var ModuleManager $moduleManager */
     $moduleManager = $this->getContainer()->get('module_manager');
 
-    //$updateNewOnly = isset($input->getOption('import-new'));
+    $updateNewSitesOnly = ($input->getOption('import-new'));
 
     // @todo refactor this!
 
@@ -68,11 +68,13 @@ class DrupalUpdateCommand extends ContainerAwareCommand {
         $moduleVersions = $this->moduleVersions;
         $moduleLatestVersion[$version][$module->getProjectName()] = $moduleVersions;
 
-        $module->setName($this->drupalUpdateService->getModuleName());
-        $module->setIsNew(FALSE);
-        $module->setLatestVersion($version, $moduleVersions);
-        $module->setProjectStatus($this->projectStatus);
-        $moduleManager->updateDocument();
+        if (!$updateNewSitesOnly) {
+          $module->setName($this->drupalUpdateService->getModuleName());
+          $module->setIsNew(FALSE);
+          $module->setLatestVersion($version, $moduleVersions);
+          $module->setProjectStatus($this->projectStatus);
+          $moduleManager->updateDocument();
+        }
       }
     }
 
@@ -87,8 +89,14 @@ class DrupalUpdateCommand extends ContainerAwareCommand {
         $output->writeln(' - Unable to update module version [' . $version . ']: ' . $e->getMessage());
       }
 
+      if ($updateNewSitesOnly) {
+        $sites = $siteManager->getDocumentsBy(array('isNew' => TRUE));
+      }
+      else {
+        $sites = $siteManager->getAllDocuments();
+      }
+
       $moduleVersions = $this->moduleVersions[ModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED];
-      $sites = $siteManager->getAllByVersion($version);
       foreach ($sites as $site) {
         /** @var SiteDocument $site */
         $output->writeln('Updating site: ' . $site->getId() . ' - ' . $site->getUrl());
@@ -96,6 +104,10 @@ class DrupalUpdateCommand extends ContainerAwareCommand {
         if (!isset($moduleLatestVersion[$version])) {
           $output->writeln("\tNo module version for version: " . $version);
           continue;
+        }
+
+        if ($updateNewSitesOnly) {
+          $site->setIsNew(FALSE);
         }
 
         $site->setLatestCoreVersion($moduleVersions['version'], $moduleVersions['isSecurity']);
