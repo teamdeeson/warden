@@ -2,6 +2,8 @@
 
 namespace Deeson\SiteStatusBundle\Services;
 
+use Buzz\Exception\ClientException;
+
 abstract class BaseRequestService {
 
   /**
@@ -65,22 +67,26 @@ abstract class BaseRequestService {
   public function processRequest() {
     $this->setClientTimeout($this->connectionTimeout);
 
-    $startTime = $this->getMicrotimeFloat();
+    try {
+      $startTime = $this->getMicrotimeFloat();
 
-    $request = $this->buzz->get($this->getRequestUrl(), $this->connectionHeaders);
-    // @todo check request header, if not 200 throw exception.
-    /*$headers = $request->getHeaders();
-    if (trim($headers[0]) !== 'HTTP/1.0 200 OK') {
-      print 'invalid response'."\n";
-      print_r($headers);
-      //return;
-    }*/
-    $requestData = $request->getContent();
+      $request = $this->buzz->get($this->getRequestUrl(), $this->connectionHeaders);
+      // @todo check request header, if not 200 throw exception.
+      /*$headers = $request->getHeaders();
+      if (trim($headers[0]) !== 'HTTP/1.0 200 OK') {
+        print 'invalid response'."\n";
+        print_r($headers);
+        //return;
+      }*/
+      $requestData = $request->getContent();
 
-    $endTime = $this->getMicrotimeFloat();
-    $this->requestTime = $endTime - $startTime;
+      $endTime = $this->getMicrotimeFloat();
+      $this->requestTime = $endTime - $startTime;
 
-    $this->processRequestData($requestData);
+      $this->processRequestData($requestData);
+    } catch (ClientException $e) {
+      throw new \Exception($e->getMessage());
+    }
   }
 
   /**

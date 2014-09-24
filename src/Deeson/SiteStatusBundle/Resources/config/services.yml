@@ -24,7 +24,7 @@ services:
         arguments: ['@buzz.client.curl']
 
     site_status_service:
-        class: Deeson\SiteStatusBundle\Services\StatusRequestService
+        class: Deeson\SiteStatusBundle\Services\SiteStatusRequestService
         arguments: ['@buzz.browser']
 
     drupal_update_service:

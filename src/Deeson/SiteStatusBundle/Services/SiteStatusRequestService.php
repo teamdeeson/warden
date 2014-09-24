@@ -3,9 +3,9 @@
 namespace Deeson\SiteStatusBundle\Services;
 
 use Deeson\SiteStatusBundle\Document\ModuleDocument;
-use Deeson\SiteStatusBundle\Exception\StatusRequestException;
+use Deeson\SiteStatusBundle\Exception\SiteStatusRequestException;
 
-class StatusRequestService extends BaseRequestService {
+class SiteStatusRequestService extends BaseRequestService {
 
   /**
    * Drupal core version.
@@ -98,7 +98,7 @@ class StatusRequestService extends BaseRequestService {
     }
     else {
       // This request isn't encrypted so don't do anything with it but generate an alert?
-      //throw new StatusRequestException('Request is not encrypted!');
+      //throw new SiteStatusRequestException('Request is not encrypted!');
       $systemStatusDataObject = $requestDataObject;
     }
     //printf('<pre>%s</pre>', print_r($systemStatusDataObject, true));

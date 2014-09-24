@@ -5,7 +5,7 @@ namespace Deeson\SiteStatusBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Deeson\SiteStatusBundle\Managers\SiteManager;
-use Deeson\SiteStatusBundle\Services\StatusRequestService;
+use Deeson\SiteStatusBundle\Services\SiteStatusRequestService;
 use Deeson\SiteStatusBundle\Document\SiteDocument;
 
 class SitesController extends Controller {
@@ -107,7 +107,7 @@ class SitesController extends Controller {
     /** @var SiteDocument $site */
     $site = $manager->getDocumentById($id);
 
-    /** @var StatusRequestService $statusService */
+    /** @var SiteStatusRequestService $statusService */
     $statusService = $this->get('site_status_service');
     //$statusService->setConnectionTimeout(10);
     $statusService->setSite($site);

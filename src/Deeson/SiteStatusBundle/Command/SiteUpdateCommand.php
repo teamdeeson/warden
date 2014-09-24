@@ -4,7 +4,7 @@ namespace Deeson\SiteStatusBundle\Command;
 
 use Deeson\SiteStatusBundle\Document\ModuleDocument;
 use Deeson\SiteStatusBundle\Document\SiteDocument;
-use Deeson\SiteStatusBundle\Services\StatusRequestService;
+use Deeson\SiteStatusBundle\Services\SiteStatusRequestService;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -39,11 +39,16 @@ class SiteUpdateCommand extends ContainerAwareCommand {
       /** @var SiteDocument $site */
       $output->writeln('Updating site: ' . $site->getId() . ' - ' . $site->getUrl());
 
-      /** @var StatusRequestService $statusService */
-      $statusService = $this->getContainer()->get('site_status_service');
-      //$statusService->setConnectionTimeout(10);
-      $statusService->setSite($site);
-      $statusService->processRequest();
+      /** @var SiteStatusRequestService $statusService */
+      try {
+        $statusService = $this->getContainer()->get('site_status_service');
+        //$statusService->setConnectionTimeout(10);
+        $statusService->setSite($site);
+        $statusService->processRequest();
+      } catch (\Exception $e) {
+        $output->writeln(' - Unable to retrieve data from the site: ' . $e->getMessage());
+        continue;
+      }
 
       $coreVersion = $statusService->getCoreVersion();
       $moduleData = $statusService->getModuleData();
