@@ -178,7 +178,7 @@ class SiteDocument extends BaseDocument {
    * @return mixed
    */
   public function getModules() {
-    return $this->modules;
+    return (!empty($this->modules)) ? $this->modules : array();
   }
 
   /**
