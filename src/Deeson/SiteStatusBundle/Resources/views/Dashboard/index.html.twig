@@ -10,10 +10,10 @@
     {#<ul>
         {% for site in sites %}
         <li>
-            <a href="/sites/{{ site.getSiteId() }}">{{ site.getUrl() }}</a> - {{ site.getCoreVersion() }} - {{ site.getLatestCoreVersion() }} (Security: {% if site.getIsSecurityCoreVersion() %}Y{% else %}N{% endif %})
+            <a href="{{ path('sites_show', {'id': site.getSiteId() }) }}">{{ site.getUrl() }}</a> - {{ site.getCoreVersion() }} - {{ site.getLatestCoreVersion() }} (Security: {% if site.getIsSecurityCoreVersion() %}Y{% else %}N{% endif %})
             <br />
             {% for module in site.modules %}
-                <a href="/modules/{{ module.name }}">{{ module.name }}</a> {% if module.isSecurity %}(Security Update){% endif %},
+                <a href="{{ path('modules_show', {'projectName': module.name }) }}">{{ module.name }}</a> {% if module.isSecurity %}(Security Update){% endif %},
             {% endfor %}
         </li>
         {% endfor %}
@@ -32,7 +32,7 @@
         <tbody>
         {% for site in sites %}
         <tr>
-            <td><a href="/sites/{{ site.getSiteId() }}">{{ site.getUrl() }}</a></td>
+            <td><a href="{{ path('sites_show', {'id': site.getSiteId() }) }}">{{ site.getUrl() }}</a></td>
             <td>{{ site.getCoreVersion() }}</td>
             <td>
                 {{ site.getLatestCoreVersion() }}
@@ -44,7 +44,7 @@
             <td colspan="3">
                 Modules needing updates:<br/>
                 {% for module in site.modules %}
-                    <a href="/modules/{{ module.name }}">{{ module.name }}</a> {% if module.isSecurity %}(Security Update){% endif %},
+                    <a href="{{ path('modules_show', {'projectName': module.name }) }}">{{ module.name }}</a> {% if module.isSecurity %}(Security Update){% endif %},
                 {% endfor %}
             </td>
         </tr>

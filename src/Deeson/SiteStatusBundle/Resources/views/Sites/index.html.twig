@@ -19,7 +19,7 @@
         <tbody>
         {% for site in sites %}
         <tr class="{% if site.compareCoreVersion() %}{% else %}{% if site.getIsSecurityCoreVersion() %}error{% else %}warning{% endif %}{% endif %}">
-            <td><a href="/sites/{{ site.getId() }}">{{ site.getUrl() }}</a> {% if site.getIsNew() %}(new){% endif %}</td>
+            <td><a href="{{ path('sites_show', {'id': site.getId() }) }}">{{ site.getUrl() }}</a> {% if site.getIsNew() %}(new){% endif %}</td>
             <td>{{ site.getCoreVersion() }}</td>
             <td>
                 {{ site.getLatestCoreVersion() }}

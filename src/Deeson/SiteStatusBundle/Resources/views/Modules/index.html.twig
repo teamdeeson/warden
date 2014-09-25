@@ -18,7 +18,7 @@
         <tbody>
         {% for module in modules %}
         <tr>
-            <td><a href="/modules/{{ module.getProjectName() }}">{{ module.getName() }}</a> ({{ module.getProjectName() }})</td>
+            <td><a href="{{ path('modules_show', {'projectName': module.getProjectName() }) }}">{{ module.getName() }}</a> ({{ module.getProjectName() }})</td>
             <td>{{ module.getSiteCount() }} ({{ module.getUsagePercentage() }}%)</td>
         </tr>
         {% endfor %}

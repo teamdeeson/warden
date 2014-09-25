@@ -23,7 +23,7 @@
         <tbody>
         {% for module in modulesRequiringUpdates %}
             <tr class="{% if site.getModuleIsSecurity(module) %}error{% else %}{% if module.version != site.getModuleLatestVersion(module) %}warning{% endif %}{% endif %}">
-                <td><a href="/modules/{{ module.name }}">{{ module.name }}</a></td>
+                <td><a href="{{ path('modules_show', {'projectName': module.name }) }}">{{ module.name }}</a></td>
                 <td>{{ module.version }}</td>
                 <td>{{ site.getModuleLatestVersion(module) }}</td>
             </tr>
@@ -46,7 +46,7 @@
         <tbody>
         {% for module in site.getModules() %}
             <tr>
-                <td><a href="/modules/{{ module.name }}">{{ module.name }}</a></td>
+                <td><a href="{{ path('modules_show', {'projectName': module.name }) }}">{{ module.name }}</a></td>
                 <td>{{ module.version }}</td>
                 {#<td>{{ site.getModuleLatestVersion(module) }} ({% if module.version == site.getModuleLatestVersion(module) %}N{% else %}Y{% endif %}) [{% if site.getModuleIsSecurity(module) %}Y{% else %}N{% endif %}]</td>#}
             </tr>
@@ -56,9 +56,9 @@
     <br />
     <br />
 
-    <a href="/sites"><< Back</a>
+    <a href="{{ path('sites_list') }}"><< Back</a>
     {#<br />
     <br />
-    <a href="/sites/{{ site.getId() }}/edit">EDIT</a>#}
+    <a href="{{ path('sites_edit', {'id': site.getId() }) }}">EDIT</a>#}
 
 {% endblock %}

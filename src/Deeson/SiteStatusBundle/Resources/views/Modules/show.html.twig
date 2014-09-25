@@ -32,7 +32,7 @@
         <tbody>
         {% for site in module.getSites() %}
         <tr>
-            <td><a href="/sites/{{ site.id }}">{{ site.url }}</a></td>
+            <td><a href="{{ path('sites_show', {'id': site.id }) }}">{{ site.url }}</a></td>
             <td>{{ site.version }} ({% if module.compareVersion(site.version) %}N{% else %}Y{% endif %})</td>
         </tr>
         {% endfor %}
