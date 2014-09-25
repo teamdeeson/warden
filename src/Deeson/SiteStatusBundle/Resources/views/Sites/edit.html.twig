@@ -13,6 +13,9 @@
     <p>System Status Token: {{ site.getSystemStatusToken() }}</p>
     <p>System Status Encrypt Token: {{ site.getSystemStatusEncryptToken() }}</p>
 
+    {{ form(form) }}
+
+    <br />
     <br />
     <a href="{{ path('sites_update_refresh', {'id': site.getId() }) }}">Refresh site data</a>
     <br />

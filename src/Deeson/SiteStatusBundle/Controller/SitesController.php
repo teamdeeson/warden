@@ -130,13 +130,29 @@ class SitesController extends Controller {
     return $this->redirect('/sites/' . $id . '/edit');
   }
 
-  public function EditAction($id) {
+  public function EditAction($id, Request $request) {
     /** @var SiteManager $manager */
     $manager = $this->get('site_manager');
     $site = $manager->getDocumentById($id);
 
+    $form = $this->createFormBuilder($site)
+            //->add('systemStatusToken', 'text')
+            //->add('systemStatusEncryptToken', 'text')
+            ->add('authUser', 'text')
+            ->add('authPass', 'text')
+            ->add('save', 'submit')
+            ->getForm();
+
+    $form->handleRequest($request);
+
+    if ($form->isValid()) {
+      $manager->updateDocument();
+      $this->get('session')->getFlashBag()->add('notice', 'Site updated successfully');
+    }
+
     $params = array(
       'site' => $site,
+      'form' => $form->createView(),
     );
 
     return $this->render('DeesonSiteStatusBundle:Sites:edit.html.twig', $params);

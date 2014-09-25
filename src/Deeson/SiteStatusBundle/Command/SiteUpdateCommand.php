@@ -43,10 +43,17 @@ class SiteUpdateCommand extends ContainerAwareCommand {
       try {
         $statusService = $this->getContainer()->get('site_status_service');
         //$statusService->setConnectionTimeout(10);
+        if ($site->getAuthUser() && $site->getAuthPass()) {
+          $headers = array(sprintf('Authorization: Basic %s', base64_encode($site->getAuthUser() . ':' . $site->getAuthPass())));
+          $statusService->setConnectionHeaders($headers);
+        }
         $statusService->setSite($site);
         $statusService->processRequest();
+      /*} catch (SiteStatusRequestException $e) {
+        $output->writeln('Request Error: ' . $e->getMessage());
+        continue;*/
       } catch (\Exception $e) {
-        $output->writeln(' - Unable to retrieve data from the site: ' . $e->getMessage());
+        $output->writeln('General Error - Unable to retrieve data from the site: ' . $e->getMessage());
         continue;
       }
 

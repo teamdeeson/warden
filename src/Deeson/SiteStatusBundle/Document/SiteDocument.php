@@ -47,6 +47,16 @@ class SiteDocument extends BaseDocument {
   protected $modules;
 
   /**
+   * @Mongodb\String
+   */
+  protected $authUser;
+
+  /**
+   * @Mongodb\String
+   */
+  protected $authPass;
+
+  /**
    * @Mongodb\Hash
    */
   protected $additionalIssues;
@@ -295,6 +305,34 @@ class SiteDocument extends BaseDocument {
     }
 
     return $modulesForUpdating;
+  }
+
+  /**
+   * @return mixed
+   */
+  public function getAuthPass() {
+    return !empty($this->authPass) ? $this->authPass : NULL;
+  }
+
+  /**
+   * @param mixed $authPass
+   */
+  public function setAuthPass($authPass) {
+    $this->authPass = $authPass;
+  }
+
+  /**
+   * @return mixed
+   */
+  public function getAuthUser() {
+    return !empty($this->authUser) ? $this->authUser : NULL;
+  }
+
+  /**
+   * @param mixed $authUser
+   */
+  public function setAuthUser($authUser) {
+    $this->authUser = $authUser;
   }
 
   /**
