@@ -56,6 +56,13 @@ abstract class BaseRequestService {
   }
 
   /**
+   * @param array $connectionHeaders
+   */
+  public function setConnectionHeaders(array $connectionHeaders) {
+    $this->connectionHeaders = $connectionHeaders;
+  }
+
+  /**
    * Processes the request on a URL.
    *
    * This gets the URL from the method: getRequestUrl() and makes a call to
@@ -69,6 +76,9 @@ abstract class BaseRequestService {
 
     try {
       $startTime = $this->getMicrotimeFloat();
+
+      // Don't verify SSL certificate.
+      $this->buzz->getClient()->setVerifyPeer(FALSE);
 
       $request = $this->buzz->get($this->getRequestUrl(), $this->connectionHeaders);
       // @todo check request header, if not 200 throw exception.

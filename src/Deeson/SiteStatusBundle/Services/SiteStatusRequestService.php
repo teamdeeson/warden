@@ -88,8 +88,7 @@ class SiteStatusRequestService extends BaseRequestService {
 
     // @todo add logging of response to a file.
     if (!isset($requestDataObject->system_status)) {
-      print "Invalid return response - access denied??";
-      return;
+      throw new SiteStatusRequestException("Invalid return response - possibly access denied");
     }
 
     if (is_string($requestDataObject->system_status) && $requestDataObject->system_status == 'encrypted') {
