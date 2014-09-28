@@ -240,18 +240,15 @@ class ModuleDocument extends BaseDocument {
    */
   public static function getRelevantLatestVersion($version, $otherVersion = 0, $compareFullVersions = FALSE) {
     if ($otherVersion > 0) {
-      preg_match('/([1-9]).x-([0-9]+).([a-z0-9\-]+)/', $version, $versionMatches);
+      $versionMatches = self::getVersionInfo($version);
       //printf('<pre>version: %s</pre>', print_r($versionMatches, true));
-      preg_match('/([1-9]).x-([0-9]+).([a-z0-9\-]+)/', $otherVersion, $otherMatches);
+      $otherMatches = self::getVersionInfo($otherVersion);
       //printf('<pre>other: %s</pre>', print_r($otherMatches, true));
-      //preg_match('/([1-9]).x-([1-9]+).([a-z0-9\-])/', $recommendedVersion, $recommendedMatches);
-      //printf('<pre>%s</pre>', print_r($recommendedMatches, true));
       //print "<br>$version, $otherVersion <br>";
 
-      //print "$otherMatches[2] == $versionMatches[2]<br>";
-      if ($otherMatches[1] == $versionMatches[1] && $otherMatches[2] == $versionMatches[2]) {
+      if ($otherMatches['major'] == $versionMatches['major'] && $otherMatches['minor'] == $versionMatches['minor']) {
         if ($compareFullVersions) {
-          return ($otherMatches[3] == $versionMatches[3]) ? $otherVersion : FALSE;
+          return ($otherMatches['other'] == $versionMatches['other']) ? $otherVersion : FALSE;
         }
         else {
           return $otherVersion;
@@ -271,6 +268,40 @@ class ModuleDocument extends BaseDocument {
    */
   public static function getMajorVersion($version) {
     return substr($version, 0, 1);
+  }
+
+  /**
+   * This gets the different version information and returns it as a keyed array.
+   *
+   * Module version number are in the following formats:
+   *  7.x-1.3
+   *  7.x-2.0-(alpha|beta|rc-0...|?)
+   *
+   * The returned array has the following keys for a value of 7.x-2.0-beta4:
+   *   'major' - the major version number (e.g. 7)
+   *   'minor' - the minor version (e.g. 2)
+   *   'other' - the other minor version (e.g. 0)
+   *   'extra' - any extra version info (e.g. -beta4).  This defaults to NULL if there is no value
+   *
+   * @param string $version
+   *
+   * @return array
+   *   Returns a keys array of each of the version information.
+   */
+  public static function getVersionInfo($version) {
+    preg_match('/([1-9]).x-([0-9]+).([0-9\.x]+)([a-z0-9\-]+)?/', $version, $matches);
+
+    // Standard version number regex doesn't match, probably Drupal release.
+    if (count($matches) < 1) {
+      preg_match('/([1-9]).([0-9]+)/', $version, $matches);
+    }
+
+    return array(
+      'major' => $matches[1],
+      'minor' => $matches[2],
+      'other' => (isset($matches[3])) ? $matches[3] : NULL,
+      'extra' => (isset($matches[4])) ? $matches[4] : NULL,
+    );
   }
 
 }

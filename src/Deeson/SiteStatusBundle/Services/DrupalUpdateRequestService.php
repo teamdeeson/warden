@@ -79,7 +79,6 @@ class DrupalUpdateRequestService extends BaseRequestService {
    * @throws \Exception
    */
   protected function processRequestData($requestData) {
-    //printf('<pre>%s</pre>', print_r($requestData, true));
     $requestXmlObject = simplexml_load_string($requestData);
 
     if (!isset($requestXmlObject->title)) {
@@ -103,11 +102,23 @@ class DrupalUpdateRequestService extends BaseRequestService {
     }
 
     $releaseVersions = array();
+    $latestReleaseVersions = array();
     foreach ($requestXmlObject->releases->release as $release) {
       if (count($supportedMajorVersions) > 0) {
+        // Check if this major version is in the list of supported versions.
         if (in_array($release->version_major, $supportedMajorVersions)) {
-          $releaseVersions[] = $release;
           $key = array_search($release->version_major, $supportedMajorVersions);
+          $latestReleaseVersions[$supportedMajorVersions[$key]][] = $release;
+
+          // Get the version information for this release version.
+          $versionInfo = ModuleDocument::getVersionInfo($release->version);
+          // If the version info extra data is set than this must be a non-stable
+          // release (alpha, beta, rc, bug etc).
+          if (!is_null($versionInfo['extra'])) {
+            continue;
+          }
+
+          $releaseVersions[] = $release;
           unset($supportedMajorVersions[$key]);
         }
         if (count($supportedMajorVersions) < 1) {
@@ -118,6 +129,15 @@ class DrupalUpdateRequestService extends BaseRequestService {
         // This isn't a supported version, so just return the latest release.
         $releaseVersions[] = $release;
         break;
+      }
+    }
+
+    // If there is still version data available, then set the release to be the
+    // latest available version as there must not be a stable version for that
+    // minor release yet.
+    if (count($supportedMajorVersions) > 0) {
+      foreach ($supportedMajorVersions as $version) {
+        $releaseVersions[] = $latestReleaseVersions[$version][0];
       }
     }
 
@@ -159,6 +179,5 @@ class DrupalUpdateRequestService extends BaseRequestService {
   protected function getRequestUrl() {
     return 'http://updates.drupal.org/release-history/' . $this->moduleRequestName . '/' . $this->moduleRequestVersion;
   }
-
 
 }
