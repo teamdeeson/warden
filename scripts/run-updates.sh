@@ -3,9 +3,9 @@
 NEWONLY=""
 if [[ -n "$1" ]]; then
   # new flag is passed in but if the time is 04:00 then run full import instead.
-  TIME=$(date "+%H%M")
+  TIME=$(date "+%k%M")
   echo $TIME
-  if [[ $TIME -gt 400 ]] && [[ $TIME -lt 405 ]]; then
+  if [[ $TIME -ge 400 ]] && [[ $TIME -lt 405 ]]; then
     echo "Run full update"
   else
     echo "Run new only import"
@@ -19,7 +19,6 @@ OUTPUT=""
 OUTPUT=$("${DIR}/update-sites.sh" ${NEWONLY})
 echo "$OUTPUT"
 SIZE=${#OUTPUT}
-#echo "size: ${SIZE}"
 
 if [[ "$SIZE" -gt 0 ]]; then
   "${DIR}/update-modules.sh" ${NEWONLY}
