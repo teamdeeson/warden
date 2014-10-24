@@ -21,3 +21,14 @@ monolog:
             type:  stream
             path:  "%kernel.logs_dir%/%kernel.environment%.log"
             level: debug
+
+# app/config/config.yml
+doctrine_mongodb:
+    connections:
+        default:
+            server: mongodb://localhost:27017
+            options: {}
+    default_database: drupal_site_status
+    document_managers:
+        default:
+            auto_mapping: true
