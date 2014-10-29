@@ -24,34 +24,40 @@
     <table border="1" width="100%">
         <thead>
             <tr>
-                <td width="50%">Site</td>
+                <td width="60%">Site</td>
+                {# <td width="50%">Website link</td> #}
                 <td>Core Version</td>
-                <td>Latest Core Version [Security Update]</td>
+                <td>Status</td>
+                {# <td>Latest Core Version [Security Update]</td> #}
             </tr>
         </thead>
         <tbody>
         {% for site in sites %}
         <tr>
-            <td><a href="{{ path('sites_show', {'id': site.getSiteId() }) }}">{{ site.getUrl() }}</a></td>
-            <td>{{ site.getCoreVersion() }}</td>
-            <td>
+            <td><a href="{{ path('sites_show', {'id': site.getSiteId() }) }}">Site name</a></td>
+            {# <td><a href="{{ path('sites_show', {'id': site.getSiteId() }) }}">{{ site.getUrl() }}</a></td> #}
+            <td >{{ site.getCoreVersion() }}</td>
+            <td onclick="document.location = '{{ path('sites_show', {'id': site.getSiteId() }) }}';" {% if site.getIsSecurityCoreVersion() %}class="error"{% endif %}>{% if site.getIsSecurityCoreVersion() %} <span class="fa fa-warning"></span>&nbsp;View {% endif %}</td>
+            
+
+            {# <td>
                 {{ site.getLatestCoreVersion() }}
                 [{% if site.getIsSecurityCoreVersion() %}Y{% else %}N{% endif %}]
-            </td>
+            </td> #}
         </tr>
         {% if site.modules %}
-        <tr>
+        {# <tr>
             <td colspan="3">
                 Modules needing updates:<br/>
                 {% for module in site.modules %}
                     <a href="{{ path('modules_show', {'projectName': module.name }) }}">{{ module.name }}</a> {% if module.isSecurity %}(Security Update){% endif %},
                 {% endfor %}
             </td>
-        </tr>
+        </tr> #}
         {% endif %}
-        <tr>
+        {# <tr>
             <td colspan="3">&nbsp;</td>
-        </tr>
+        </tr> #}
         {% endfor %}
         </tbody>
     </table>

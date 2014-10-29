@@ -4,10 +4,10 @@
         <meta http-equiv="Content-Type" content="text/html; charset={{ _charset }}"/>
         <meta name="robots" content="noindex,nofollow" />
         <title>{% block title %}{% endblock %}</title>
-        <link href="{{ asset('bundles/framework/css/structure.css') }}" rel="stylesheet" type="text/css" media="all" />
+        {# <link href="{{ asset('bundles/framework/css/structure.css') }}" rel="stylesheet" type="text/css" media="all" /> #}
         <link href="{{ asset('bundles/framework/css/body.css') }}" rel="stylesheet" type="text/css" media="all" />
         <link rel="icon" sizes="16x16" href="{{ asset('favicon.ico') }}" />
-        <link rel="stylesheet" href="{{ asset('bundles/acmedemo/css/demo.css') }}" />
+        {# <link rel="stylesheet" href="{{ asset('bundles/acmedemo/css/demo.css') }}" /> #}
         <link rel="stylesheet" href="{{ asset('bundles/deesonsitestatus/css/site-status.css') }}" />
         {% block head %}{% endblock %}
     </head>
@@ -15,7 +15,7 @@
         <div id="content">
             <div class="header clear-fix">
                 <div class="header-logo">
-                    <img src="{{ asset('bundles/deesonsitestatus/images/logo.gif') }}" alt="Deeson Site Status" />
+                    <img src="https://d5av3fo92eabs.cloudfront.net/sites/default/files/styles/image_600_width/public/secondary_images/images_and_text/deeson-red.jpg?itok=j7KXqt0f" width="200" alt="Deeson Site Status" />
                 </div>
             </div>
 
@@ -27,7 +27,7 @@
                 {% endfor %}
 
                 <div class="nav">
-                    <a href="/">Dashboard</a> | <a href="/sites">Sites</a> | <a href="/modules">Modules</a>
+                    <a href="/" class="active">Dashboard</a><a href="/sites">Sites</a><a href="/modules">Modules</a>
                 </div>
 
                 <div class="block">
