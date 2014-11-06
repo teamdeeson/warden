@@ -7,11 +7,13 @@ security:
         ROLE_SUPER_ADMIN: [ROLE_USER, ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]
 
     providers:
-        in_memory:
-            memory:
-                users:
-                    user:  { password: userpass, roles: [ 'ROLE_USER' ] }
-                    admin: { password: adminpass, roles: [ 'ROLE_ADMIN' ] }
+#        in_memory:
+#            memory:
+#                users:
+#                    user:  { password: userpass, roles: [ 'ROLE_USER' ] }
+#                    admin: { password: adminpass, roles: [ 'ROLE_ADMIN' ] }
+        user_file:
+            id: user_provider
 
     firewalls:
         dev:
@@ -19,21 +21,21 @@ security:
             security: false
 
         login:
-            pattern:  ^/demo/secured/login$
+            pattern:  ^/login$
             security: false
 
         secured_area:
-            pattern:    ^/demo/secured/
+            pattern:    ^/
             form_login:
                 check_path: _security_check
-                login_path: _demo_login
+                login_path: _login
             logout:
-                path:   _demo_logout
-                target: _demo
+                path:   _logout
+                target: _login
             #anonymous: ~
-            #http_basic:
-            #    realm: "Secured Demo Area"
+
+    access_denied_url: /unauthorised
 
     access_control:
-        - { path: ^/demo/secured/hello/admin/, roles: ROLE_ADMIN }
+        - { path: ^/, roles: ROLE_USER }
         #- { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }

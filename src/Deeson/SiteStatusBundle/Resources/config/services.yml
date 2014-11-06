@@ -1,12 +1,9 @@
 parameters:
-#    deeson_site_status.example.class: Deeson\SiteStatusBundle\Example
+    user_config_file: %kernel.root_dir%/../src/Deeson/SiteStatusBundle/Resources/config/users.yml
+    custom_css_file: %kernel.root_dir%
 
 services:
-#    deeson_site_status.example:
-#        class: %deeson_site_status.example.class%
-#        arguments: [@service_id, "plain_value", %parameter%]
-
-# cURL client for Buzz
+    # cURL client for Buzz
     buzz.client.file_get_contents:
         class:  Buzz\Client\FileGetContents
         public: false
@@ -42,3 +39,7 @@ services:
     site_have_issue_manager:
         class: Deeson\SiteStatusBundle\Managers\SiteHaveIssueManager
         arguments: [@doctrine_mongodb]
+
+    user_provider:
+        class: Deeson\SiteStatusBundle\Services\UserProviderService
+        arguments: [%user_config_file%]

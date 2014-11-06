@@ -4,6 +4,7 @@ namespace Deeson\SiteStatusBundle\Controller;
 
 use Deeson\SiteStatusBundle\Managers\SiteHaveIssueManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
 
 class DashboardController extends Controller {
 
@@ -17,6 +18,15 @@ class DashboardController extends Controller {
     );
 
     return $this->render('DeesonSiteStatusBundle:Dashboard:index.html.twig', $params);
+  }
+
+  public function unauthorisedAction() {
+    $params = array(
+      'status_text' => 'Unauthorised Access',
+      'status_code' => '403',
+    );
+
+    return $this->render('DeesonSiteStatusBundle:Dashboard:unauthorised.html.twig', $params);
   }
 
 }

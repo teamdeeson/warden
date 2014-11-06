@@ -9,3 +9,6 @@
 /vendor/
 /bin/
 /composer.phar
+/composer.lock
+
+src/Deeson/SiteStatusBundle/Resources/users.list

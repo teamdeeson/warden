@@ -1,3 +1,11 @@
+_secured:
+    resource: "@DeesonSiteStatusBundle/Controller/SecuredController.php"
+    type:     annotation
+
+_unauthorised:
+    pattern: /unauthorised
+    defaults: { _controller: DeesonSiteStatusBundle:Dashboard:unauthorised }
+
 _dashboard:
     pattern:  /
     defaults: { _controller: DeesonSiteStatusBundle:Dashboard:index }

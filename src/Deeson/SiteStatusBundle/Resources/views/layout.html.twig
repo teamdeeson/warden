@@ -26,9 +26,13 @@
                     </div>
                 {% endfor %}
 
+                {% if app.user %}
                 <div class="nav">
-                    <a href="/" class="active">Dashboard</a><a href="/sites">Sites</a><a href="/modules">Modules</a>
+                    <a href="/" class="active">Dashboard</a> | <a href="{{ path('sites_list') }}">Sites</a> | <a href="{{ path('modules_list') }}">Modules</a>
+                    | logged in as <strong>{{ app.user ? app.user.username : 'Anonymous' }}</strong> - <a href="{{ path('_logout') }}">Logout</a>
+
                 </div>
+                {% endif %}
 
                 <div class="block">
                     {% block content %}{% endblock %}
