@@ -74,7 +74,7 @@ class SitesController extends Controller {
       $this->get('session')->getFlashBag()->add('error', 'Your site is already registered!');
     }
 
-    return $this->redirect('/sites');
+    return $this->redirect($this->generateUrl('sites_list'));
   }
 
   /**
@@ -90,7 +90,7 @@ class SitesController extends Controller {
     $manager = $this->get('site_manager');
     $manager->deleteDocument($id);
 
-    return $this->redirect('/sites');
+    return $this->redirect($this->generateUrl('sites_list'));
   }
 
   /**
@@ -127,7 +127,7 @@ class SitesController extends Controller {
 
     $this->get('session')->getFlashBag()->add('notice', 'Your site has had the core version updated! (' . $requestTime . ' secs)');
 
-    return $this->redirect('/sites/' . $id . '/edit');
+    return $this->redirect($this->generateUrl('sites_edit', array('id' => $id)));
   }
 
   public function EditAction($id, Request $request) {

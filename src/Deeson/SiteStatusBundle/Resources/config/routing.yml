@@ -22,9 +22,9 @@ sites_show:
     path:    /sites/{id}
     defaults: { _controller: DeesonSiteStatusBundle:Sites:show }
 
-sites_edit:
-    path:    /sites/{id}/edit
-    defaults: { _controller: DeesonSiteStatusBundle:Sites:edit }
+#sites_edit:
+#    path:    /sites/{id}/edit
+#    defaults: { _controller: DeesonSiteStatusBundle:Sites:edit }
 
 sites_delete:
     path:    /sites/{id}/delete
