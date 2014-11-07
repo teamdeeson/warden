@@ -18,12 +18,9 @@ class SecuredController extends Controller {
    * @Template()
    */
   public function loginAction(Request $request) {
-    $userFile = $this->container->getParameter('user_config_file');
-    if (!file_exists($userFile)) {
-      $params = array(
-        'config_file' => $userFile
-      );
-      return $this->render('DeesonSiteStatusBundle:Secured:config_error.html.twig', $params);
+    $configFile = $this->container->getParameter('site_config_file');
+    if (!file_exists($configFile)) {
+      return $this->render('DeesonSiteStatusBundle:Secured:install.html.twig');
     }
 
     if ($request->attributes->has(SecurityContext::AUTHENTICATION_ERROR)) {

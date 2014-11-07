@@ -1,6 +1,5 @@
 parameters:
-    user_config_file: %kernel.root_dir%/../src/Deeson/SiteStatusBundle/Resources/config/users.yml
-    custom_css_file: %kernel.root_dir%
+    site_config_file: %kernel.root_dir%/../src/Deeson/SiteStatusBundle/Resources/config/site_config.yml
 
 services:
     # cURL client for Buzz
@@ -42,4 +41,4 @@ services:
 
     user_provider:
         class: Deeson\SiteStatusBundle\Services\UserProviderService
-        arguments: [%user_config_file%]
+        arguments: [%site_config_file%]

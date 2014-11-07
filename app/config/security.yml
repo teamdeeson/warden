@@ -10,11 +10,6 @@ security:
         ROLE_SUPER_ADMIN: [ROLE_USER, ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]
 
     providers:
-#        in_memory:
-#            memory:
-#                users:
-#                    user:  { password: userpass, roles: [ 'ROLE_USER' ] }
-#                    admin: { password: adminpass, roles: [ 'ROLE_ADMIN' ] }
         user_file:
             id: user_provider
 

@@ -9,21 +9,25 @@ use \Symfony\Component\Yaml\Yaml;
 
 class UserProviderService implements UserProviderInterface {
 
-  protected $userConfigFile = '';
+  protected $siteConfigFile = '';
 
-  public function __construct($user_config_file) {
-    $this->userConfigFile = $user_config_file;
+  public function __construct($siteConfigFile) {
+    $this->siteConfigFile = $siteConfigFile;
   }
 
   public function loadUserByUsername($username) {
-    if (!file_exists($this->userConfigFile)) {
+    if (!file_exists($this->siteConfigFile)) {
       throw new UsernameNotFoundException(sprintf("Username %s not found", $username));
     }
-    $users = Yaml::parse(file_get_contents($this->userConfigFile));
-    foreach ($users as $name => $userData) {
+
+    $siteConfig = Yaml::parse(file_get_contents($this->siteConfigFile));
+    foreach ($siteConfig['users'] as $name => $userData) {
       if ($name == $username) {
-        $user = new User($name, $userData['pass'], $userData['roles']);
-        return $user;
+        $roles = $userData['roles'];
+        if (count($roles) < 1) {
+          $roles = array('ROLE_USER');
+        }
+        return new User($name, $userData['pass'], $roles);
       }
     }
     throw new UsernameNotFoundException(sprintf("Username %s not found", $username));

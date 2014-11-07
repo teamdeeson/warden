@@ -9,6 +9,7 @@
         <link rel="icon" sizes="16x16" href="{{ asset('favicon.ico') }}" />
         {# <link rel="stylesheet" href="{{ asset('bundles/acmedemo/css/demo.css') }}" /> #}
         <link rel="stylesheet" href="{{ asset('bundles/deesonsitestatus/css/site-status.css') }}" />
+        <link rel="stylesheet" href="{{ asset('bundles/deesonsitestatus/css/site-custom.css') }}" />
         {% block head %}{% endblock %}
     </head>
     <body>
@@ -30,7 +31,6 @@
                 <div class="nav">
                     <a href="/" class="active">Dashboard</a> | <a href="{{ path('sites_list') }}">Sites</a> | <a href="{{ path('modules_list') }}">Modules</a>
                     | logged in as <strong>{{ app.user ? app.user.username : 'Anonymous' }}</strong> - <a href="{{ path('_logout') }}">Logout</a>
-
                 </div>
                 {% endif %}
 
