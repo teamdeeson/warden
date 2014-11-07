@@ -2,6 +2,7 @@
 
 namespace Deeson\SiteStatusBundle\Command;
 
+use Deeson\SiteStatusBundle\Document\SiteDocument;
 use Deeson\SiteStatusBundle\Document\SiteHaveIssueDocument;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
@@ -24,28 +25,19 @@ class BuildSiteHaveIssueCommand extends ContainerAwareCommand {
     /** @var SiteHaveIssueManager $siteHaveIssueManager */
     $siteHaveIssueManager = $this->getContainer()->get('site_have_issue_manager');
 
-    // Remove all 'needupdate' documents.
+    // Remove all 'have_issue' documents.
     $siteHaveIssueManager->deleteAll();
 
     // Rebuild the new ones.
-    //$sites = $siteManager->getAllDocuments();
     $sites = $siteManager->getDocumentsBy(array('isNew' => FALSE));
     foreach ($sites as $site) {
-      /** @var \Deeson\SiteStatusBundle\Document\SiteDocument $site */
-      if ($site->getLatestCoreVersion() == $site->getCoreVersion()) {
-        continue;
-      }
+      /** @var SiteDocument $site */
+      // @todo site could be right core version, but module might have security issue.
 
-      $output->writeln('Adding site: ' . $site->getId() . ' - ' . $site->getUrl());
+      $output->writeln('Checking site: ' . $site->getId() . ' - ' . $site->getUrl());
       //print "\t{$site->getLatestCoreVersion()} == {$site->getCoreVersion()}\n";
 
-      /** @var SiteHaveIssueDocument $needUpdate */
-      $needUpdate = $siteHaveIssueManager->makeNewItem();
-      $needUpdate->setSiteId($site->getId());
-      $needUpdate->setUrl($site->getUrl());
-      $needUpdate->setCoreVersion($site->getCoreVersion(), $site->getLatestCoreVersion(), $site->getIsSecurityCoreVersion());
-      $needUpdate->setAdditionalIssues($site->getAdditionalIssues());
-
+      $isModuleSecurityUpdate = FALSE;
       $modulesNeedUpdate = array();
       foreach ($site->getModules() as $siteModule) {
         if (!isset($siteModule['latestVersion'])) {
@@ -58,10 +50,27 @@ class BuildSiteHaveIssueCommand extends ContainerAwareCommand {
           continue;
         }
 
+        if ($siteModule['isSecurity']) {
+          $isModuleSecurityUpdate = TRUE;
+        }
+
         $modulesNeedUpdate[] = $siteModule;
       }
 
+      if ($site->getLatestCoreVersion() == $site->getCoreVersion() && !$isModuleSecurityUpdate) {
+        continue;
+      }
+
+      $output->writeln('Adding site to dashboard: ' . $site->getId() . ' - ' . $site->getUrl());
+
+      /** @var SiteHaveIssueDocument $needUpdate */
+      $needUpdate = $siteHaveIssueManager->makeNewItem();
+      $needUpdate->setSiteId($site->getId());
+      $needUpdate->setUrl($site->getUrl());
+      $needUpdate->setCoreVersion($site->getCoreVersion(), $site->getLatestCoreVersion(), $site->getIsSecurityCoreVersion());
+      $needUpdate->setAdditionalIssues($site->getAdditionalIssues());
       $needUpdate->setModules($modulesNeedUpdate);
+
       $siteHaveIssueManager->saveDocument($needUpdate);
     }
   }
