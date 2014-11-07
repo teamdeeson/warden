@@ -11,4 +11,6 @@
 /composer.phar
 /composer.lock
 
-src/Deeson/SiteStatusBundle/Resources/users.list
+# Application
+src/Deeson/SiteStatusBundle/Resources/config/site_config.yml
+src/Deeson/SiteStatusBundle/Resources/public/css/site-custom.css
