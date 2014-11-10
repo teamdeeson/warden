@@ -12,5 +12,5 @@
 /composer.lock
 
 # Application
-src/Deeson/SiteStatusBundle/Resources/config/site_config.yml
-src/Deeson/SiteStatusBundle/Resources/public/css/site-custom.css
+src/Deeson/WardenBundle/Resources/config/site_config.yml
+src/Deeson/WardenBundle/Resources/public/css/site-custom.css

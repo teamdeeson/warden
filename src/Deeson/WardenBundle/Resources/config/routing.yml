@@ -1,0 +1,43 @@
+_secured:
+    resource: "@DeesonWardenBundle/Controller/SecuredController.php"
+    type:     annotation
+
+_unauthorised:
+    pattern: /unauthorised
+    defaults: { _controller: DeesonWardenBundle:Dashboard:unauthorised }
+
+_dashboard:
+    pattern:  /
+    defaults: { _controller: DeesonWardenBundle:Dashboard:index }
+
+sites_list:
+    path:    /sites
+    defaults: { _controller: DeesonWardenBundle:Sites:index }
+
+sites_add:
+    path:    /sites/add
+    defaults: { _controller: DeesonWardenBundle:Sites:add }
+
+sites_show:
+    path:    /sites/{id}
+    defaults: { _controller: DeesonWardenBundle:Sites:show }
+
+#sites_edit:
+#    path:    /sites/{id}/edit
+#    defaults: { _controller: DeesonWardenBundle:Sites:edit }
+
+sites_delete:
+    path:    /sites/{id}/delete
+    defaults: { _controller: DeesonWardenBundle:Sites:delete }
+
+sites_update_refresh:
+    path:    /sites/{id}/refresh
+    defaults: { _controller: DeesonWardenBundle:Sites:refresh }
+
+modules_list:
+    path:    /modules
+    defaults: { _controller: DeesonWardenBundle:Modules:index }
+
+modules_show:
+    path:    /modules/{projectName}
+    defaults: { _controller: DeesonWardenBundle:Modules:show }

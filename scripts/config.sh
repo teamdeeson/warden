@@ -1,3 +1,3 @@
 #! /bin/bash
 
-php app/console deeson:site-status:install
+php app/console deeson:warden:install

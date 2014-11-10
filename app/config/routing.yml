@@ -1,4 +1,4 @@
-deeson_site_status:
-    resource: "@DeesonSiteStatusBundle/Resources/config/routing.yml"
+deeson_warden:
+    resource: "@DeesonWardenBundle/Resources/config/routing.yml"
     prefix:   /
 

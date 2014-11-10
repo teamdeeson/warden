@@ -24,6 +24,9 @@ to get your application started:
 
   * Run ./script/install.sh to install the Symfony application fully
   * Run ./script/config.sh to configure the user account for accessing the dashboard
+  * Run the following the rebuild the assets:
+  
+        php app/console --env=[ENV] assets:install web
   
 Once set up you can log in using the credentials that you entered when running 
 the config.sh command.
@@ -42,11 +45,11 @@ A couple of things for you to be aware of with this application:
  
   1. User credentials: If you need to regenerate the user credentials run:
 
-         php app/console deeson:site-status:install --regenerate
+         php app/console deeson:warden:install --regenerate
     
   2. There is a custom CSS file generated based upon the file:
 
-        src/Deeson/SiteStatusBundle/Resources/public/css/site-custom.css
+        src/Deeson/WardenBundle/Resources/public/css/site-custom.css
      
      If you want to override any of the styling of the application edit this 
      file and then run: 

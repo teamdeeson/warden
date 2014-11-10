@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset={{ _charset }}"/>
+        <meta name="robots" content="noindex,nofollow" />
+        <title>{% block title %}{% endblock %}</title>
+        {# <link href="{{ asset('bundles/framework/css/structure.css') }}" rel="stylesheet" type="text/css" media="all" /> #}
+        <link href="{{ asset('bundles/framework/css/body.css') }}" rel="stylesheet" type="text/css" media="all" />
+        <link rel="icon" sizes="16x16" href="{{ asset('favicon.ico') }}" />
+        {# <link rel="stylesheet" href="{{ asset('bundles/acmedemo/css/demo.css') }}" /> #}
+        <link rel="stylesheet" href="{{ asset('bundles/deesonwarden/css/site-status.css') }}" />
+        <link rel="stylesheet" href="{{ asset('bundles/deesonwarden/css/site-custom.css') }}" />
+        {% block head %}{% endblock %}
+    </head>
+    <body>
+        <div id="content">
+            <div class="header clear-fix">
+                <div class="header-logo">
+                    <img src="https://d5av3fo92eabs.cloudfront.net/sites/default/files/styles/image_600_width/public/secondary_images/images_and_text/deeson-red.jpg?itok=j7KXqt0f" width="200" alt="Deeson Site Status" />
+                </div>
+            </div>
+
+            <div class="sf-reset">
+                {% for flashMessage in app.session.flashbag.get('notice') %}
+                    <div class="flash-message">
+                        <em>Notice</em>: {{ flashMessage }}
+                    </div>
+                {% endfor %}
+
+                {% if app.user %}
+                <div class="nav">
+                    <a href="/" class="active">Dashboard</a> | <a href="{{ path('sites_list') }}">Sites</a> | <a href="{{ path('modules_list') }}">Modules</a>
+                    | logged in as <strong>{{ app.user ? app.user.username : 'Anonymous' }}</strong> - <a href="{{ path('_logout') }}">Logout</a>
+                </div>
+                {% endif %}
+
+                <div class="block">
+                    {% block content %}{% endblock %}
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

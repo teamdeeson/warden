@@ -1,0 +1,46 @@
+{% extends 'DeesonWardenBundle::layout.html.twig' %}
+
+{% block title %}View module: {{ module.getName() }}{% endblock %}
+
+{% block content_header '' %}
+
+{% block content %}
+
+    <p>Name: {{ module.getName() }} ({{ module.getProjectName() }})<br/>
+    Status: {{ module.getProjectStatus() }}</p>
+    <p>Latest Versions: <br/>
+    {% for version, moduleVersion in module.getLatestVersion() %}
+        {{ version }}:
+        {% if moduleVersion.recommended is defined %}
+           Recommended - {{ moduleVersion.recommended.version }} {% if moduleVersion.recommended.isSecurity %}(Security Update){% endif %}
+        {% endif %}
+        {% if moduleVersion.other is defined %}
+            , also available - {{ moduleVersion.other.version }} {% if moduleVersion.other.isSecurity %}(Security Update){% endif %}
+        {% endif %}
+        <br/>
+    {% endfor %}
+    </p>
+
+    <p>Sites using this module:</p>
+    <table border="1" width="100%">
+        <thead>
+            <tr>
+                <td width="50%">Site</td>
+                <td>Core Version (Out of date)</td>
+            </tr>
+        </thead>
+        <tbody>
+        {% for site in module.getSites() %}
+        <tr>
+            <td><a href="{{ path('sites_show', {'id': site.id }) }}">{{ site.url }}</a></td>
+            <td>{{ site.version }} ({% if module.compareVersion(site.version) %}N{% else %}Y{% endif %})</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <br />
+    <br />
+
+    <a href="/modules"><< Back</a>
+
+{% endblock %}

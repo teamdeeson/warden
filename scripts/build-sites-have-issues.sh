@@ -1,3 +1,3 @@
 #! /bin/bash
 
-php app/console deeson:site-status:build-sites-have-issues
+php app/console deeson:warden:build-sites-have-issues

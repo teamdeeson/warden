@@ -1,3 +1,3 @@
 #! /bin/bash
 
-php app/console deeson:site-status:reset
+php app/console deeson:warden:reset
