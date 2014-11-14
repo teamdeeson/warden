@@ -85,13 +85,13 @@ class SitesController extends Controller {
    *
    * @return \Symfony\Component\HttpFoundation\RedirectResponse
    */
-  public function DeleteAction($id) {
-    /** @var SiteManager $manager */
+  /*public function DeleteAction($id) {
+    /** @var SiteManager $manager *//*
     $manager = $this->get('site_manager');
     $manager->deleteDocument($id);
 
     return $this->redirect($this->generateUrl('sites_list'));
-  }
+  }*/
 
   /**
    * Updates the core & module versions for this site.
@@ -101,13 +101,13 @@ class SitesController extends Controller {
    *
    * @return \Symfony\Component\HttpFoundation\RedirectResponse
    */
-  public function RefreshAction($id) {
-    /** @var SiteManager $manager */
+  /*public function RefreshAction($id) {
+    /** @var SiteManager $manager *//*
     $manager = $this->get('site_manager');
-    /** @var SiteDocument $site */
+    /** @var SiteDocument $site *//*
     $site = $manager->getDocumentById($id);
 
-    /** @var SiteStatusRequestService $statusService */
+    /** @var SiteStatusRequestService $statusService *//*
     $statusService = $this->get('site_status_service');
     //$statusService->setConnectionTimeout(10);
     $statusService->setSite($site);
@@ -118,7 +118,7 @@ class SitesController extends Controller {
     ksort($moduleData);
     $requestTime = $statusService->getRequestTime();
 
-    /** @var SiteManager $manager */
+    /** @var SiteManager $manager *//*
     $manager = $this->get('site_manager');
     $site->setIsNew(FALSE);
     $site->setCoreVersion($coreVersion);
@@ -128,10 +128,10 @@ class SitesController extends Controller {
     $this->get('session')->getFlashBag()->add('notice', 'Your site has had the core version updated! (' . $requestTime . ' secs)');
 
     return $this->redirect($this->generateUrl('sites_edit', array('id' => $id)));
-  }
+  }*/
 
-  public function EditAction($id, Request $request) {
-    /** @var SiteManager $manager */
+  /*public function EditAction($id, Request $request) {
+    /** @var SiteManager $manager *//*
     $manager = $this->get('site_manager');
     $site = $manager->getDocumentById($id);
 
@@ -156,5 +156,5 @@ class SitesController extends Controller {
     );
 
     return $this->render('DeesonWardenBundle:Sites:edit.html.twig', $params);
-  }
+  }*/
 }
