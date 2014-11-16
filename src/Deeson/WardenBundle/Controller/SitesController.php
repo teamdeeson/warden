@@ -5,7 +5,7 @@ namespace Deeson\WardenBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Deeson\WardenBundle\Managers\SiteManager;
-use Deeson\WardenBundle\Services\SiteStatusRequestService;
+use Deeson\WardenBundle\Services\WardenRequestService;
 use Deeson\WardenBundle\Document\SiteDocument;
 
 class SitesController extends Controller {

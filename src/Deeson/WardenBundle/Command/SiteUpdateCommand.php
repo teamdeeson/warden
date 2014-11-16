@@ -4,7 +4,7 @@ namespace Deeson\WardenBundle\Command;
 
 use Deeson\WardenBundle\Document\ModuleDocument;
 use Deeson\WardenBundle\Document\SiteDocument;
-use Deeson\WardenBundle\Services\SiteStatusRequestService;
+use Deeson\WardenBundle\Services\WardenRequestService;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -39,7 +39,7 @@ class SiteUpdateCommand extends ContainerAwareCommand {
       /** @var SiteDocument $site */
       $output->writeln('Updating site: ' . $site->getId() . ' - ' . $site->getUrl());
 
-      /** @var SiteStatusRequestService $statusService */
+      /** @var WardenRequestService $statusService */
       try {
         $statusService = $this->getContainer()->get('site_status_service');
         //$statusService->setConnectionTimeout(10);

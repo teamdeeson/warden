@@ -3,9 +3,9 @@
 namespace Deeson\WardenBundle\Services;
 
 use Deeson\WardenBundle\Document\ModuleDocument;
-use Deeson\WardenBundle\Exception\SiteStatusRequestException;
+use Deeson\WardenBundle\Exception\WardenRequestException;
 
-class SiteStatusRequestService extends BaseRequestService {
+class WardenRequestService extends BaseRequestService {
 
   /**
    * Drupal core version.
@@ -81,14 +81,11 @@ class SiteStatusRequestService extends BaseRequestService {
    *   Data that has come back from the request.
    */
   protected function processRequestData($requestData) {
-    //printf('<pre>req: %s</pre>', print_r($requestData, true));
     $requestDataObject = json_decode($requestData);
-    //printf('<pre>req obj: %s</pre>', print_r($requestDataObject, true));
-    //die();
 
     // @todo add logging of response to a file.
     if (!isset($requestDataObject->warden)) {
-      throw new SiteStatusRequestException("Invalid return response - possibly access denied");
+      throw new WardenRequestException("Invalid return response - possibly access denied");
     }
 
     if (is_string($requestDataObject->warden) && $requestDataObject->warden == 'encrypted') {
@@ -100,8 +97,6 @@ class SiteStatusRequestService extends BaseRequestService {
       //throw new SiteStatusRequestException('Request is not encrypted!');
       $wardenDataObject = $requestDataObject;
     }
-    //printf('<pre>%s</pre>', print_r($systemStatusDataObject, true));
-    //die();
 
     // Get the core version from the site.
     if (isset($wardenDataObject->warden->core->drupal)) {
