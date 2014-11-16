@@ -6,7 +6,7 @@
 
 {% block content %}
 
-    <p>Name: {{ module.getName() }} ({{ module.getProjectName() }})<br/>
+    <p>Name: {{ module.getName() }} (<a href="https://www.drupal.org/project/{{ module.getProjectName() }}" target="_blank">{{ module.getProjectName() }}</a>)<br/>
     Status: {{ module.getProjectStatus() }}</p>
     <p>Latest Versions: <br/>
     {% for version, moduleVersion in module.getLatestVersion() %}
