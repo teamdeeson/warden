@@ -64,7 +64,7 @@ class SiteStatusRequestService extends BaseRequestService {
    * @return mixed
    */
   protected function getRequestUrl() {
-    return $this->site->getUrl() . '/admin/reports/system_status/' . $this->site->getSystemStatusToken();
+    return $this->site->getUrl() . '/admin/reports/warden/' . $this->site->getWardenToken();
   }
 
   /**
@@ -87,25 +87,25 @@ class SiteStatusRequestService extends BaseRequestService {
     //die();
 
     // @todo add logging of response to a file.
-    if (!isset($requestDataObject->system_status)) {
+    if (!isset($requestDataObject->warden)) {
       throw new SiteStatusRequestException("Invalid return response - possibly access denied");
     }
 
-    if (is_string($requestDataObject->system_status) && $requestDataObject->system_status == 'encrypted') {
-      $systemStatusData = $this->decrypt($requestDataObject->data, $this->site->getSystemStatusEncryptToken());
-      $systemStatusDataObject = json_decode($systemStatusData);
+    if (is_string($requestDataObject->warden) && $requestDataObject->warden == 'encrypted') {
+      $wardenData = $this->decrypt($requestDataObject->data, $this->site->getWardenEncryptToken());
+      $wardenDataObject = json_decode($wardenData);
     }
     else {
       // This request isn't encrypted so don't do anything with it but generate an alert?
       //throw new SiteStatusRequestException('Request is not encrypted!');
-      $systemStatusDataObject = $requestDataObject;
+      $wardenDataObject = $requestDataObject;
     }
     //printf('<pre>%s</pre>', print_r($systemStatusDataObject, true));
     //die();
 
     // Get the core version from the site.
-    if (isset($systemStatusDataObject->system_status->core->drupal)) {
-      $this->coreVersion = $systemStatusDataObject->system_status->core->drupal->version;
+    if (isset($wardenDataObject->warden->core->drupal)) {
+      $this->coreVersion = $wardenDataObject->warden->core->drupal->version;
     }
     else {
       // No core data available - probably on pressflow!
@@ -113,7 +113,7 @@ class SiteStatusRequestService extends BaseRequestService {
         $coreVersion = $requestDataObject->drupal_version;
       }
       else {
-        foreach ($systemStatusDataObject->system_status->contrib as $module) {
+        foreach ($wardenDataObject->warden->contrib as $module) {
           $coreVersion = ModuleDocument::getMajorVersion((string) $module->version);
           break;
         }
@@ -121,12 +121,12 @@ class SiteStatusRequestService extends BaseRequestService {
       $this->coreVersion = $coreVersion . '.x';
     }
 
-    //$this->coreVersion = isset($systemStatusDataObject->system_status->core->drupal) ? $systemStatusDataObject->system_status->core->drupal->version : '0';
-    $this->moduleData = json_decode(json_encode($systemStatusDataObject->system_status->contrib), TRUE);
+    //$this->coreVersion = isset($wardenDataObject->warden->core->drupal) ? $wardenDataObject->warden->core->drupal->version : '0';
+    $this->moduleData = json_decode(json_encode($wardenDataObject->warden->contrib), TRUE);
   }
 
   /**
-   * Decrypt an encrypted message from the system_status module on the site.
+   * Decrypt an encrypted message from the warden module on the site.
    *
    * @param string $cipherTextBase64
    * @param string $encryptToken

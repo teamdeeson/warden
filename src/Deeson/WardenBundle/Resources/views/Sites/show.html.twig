@@ -6,6 +6,7 @@
 
 {% block content %}
 
+    <p>Name: {{ site.getName() }}</p>
     <p>URL: {{ site.getUrl() }}</p>
     <p>Core Version: {{ site.getCoreVersion() }}</p>
     <p>Current Core Version: {{ site.getLatestCoreVersion() }} {% if site.compareCoreVersion() %}{% else %}(Currently out of date {% if site.getIsSecurityCoreVersion() %} - SECURITY UPDATE!!!{% endif %}){% endif %}</p>

@@ -34,12 +34,12 @@ class SiteDocument extends BaseDocument {
   /**
    * @Mongodb\String
    */
-  protected $systemStatusToken;
+  protected $wardenToken;
 
   /**
    * @Mongodb\String
    */
-  protected $systemStatusEncryptToken;
+  protected $wardenEncryptToken;
 
   /**
    * @Mongodb\Collection
@@ -65,7 +65,7 @@ class SiteDocument extends BaseDocument {
    * @return mixed
    */
   public function getName() {
-    return $this->name;
+    return (empty($this->name)) ? '[Site Name]' : $this->name;
   }
 
   /**
@@ -78,29 +78,29 @@ class SiteDocument extends BaseDocument {
   /**
    * @return mixed
    */
-  public function getSystemStatusEncryptToken() {
-    return $this->systemStatusEncryptToken;
+  public function getWardenEncryptToken() {
+    return $this->wardenEncryptToken;
   }
 
   /**
-   * @param mixed $system_status_encrypt_token
+   * @param mixed $wardenEncryptToken
    */
-  public function setSystemStatusEncryptToken($system_status_encrypt_token) {
-    $this->systemStatusEncryptToken = $system_status_encrypt_token;
+  public function setWardenEncryptToken($wardenEncryptToken) {
+    $this->wardenEncryptToken = $wardenEncryptToken;
   }
 
   /**
    * @return string
    */
-  public function getSystemStatusToken() {
-    return $this->systemStatusToken;
+  public function getWardenToken() {
+    return $this->wardenToken;
   }
 
   /**
-   * @param string $systemStatusToken
+   * @param string $wardenToken
    */
-  public function setSystemStatusToken($systemStatusToken) {
-    $this->systemStatusToken = $systemStatusToken;
+  public function setWardenToken($wardenToken) {
+    $this->wardenToken = $wardenToken;
   }
 
   /**

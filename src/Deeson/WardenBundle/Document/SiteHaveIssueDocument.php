@@ -93,7 +93,7 @@ class SiteHaveIssueDocument extends BaseDocument {
    * @return mixed
    */
   public function getName() {
-    return $this->name;
+    return (empty($this->name)) ? '[Site Name]' : $this->name;
   }
 
   /**
