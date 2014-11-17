@@ -107,7 +107,7 @@ class SitesController extends Controller {
     /** @var SiteDocument $site *//*
     $site = $manager->getDocumentById($id);
 
-    /** @var SiteStatusRequestService $statusService *//*
+    /** @var WardenRequestService $statusService *//*
     $statusService = $this->get('site_status_service');
     //$statusService->setConnectionTimeout(10);
     $statusService->setSite($site);
@@ -115,12 +115,14 @@ class SitesController extends Controller {
 
     $coreVersion = $statusService->getCoreVersion();
     $moduleData = $statusService->getModuleData();
+    $siteName = $statusService->getSiteName();
     ksort($moduleData);
     $requestTime = $statusService->getRequestTime();
 
     /** @var SiteManager $manager *//*
     $manager = $this->get('site_manager');
     $site->setIsNew(FALSE);
+    $site->setName($siteName);
     $site->setCoreVersion($coreVersion);
     $site->setModules($moduleData);
     $manager->updateDocument();

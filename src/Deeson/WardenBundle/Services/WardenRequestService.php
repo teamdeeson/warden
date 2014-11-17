@@ -34,6 +34,13 @@ class WardenRequestService extends BaseRequestService {
   protected $additionalIssues = array();
 
   /**
+   * The site name from the site request.
+   *
+   * @var string
+   */
+  protected $siteName = '';
+
+  /**
    * @param \Deeson\WardenBundle\Document\SiteDocument $site
    */
   public function setSite($site) {
@@ -56,6 +63,15 @@ class WardenRequestService extends BaseRequestService {
    */
   public function getModuleData() {
     return $this->moduleData;
+  }
+
+  /**
+   * Get the site name for this site.
+   *
+   * @return string
+   */
+  public function getSiteName() {
+    return $this->siteName;
   }
 
   /**
@@ -115,6 +131,9 @@ class WardenRequestService extends BaseRequestService {
       }
       $this->coreVersion = $coreVersion . '.x';
     }
+
+    // Get the site name.
+    $this->siteName = $wardenDataObject->warden->site_name;
 
     //$this->coreVersion = isset($wardenDataObject->warden->core->drupal) ? $wardenDataObject->warden->core->drupal->version : '0';
     $this->moduleData = json_decode(json_encode($wardenDataObject->warden->contrib), TRUE);

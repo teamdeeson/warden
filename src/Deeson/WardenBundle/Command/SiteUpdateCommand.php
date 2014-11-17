@@ -59,6 +59,7 @@ class SiteUpdateCommand extends ContainerAwareCommand {
 
       $coreVersion = $statusService->getCoreVersion();
       $moduleData = $statusService->getModuleData();
+      $siteName = $statusService->getSiteName();
       ksort($moduleData);
       $requestTime = $statusService->getRequestTime();
       $additionalIssues = $statusService->getAdditionalIssues();
@@ -87,6 +88,7 @@ class SiteUpdateCommand extends ContainerAwareCommand {
       $output->writeln('request time: ' . $requestTime);
 
       //$site->setIsNew(FALSE);
+      $site->setName($siteName);
       $site->setCoreVersion($coreVersion);
       $site->setModules($moduleData);
       $site->setAdditionalIssues($additionalIssues);

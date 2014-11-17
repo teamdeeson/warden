@@ -20,7 +20,7 @@ services:
         arguments: ['@buzz.client.curl']
 
     site_status_service:
-        class: Deeson\WardenBundle\Services\SiteStatusRequestService
+        class: Deeson\WardenBundle\Services\WardenRequestService
         arguments: ['@buzz.browser']
 
     drupal_update_service:

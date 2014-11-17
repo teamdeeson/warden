@@ -65,6 +65,7 @@ class BuildSiteHaveIssueCommand extends ContainerAwareCommand {
 
       /** @var SiteHaveIssueDocument $needUpdate */
       $needUpdate = $siteHaveIssueManager->makeNewItem();
+      $needUpdate->setName($site->getName());
       $needUpdate->setSiteId($site->getId());
       $needUpdate->setUrl($site->getUrl());
       $needUpdate->setCoreVersion($site->getCoreVersion(), $site->getLatestCoreVersion(), $site->getIsSecurityCoreVersion());
