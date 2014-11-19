@@ -22,14 +22,29 @@ installed and PHP configured to use it.
 Once these dependencies have been installed you will need to follow these steps 
 to get your application started: 
 
-  * Run ./script/install.sh to install the Symfony application fully
+  * Run ./script/install.sh to install the Symfony application fully (when 
+  prompted for data credentials just press enter for all of them as they are not 
+  needed)
   * Run ./script/config.sh to configure the user account for accessing the dashboard
-  * Run the following the rebuild the assets:
-  
-        php app/console --env=[ENV] assets:install web
+  * Run ./scripts/clear-cache.sh to clear the cache and rebuild the assets
   
 Once set up you can log in using the credentials that you entered when running 
 the config.sh command.
+
+Running a Development Webserver
+-------------------------------
+
+Symfony has a build in webserver that you can use when working on a development
+environment.  To start this webserver run:
+
+    ./scripts/run-webserver.sh
+    
+You can optionally pass in the environment that you would like to run (if no
+parameter is passed in then it default to dev).
+
+    ./scripts/run-webserver.sh [ENV]
+    
+Where [ENV] is the environment that you are running on - @dev/ @test/ @prod
 
 Security
 --------
@@ -39,7 +54,14 @@ the security of the data and the system.
 
 Using this without SSL will be at your own risk.
 
-###General Help
+You can 'force' the application to only run under SSL by making a slight change 
+to the security.yml file (app/config).
+
+At the end of the file there are two line under 'access_control'. Comment out 
+the first and uncomment the second line to force the application to run under SSL. 
+
+General Help
+------------
 
 A couple of things for you to be aware of with this application:
  
@@ -47,16 +69,16 @@ A couple of things for you to be aware of with this application:
 
          php app/console deeson:warden:install --regenerate
     
-  2. There is a custom CSS file generated based upon the file:
+  2. There is a custom CSS file generated in the following directory:
 
-        src/Deeson/WardenBundle/Resources/public/css/site-custom.css
+        src/Deeson/WardenBundle/Resources/public/css/warden-custom.css
      
      If you want to override any of the styling of the application edit this 
      file and then run: 
 
         ./script/clear-cache.sh [ENV]
 
-Where [ENV] is the environment that you are running on - dev/ test/ prod
+Where [ENV] is the environment that you are running on - @dev/ @test/ @prod
 
 [1]:  https://www.drupal.org/projects/warden
 [2]:  http://getcomposer.org/

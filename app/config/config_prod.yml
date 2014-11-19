@@ -28,7 +28,7 @@ doctrine_mongodb:
         default:
             server: mongodb://localhost:27017
             options: {}
-    default_database: drupal_site_status
+    default_database: warden
     document_managers:
         default:
             auto_mapping: true
