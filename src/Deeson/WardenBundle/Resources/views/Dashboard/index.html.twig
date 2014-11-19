@@ -7,64 +7,55 @@
 {% block content %}
 
     {% if sites %}
-    {#<ul>
-        {% for site in sites %}
-        <li>
-            <a href="{{ path('sites_show', {'id': site.getSiteId() }) }}">{{ site.getUrl() }}</a> - {{ site.getCoreVersion() }} - {{ site.getLatestCoreVersion() }} (Security: {% if site.getIsSecurityCoreVersion() %}Y{% else %}N{% endif %})
-            <br />
-            {% for module in site.modules %}
-                <a href="{{ path('modules_show', {'projectName': module.name }) }}">{{ module.name }}</a> {% if module.isSecurity %}(Security Update){% endif %},
-            {% endfor %}
-        </li>
-        {% endfor %}
-    </ul>
-
-    <hr/>#}
-
-    <table border="1" width="100%">
-        <thead>
-            <tr>
-                <td width="60%">Site</td>
-                {# <td width="50%">Website link</td> #}
-                <td>Core Version</td>
-                <td>Status</td>
-                {# <td>Latest Core Version [Security Update]</td> #}
-            </tr>
-        </thead>
-        <tbody>
-        {% for site in sites %}
-        <tr>
-            <td><a href="{{ path('sites_show', {'id': site.getSiteId() }) }}">{{ site.getName() }}</a></td>
-            {# <td><a href="{{ path('sites_show', {'id': site.getSiteId() }) }}">{{ site.getUrl() }}</a></td> #}
-            <td >{{ site.getCoreVersion() }}</td>
-            <td onclick="document.location = '{{ path('sites_show', {'id': site.getSiteId() }) }}';" {% if site.getIsSecurityCoreVersion() %}class="error"{% endif %}>{% if site.getIsSecurityCoreVersion() %} <span class="fa fa-warning"></span>&nbsp;View {% endif %}</td>
-
-
-            {# <td>
-                {{ site.getLatestCoreVersion() }}
-                [{% if site.getIsSecurityCoreVersion() %}Y{% else %}N{% endif %}]
-            </td> #}
-        </tr>
-        {% if site.modules %}
-        {# <tr>
-            <td colspan="3">
-                Modules needing updates:<br/>
+        {#<ul>
+            {% for site in sites %}
+            <li>
+                <a href="{{ path('sites_show', {'id': site.getSiteId() }) }}">{{ site.getUrl() }}</a> - {{ site.getCoreVersion() }} - {{ site.getLatestCoreVersion() }} (Security: {% if site.getIsSecurityCoreVersion() %}Y{% else %}N{% endif %})
+                <br />
                 {% for module in site.modules %}
                     <a href="{{ path('modules_show', {'projectName': module.name }) }}">{{ module.name }}</a> {% if module.isSecurity %}(Security Update){% endif %},
                 {% endfor %}
-            </td>
-        </tr> #}
-        {% endif %}
-        {# <tr>
-            <td colspan="3">&nbsp;</td>
-        </tr> #}
-        {% endfor %}
-        </tbody>
-    </table>
+            </li>
+            {% endfor %}
+        </ul>
+        <hr/>#}
 
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box">
+                    <div class="box-header">
+
+                    </div><!-- /.box-header -->
+                    <!-- end first table -->
+                    <div class="box-body table-responsive no-padding">
+                        <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th width="60%">Site</th>
+                                {# <td width="50%">Website link</td> #}
+                                <th>Core Version</th>
+                                <th>Status</th>
+                                {# <td>Latest Core Version [Security Update]</td> #}
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for site in sites %}
+                            <tr>
+                                <td><a href="{{ path('sites_show', {'id': site.getSiteId() }) }}">{{ site.getName() }}</a></td>
+                                <td>{{ site.getCoreVersion() }}</td>
+                                <td style="cursor: pointer;" onclick="document.location = '{{ path('sites_show', {'id': site.getSiteId() }) }}';" {% if site.getIsSecurityCoreVersion() %}class="error"{% endif %}>{% if site.getIsSecurityCoreVersion() %}<span class="fa fa-warning"></span>&nbsp;View {% endif %}</td>
+                            </tr>
+
+                        {% endfor %}
+                        </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
     {% else %}
 
-    <p>There are currently no sites with any problems.</p>
+        <p>There are currently no sites with any problems.</p>
 
     {% endif %}
 

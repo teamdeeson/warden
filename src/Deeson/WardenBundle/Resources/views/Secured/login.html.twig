@@ -1,29 +1,48 @@
-{% extends 'DeesonWardenBundle::layout.html.twig' %}
+{% extends 'DeesonWardenBundle::loginlayout.html.twig' %}
 
 {% block content %}
-    <h1 class="title">Login</h1>
 
-    {% if error %}
-        <div class="error">{{ error.message }}</div>
-    {% endif %}
-
-    <form action="{{ path("_security_check") }}" method="post" id="login">
-        <div>
-            <label for="username">Username</label>
-            <input type="text" id="username" name="_username" />
+    <div class="form-box" id="login-box">
+        <div class="header bg-brand">Sign In
+        {% if error %}
+            <h4 class="text-center"><i class="fa fa-warning text-yellow"></i> {{ error.message }}</h4>
+        {% endif %}
         </div>
 
-        <div>
-            <label for="password">Password</label>
-            <input type="password" id="password" name="_password" />
-        </div>
+        <form action="{{ path("_security_check") }}" method="post" id="login">
+            <div class="body bg-gray">
+                <div class="form-group">
+                    <input type="text" id="username" name="_username" class="form-control" placeholder="User ID"/>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="password" name="_password" class="form-control" placeholder="Password"/>
+                </div>
+                {#<div class="form-group">
+                    <input type="checkbox" name="remember_me"/> Remember me
+                </div>#}
+            </div>
+            <div class="footer">
+                <button type="submit" class="btn bg-olive btn-block">Sign me in</button>
+                {#<p><a href="#">I forgot my password</a></p>
+                <a href="register.html" class="text-center">Register a new membership</a>#}
+            </div>
+        </form>
 
-        <button type="submit" class="sf-button">
-            <span class="border-l">
-                <span class="border-r">
-                    <span class="btn-bg">Login</span>
-                </span>
-            </span>
-        </button>
-    </form>
+        <div class="margin text-center">
+            <div class="marketing">
+              <p>
+
+                <br/>
+                <a href="http://deeson.co.uk" targte="_blank"><i class="icon-deesonicons-13"></i></a>&nbsp;
+                <a href="https://www.linkedin.com/company/deeson"><span class="icon-deesonicons-12"></span></a>&nbsp;
+                <a href="https://plus.google.com/u/0/b/112279886408290263851/+DeesonCoUk/posts"><span class="icon-deesonicons-242"></span></a>&nbsp;
+                <a href="https://twitter.com/DeesonAgency"><span class="icon-deesonicons-07"></span></a>&nbsp;
+                <a href="https://twitter.com/DeesonAgency"><span class="icon-deesonicons-08"></span></a>&nbsp;
+                <br/><br/>
+                <span class="small"><span class="icon-deesonicons-02"></span>&nbsp;Drupal experts since 2007</span>
+              </p>
+            </div>
+        </div>
+    </div>
+
 {% endblock %}
