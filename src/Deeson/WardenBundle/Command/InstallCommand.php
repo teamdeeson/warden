@@ -31,18 +31,34 @@ class InstallCommand extends ContainerAwareCommand {
     $username = $helper->ask($input, $output, $usernameQuestion);
 
     $passwordQuestion = new Question('Please enter the admin password (minimum of 8 characters): ', '');
+    $passwordQuestion->setValidator(function ($value) {
+      if (trim($value) == '') {
+        throw new \Exception('The password can not be empty');
+      }
+      if (strlen($value) < 8) {
+        throw new \Exception('Password provided is too short - must be minimum of 8 characters');
+      }
+
+      return $value;
+    });
+    $passwordQuestion->setMaxAttempts(3);
+    $passwordQuestion->setHidden(TRUE);
+    $passwordQuestion->setHiddenFallback(FALSE);
+
     $password = $helper->ask($input, $output, $passwordQuestion);
 
-    if ($password == '') {
-      $output->writeln('<error>No password provided.</error>');
-      return;
-    }
+    $this->generateConfigFiles($configFile, $username, $password);
+    $output->writeln('Generated config file.');
+  }
 
-    if (strlen($password) < 8) {
-      $output->writeln('<error>Password provided is too short - must be minimum of 8 characters.</error>');
-      return;
-    }
-
+  /**
+   * Generate the config files for the application.
+   *
+   * @param string $configFile
+   * @param string $username
+   * @param string $password
+   */
+  protected function generateConfigFiles($configFile, $username, $password) {
     $configData = array(
       'users' => array(
         $username => array(
@@ -58,13 +74,11 @@ class InstallCommand extends ContainerAwareCommand {
 
     // Create custom css file
     $appRoot = $this->getContainer()->get('kernel')->getRootDir();
-    $customCssFile = $appRoot . '/../src/Deeson/SiteStatusBundle/Resources/public/css/site-custom.css';
+    $customCssFile = $appRoot . '/../src/Deeson/WardenBundle/Resources/public/css/warden-custom.css';
 
     if (!file_exists($customCssFile)) {
       file_put_contents($customCssFile, '');
     }
-
-    $output->writeln('Generated config file.');
   }
 
 }
