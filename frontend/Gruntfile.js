@@ -14,17 +14,18 @@ module.exports = function(grunt) {
     copy: {
       files: {
         expand: true,
-        dest: '../docroot/sites/all/themes/rct_bootstrap',
-        src: 'assets/**'
+        dest: '../src/Deeson/WardenBundle/Resources/public/assets',
+        src: ["./css/**", "./fonts/**", "./img/**", "./js/**"]
       }
-    }
-    /*watch: {
-      files: "./less*//*",
+    },
+    watch: {
+      files: "./less/*",
       tasks: ["less", "copy"]
     }
-     /Applications/MAMP/htdocs/warden/src/Deeson/WardenBundle/Resources/public/assets
-    */
   });
+
   grunt.loadNpmTasks('grunt-contrib-less');
   grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-contrib-copy');
+
 };

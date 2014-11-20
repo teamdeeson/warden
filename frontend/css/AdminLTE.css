@@ -186,7 +186,7 @@ img {
   background-color: #222222 !important;
 }
 .bg-red {
-  background-color: #f56954 !important;
+  background-color: #f10008 !important;
 }
 .bg-yellow {
   background-color: #f39c12 !important;
@@ -229,7 +229,7 @@ img {
 }
 /* Text colors */
 .text-red {
-  color: #f56954 !important;
+  color: #f10008 !important;
 }
 .text-yellow {
   color: #f39c12 !important;
@@ -418,12 +418,12 @@ Gradient Background colors
   color: #fff;
 }
 .bg-red-gradient {
-  background: #f56954 !important;
-  background: -webkit-gradient(linear, left bottom, left top, color-stop(0, #f56954), color-stop(1, #f89384)) !important;
-  background: -ms-linear-gradient(bottom, #f56954, #f89384) !important;
-  background: -moz-linear-gradient(center bottom, #f56954 0%, #f89384 100%) !important;
-  background: -o-linear-gradient(#f89384, #f56954) !important;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f89384', endColorstr='#f56954', GradientType=0) !important;
+  background: #f10008 !important;
+  background: -webkit-gradient(linear, left bottom, left top, color-stop(0, #f10008), color-stop(1, #ff252c)) !important;
+  background: -ms-linear-gradient(bottom, #f10008, #ff252c) !important;
+  background: -moz-linear-gradient(center bottom, #f10008 0%, #ff252c 100%) !important;
+  background: -o-linear-gradient(#ff252c, #f10008) !important;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff252c', endColorstr='#f10008', GradientType=0) !important;
   color: #fff;
 }
 .bg-black-gradient {
@@ -896,7 +896,7 @@ body > .header .logo .icon {
 .navbar-nav > .notifications-menu > .dropdown-menu > li .menu > li > a > .glyphicon.danger,
 .navbar-nav > .notifications-menu > .dropdown-menu > li .menu > li > a > .fa.danger,
 .navbar-nav > .notifications-menu > .dropdown-menu > li .menu > li > a > .ion.danger {
-  background: #f56954;
+  background: #f10008;
 }
 .navbar-nav > .notifications-menu > .dropdown-menu > li .menu > li > a > .glyphicon.warning,
 .navbar-nav > .notifications-menu > .dropdown-menu > li .menu > li > a > .fa.warning,
@@ -1154,10 +1154,10 @@ body > .header .logo .icon {
   box-shadow: none;
 }
 .form-group.has-error label {
-  color: #f56954;
+  color: #f10008;
 }
 .form-group.has-error .form-control {
-  border-color: #f56954 !important;
+  border-color: #f10008 !important;
   box-shadow: none;
 }
 /* Input group */
@@ -1255,7 +1255,7 @@ body > .header .logo .icon {
 }
 .progress-bar-red,
 .progress-bar-danger {
-  background-color: #f56954;
+  background-color: #f10008;
 }
 .progress-striped .progress-bar-red,
 .progress-striped .progress-bar-danger {
@@ -1392,7 +1392,7 @@ body > .header .logo .icon {
   border-top-color: #00c0ef;
 }
 .box.box-danger {
-  border-top-color: #f56954;
+  border-top-color: #f10008;
 }
 .box.box-warning {
   border-top-color: #f39c12;
@@ -1564,8 +1564,8 @@ body > .header .logo .icon {
 }
 .box.box-solid.box-danger > .box-header {
   color: #fff;
-  background: #f56954;
-  background-color: #f56954;
+  background: #f10008;
+  background-color: #f10008;
 }
 .box.box-solid.box-danger > .box-header a {
   color: #444;
@@ -1627,7 +1627,7 @@ body > .header .logo .icon {
   margin-bottom: 0;
 }
 .box .todo-list > li.danger {
-  border-left-color: #f56954;
+  border-left-color: #f10008;
 }
 .box .todo-list > li.warning {
   border-left-color: #f39c12;
@@ -1656,7 +1656,7 @@ body > .header .logo .icon {
 .box .todo-list > li .tools {
   display: none;
   float: right;
-  color: #f56954;
+  color: #f10008;
 }
 .box .todo-list > li .tools > .fa,
 .box .todo-list > li .tools > .glyphicon,
@@ -1708,7 +1708,7 @@ body > .header .logo .icon {
   border: 2px solid #00a65a;
 }
 .box .chat .item > img.offline {
-  border: 2px solid #f56954;
+  border: 2px solid #f10008;
 }
 .box .chat .item > .message {
   margin-left: 55px;
@@ -1916,13 +1916,13 @@ Component: timeline
   background-color: #00acd6;
 }
 .btn.btn-danger {
-  background-color: #f56954;
-  border-color: #f4543c;
+  background-color: #f10008;
+  border-color: #d80007;
 }
 .btn.btn-danger:hover,
 .btn.btn-danger:active,
 .btn.btn-danger.hover {
-  background-color: #f4543c;
+  background-color: #d80007;
 }
 .btn.btn-warning {
   background-color: #f39c12;
@@ -3543,4 +3543,7 @@ fieldset[disabled] .btn-vk.active {
 }
 .bottom-absolute a {
   color: #f10008;
+}
+.logo .icon-deesonicons-21 strong {
+  margin-left: 3px;
 }
