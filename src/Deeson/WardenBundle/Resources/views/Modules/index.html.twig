@@ -2,28 +2,38 @@
 
 {% block title %}Module Status{% endblock %}
 
-{% block content_header '' %}
+{% block page_title 'Modules' %}
 
 {% block content %}
 
     {% if modules %}
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box">
+                    <div class="box-header">
 
-    <table border="1" width="100%">
-        <thead>
-            <tr>
-                <td width="50%">Module</td>
-                <td>Number of sites (Site usage)</td>
-            </tr>
-        </thead>
-        <tbody>
-        {% for module in modules %}
-        <tr>
-            <td><a href="{{ path('modules_show', {'projectName': module.getProjectName() }) }}">{{ module.getName() }}</a> ({{ module.getProjectName() }})</td>
-            <td>{{ module.getSiteCount() }} ({{ module.getUsagePercentage() }}%)</td>
-        </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+                    </div><!-- /.box-header -->
+                    <div class="box-body table-responsive no-padding">
+                        <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th width="60%">Module</th>
+                                <th>Number of sites (Site usage)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for module in modules %}
+                        <tr>
+                            <td><a href="{{ path('modules_show', {'projectName': module.getProjectName() }) }}">{{ module.getName() }}</a> ({{ module.getProjectName() }})</td>
+                            <td>{{ module.getSiteCount() }} ({{ module.getUsagePercentage() }}%)</td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
 
     {% else %}
 

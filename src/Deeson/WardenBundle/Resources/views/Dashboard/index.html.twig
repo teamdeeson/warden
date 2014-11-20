@@ -2,7 +2,7 @@
 
 {% block title %}Warden Dashboard{% endblock %}
 
-{% block content_header '' %}
+{% block page_title 'Dashboard' %}
 
 {% block content %}
 
@@ -26,7 +26,6 @@
                     <div class="box-header">
 
                     </div><!-- /.box-header -->
-                    <!-- end first table -->
                     <div class="box-body table-responsive no-padding">
                         <table class="table table-hover">
                         <thead>
@@ -40,7 +39,7 @@
                         </thead>
                         <tbody>
                         {% for site in sites %}
-                            <tr>
+                            <tr class="{% if site.getIsSecurityCoreVersion() %}alert alert-danger{% else %}alert alert-warning{% endif %}">
                                 <td><a href="{{ path('sites_show', {'id': site.getSiteId() }) }}">{{ site.getName() }}</a></td>
                                 <td>{{ site.getCoreVersion() }}</td>
                                 <td style="cursor: pointer;" onclick="document.location = '{{ path('sites_show', {'id': site.getSiteId() }) }}';" {% if site.getIsSecurityCoreVersion() %}class="error"{% endif %}>{% if site.getIsSecurityCoreVersion() %}<span class="fa fa-warning"></span>&nbsp;View {% endif %}</td>
