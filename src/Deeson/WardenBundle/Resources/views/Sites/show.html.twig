@@ -15,17 +15,13 @@
                 <p>Core Version: {{ site.getCoreVersion() }}</p>
             </div>
             <div class="box-body col-md-4">
+                {% if site.compareCoreVersion() %}{% else %}
                 {% if site.getIsSecurityCoreVersion() %}
                 <div class="alert alert-danger alert-dismissable">
                     <i class="fa fa-ban"></i>
-                    <b>Alert!</b> There is a security update required for this site: {{ site.getLatestCoreVersion() }}
+                    <b>Alert!</b> There is a core security update required for this site: {{ site.getLatestCoreVersion() }}
                 </div>
                 {% endif %}
-                {% if site.compareCoreVersion() %}{% else %}
-                <div class="alert alert-warning alert-dismissable">
-                    <i class="fa fa-warning"></i>
-                    <b>Alert!</b> Current core version is out of date: {{ site.getLatestCoreVersion() }}
-                </div>
                 {% endif %}
                 {#<div class="alert alert-danger alert-dismissable">
                     <i class="fa fa-ban"></i>
