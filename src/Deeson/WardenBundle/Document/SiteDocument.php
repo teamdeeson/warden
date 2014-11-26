@@ -175,6 +175,8 @@ class SiteDocument extends BaseDocument {
   }
 
   /**
+   * Get the site modules.
+   *
    * @return mixed
    */
   public function getModules() {
@@ -182,12 +184,26 @@ class SiteDocument extends BaseDocument {
   }
 
   /**
-   * @param mixed $modules
+   * Set the current modules for the site.
+   *
+   * @param array $modules
+   *   List of modules to add to the site.
+   * @param bool $update
+   *   If true, update the site module versions while using the existing version
+   *   information.
    */
-  public function setModules($modules) {
+  public function setModules($modules, $update = FALSE) {
+    $currentModules = ($update) ? $this->getModules() : array();
+    if (!empty($currentModules)) {
+      $currentVersions = array();
+      foreach ($currentModules as $value) {
+        $currentVersions[$value['name']] = $value;
+      }
+    }
+
     $moduleList = array();
     foreach ($modules as $name => $version) {
-      $moduleList[] = array(
+      $module = array(
         'name' => $name,
         'version' => $version['version'],
         /*'version' => array(
@@ -196,6 +212,18 @@ class SiteDocument extends BaseDocument {
           'isSecurity' => 0,
         ),*/
       );
+
+      // Set the current version if there was one.
+      if (isset($currentVersions[$name])) {
+        if (isset($currentVersions[$name]['latestVersion'])) {
+          $module['latestVersion'] = $currentVersions[$name]['latestVersion'];
+        }
+        if (isset($currentVersions[$name]['isSecurity'])) {
+          $module['isSecurity'] = $currentVersions[$name]['isSecurity'];
+        }
+      }
+
+      $moduleList[] = $module;
     }
     $this->modules = $moduleList;
   }

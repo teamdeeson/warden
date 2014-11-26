@@ -90,7 +90,7 @@ class SiteUpdateCommand extends ContainerAwareCommand {
       //$site->setIsNew(FALSE);
       $site->setName($siteName);
       $site->setCoreVersion($coreVersion);
-      $site->setModules($moduleData);
+      $site->setModules($moduleData, TRUE);
       $site->setAdditionalIssues($additionalIssues);
       $siteManager->updateDocument();
 
