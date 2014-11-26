@@ -40,7 +40,7 @@
                         <tbody>
                         {% for site in sites %}
                             <tr class="{% if site.getIsSecurityCoreVersion() %}alert alert-danger{% else %}alert alert-warning{% endif %}">
-                                <td><a href="{{ path('sites_show', {'id': site.getSiteId() }) }}">{{ site.getName() }}</a></td>
+                                <td><a href="{{ path('sites_show', {'id': site.getSiteId() }) }}">{{ site.getName() }}</a> [{{ site.getUrl() }}]</td>
                                 <td>{{ site.getCoreVersion() }}</td>
                                 <td style="cursor: pointer;" onclick="document.location = '{{ path('sites_show', {'id': site.getSiteId() }) }}';" {% if site.getIsSecurityCoreVersion() %}class="error"{% endif %}>{% if site.getIsSecurityCoreVersion() %}<span class="fa fa-warning"></span>&nbsp;View {% endif %}</td>
                             </tr>
