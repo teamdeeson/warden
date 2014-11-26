@@ -114,17 +114,17 @@
                     <!-- /.search form -->
                     <!-- sidebar menu: : style can be found in sidebar.less -->
                     <ul class="sidebar-menu">
-                        <li class="active">
+                        <li {% if app.request.get('_route') == '_dashboard' %} class="active"{% endif %}>
                             <a href="/" class="active">
                                 <i class="icon-deesonicons-21"></i> &nbsp;<span>Dashboard</span>
                             </a>
                         </li>
-                        <li class="">
+                        <li {% if app.request.get('_route') starts with 'sites_' %} class="active"{% endif %}>
                             <a href="{{ path('sites_list') }}">
                                 <i class="fa fa-globe"></i> &nbsp;<span>Sites</span>
                             </a>
                         </li>
-                        <li class="">
+                        <li {% if app.request.get('_route') starts with 'modules_' %} class="active"{% endif %}>
                             <a href="{{ path('modules_list') }}">
                                 <i class="fa fa-th"></i> &nbsp;<span>Modules</span>
                             </a>
