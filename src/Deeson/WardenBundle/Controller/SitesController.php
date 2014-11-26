@@ -57,7 +57,7 @@ class SitesController extends Controller {
   public function AddAction() {
     $request = Request::createFromGlobals();
     $querySiteUrl = $request->query->get('siteUrl');
-    list($siteUrl, $systemStatusToken, $systemStatusEncryptToken) = explode('|', $querySiteUrl);
+    list($siteUrl, $wardenToken, $wardenEncryptToken) = explode('|', $querySiteUrl);
 
     /** @var SiteManager $manager */
     $manager = $this->get('site_manager');
@@ -65,8 +65,8 @@ class SitesController extends Controller {
     if (!$manager->urlExists($siteUrl)) {
       $site = $manager->makeNewItem();
       $site->setUrl($siteUrl);
-      $site->setSystemStatusToken($systemStatusToken);
-      $site->setSystemStatusEncryptToken($systemStatusEncryptToken);
+      $site->setWardenToken($wardenToken);
+      $site->setWardenEncryptToken($wardenEncryptToken);
       $manager->saveDocument($site);
       $this->get('session')->getFlashBag()->add('notice', 'Your site has now been registered.');
     }

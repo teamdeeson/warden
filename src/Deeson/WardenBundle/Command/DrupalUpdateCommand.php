@@ -68,13 +68,11 @@ class DrupalUpdateCommand extends ContainerAwareCommand {
         $moduleVersions = $this->moduleVersions;
         $moduleLatestVersion[$version][$module->getProjectName()] = $moduleVersions;
 
-        if (!$updateNewSitesOnly) {
-          $module->setName($this->drupalUpdateService->getModuleName());
-          $module->setIsNew(FALSE);
-          $module->setLatestVersion($version, $moduleVersions);
-          $module->setProjectStatus($this->projectStatus);
-          $moduleManager->updateDocument();
-        }
+        $module->setName($this->drupalUpdateService->getModuleName());
+        $module->setIsNew(FALSE);
+        $module->setLatestVersion($version, $moduleVersions);
+        $module->setProjectStatus($this->projectStatus);
+        $moduleManager->updateDocument();
       }
     }
 

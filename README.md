@@ -50,15 +50,17 @@ Security
 --------
 
 It is recommended that this application should be run under SSL to maintain 
-the security of the data and the system.
+the security of the data and the system.  For that reason this application has
+the security set to 'force' to run under SSL by default.
 
-Using this without SSL will be at your own risk.
-
-You can 'force' the application to only run under SSL by making a slight change 
+Should you wish to run this application without SSL, you can make a slight change 
 to the security.yml file (app/config).
 
 At the end of the file there are two line under 'access_control'. Comment out 
-the first and uncomment the second line to force the application to run under SSL. 
+the first line under this heading and uncomment the second line to remove the 
+running of the application under SSL. 
+
+*Using this application without SSL will be at your own risk.*
 
 General Help
 ------------
