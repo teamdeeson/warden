@@ -22,14 +22,18 @@ installed and PHP configured to use it.
 Once these dependencies have been installed you will need to follow these steps 
 to get your application started: 
 
-  * Run ./scripts/install.sh to install the Symfony application fully (when 
-  prompted for data credentials just press enter for all of them as they are not 
-  needed)
+  * Run ./scripts/install.sh to install the Symfony application fully
   * Run ./scripts/config.sh to configure the user account for accessing the dashboard
   * Run ./scripts/clear-cache.sh to clear the cache and rebuild the assets
   
 Once set up you can log in using the credentials that you entered when running 
 the config.sh command.
+
+The installation parameters are:
+
+* locale   - the country code
+* secret   - a long random string used for security
+* protocol - how warden should be accessed, either https (recommended) or http (not secure) 
 
 Running a Development Webserver
 -------------------------------
