@@ -1,15 +1,5 @@
 {{ include('DeesonWardenBundle::header.html.twig') }}
 
-        {#<div id="content">
-            <div class="sf-reset">
-                {% for flashMessage in app.session.flashbag.get('notice') %}
-                    <div class="flash-message">
-                        <em>Notice</em>: {{ flashMessage }}
-                    </div>
-                {% endfor %}
-            </div>
-        </div>#}
-
         {# start header #}
         <header class="header">
             <a href="/" class="logo">
@@ -172,8 +162,18 @@
                 </section>
                 {% endif %}
 
-                <!-- Main content --> <!-- Main content -->
+                <!-- Main content -->
                 <section class="content">
+                    {% for flashMessage in app.session.flashbag.get('error') %}
+                    <div class="callout callout-danger">
+                        <p>{{ flashMessage }}</p>
+                    </div>
+                    {% endfor %}
+                    {% for flashMessage in app.session.flashbag.get('notice') %}
+                    <div class="callout callout-info">
+                        <p>{{ flashMessage }}</p>
+                    </div>
+                    {% endfor %}
 
                     {% block content %}{% endblock %}
 
