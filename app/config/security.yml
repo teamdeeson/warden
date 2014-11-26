@@ -37,5 +37,4 @@ security:
     access_denied_url: /unauthorised
 
     access_control:
-        - { path: ^/, roles: ROLE_USER, requires_channel: https }
-        #- { path: ^/, roles: ROLE_USER }
+        - { path: ^/, roles: ROLE_USER, requires_channel: %protocol% }
