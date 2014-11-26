@@ -9,12 +9,16 @@
     <div class="box">
         <br/>
         <div class="clearfix">
-            <div class="col-md-8">
+            <div class="col-md-12">
                 <h2 style="margin-top: 0;">Name: {{ site.getName() }}</h2>
-                <p><a href="">{{ site.getUrl() }}</a></p>
-                <p>Core Version: {{ site.getCoreVersion() }}</p>
             </div>
-            <div class="box-body col-md-4">
+            <div class="col-md-4">
+                <p><a href="{{ site.getUrl() }}" target="_blank">{{ site.getUrl() }}</a></p>
+                <p>Core Version: {{ site.getCoreVersion() }}</p>
+                <p><button class="btn btn-primary" onclick="location.href='{{ path('sites_update_refresh', {'id': site.getId() }) }}'">Refresh Site Data</button></p>
+                <p><button class="btn btn-danger" onclick="location.href='{{ path('sites_delete', {'id': site.getId() }) }}'">Delete</button></p>
+            </div>
+            <div class="box-body col-md-8">
                 {% if site.compareCoreVersion() %}{% else %}
                 {% if site.getIsSecurityCoreVersion() %}
                 <div class="alert alert-danger alert-dismissable">

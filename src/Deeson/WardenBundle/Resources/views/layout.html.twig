@@ -1,15 +1,5 @@
 {{ include('DeesonWardenBundle::header.html.twig') }}
 
-        {#<div id="content">
-            <div class="sf-reset">
-                {% for flashMessage in app.session.flashbag.get('notice') %}
-                    <div class="flash-message">
-                        <em>Notice</em>: {{ flashMessage }}
-                    </div>
-                {% endfor %}
-            </div>
-        </div>#}
-
         {# start header #}
         <header class="header">
             <a href="/" class="logo">
@@ -124,17 +114,17 @@
                     <!-- /.search form -->
                     <!-- sidebar menu: : style can be found in sidebar.less -->
                     <ul class="sidebar-menu">
-                        <li class="active">
+                        <li {% if app.request.get('_route') == '_dashboard' %} class="active"{% endif %}>
                             <a href="/" class="active">
                                 <i class="icon-deesonicons-21"></i> &nbsp;<span>Dashboard</span>
                             </a>
                         </li>
-                        <li class="">
+                        <li {% if app.request.get('_route') starts with 'sites_' %} class="active"{% endif %}>
                             <a href="{{ path('sites_list') }}">
                                 <i class="fa fa-globe"></i> &nbsp;<span>Sites</span>
                             </a>
                         </li>
-                        <li class="">
+                        <li {% if app.request.get('_route') starts with 'modules_' %} class="active"{% endif %}>
                             <a href="{{ path('modules_list') }}">
                                 <i class="fa fa-th"></i> &nbsp;<span>Modules</span>
                             </a>
@@ -172,8 +162,18 @@
                 </section>
                 {% endif %}
 
-                <!-- Main content --> <!-- Main content -->
+                <!-- Main content -->
                 <section class="content">
+                    {% for flashMessage in app.session.flashbag.get('error') %}
+                    <div class="callout callout-danger">
+                        <p>{{ flashMessage }}</p>
+                    </div>
+                    {% endfor %}
+                    {% for flashMessage in app.session.flashbag.get('notice') %}
+                    <div class="callout callout-info">
+                        <p>{{ flashMessage }}</p>
+                    </div>
+                    {% endfor %}
 
                     {% block content %}{% endblock %}
 

@@ -82,16 +82,36 @@ class SitesController extends Controller {
    *
    * @param int $id
    *   The site id to delete.
+   * @param Request $request
    *
-   * @return \Symfony\Component\HttpFoundation\RedirectResponse
+   * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
    */
-  /*public function DeleteAction($id) {
-    /** @var SiteManager $manager *//*
+  public function DeleteAction($id, Request $request) {
+    /** @var SiteManager $manager */
     $manager = $this->get('site_manager');
-    $manager->deleteDocument($id);
+    $site = $manager->getDocumentById($id);
 
-    return $this->redirect($this->generateUrl('sites_list'));
-  }*/
+    $form = $this->createFormBuilder()
+            ->add('Delete', 'submit', array(
+              'attr' => array('class' => 'btn btn-danger')
+            ))
+            ->getForm();
+
+    $form->handleRequest($request);
+
+    if ($form->isValid()) {
+      $manager->deleteDocument($id);
+      $this->get('session')->getFlashBag()->add('notice', 'The site [' . $site->getName() . '] has been deleted.');
+
+      return $this->redirect($this->generateUrl('sites_list'));
+    }
+
+    $params = array(
+      'site' => $site,
+      'form' => $form->createView(),
+    );
+    return $this->render('DeesonWardenBundle:Sites:delete.html.twig', $params);
+  }
 
   /**
    * Updates the core & module versions for this site.
@@ -101,17 +121,26 @@ class SitesController extends Controller {
    *
    * @return \Symfony\Component\HttpFoundation\RedirectResponse
    */
-  /*public function RefreshAction($id) {
-    /** @var SiteManager $manager *//*
+  public function RefreshAction($id) {
+    /** @var SiteManager $manager */
     $manager = $this->get('site_manager');
-    /** @var SiteDocument $site *//*
+    /** @var SiteDocument $site */
     $site = $manager->getDocumentById($id);
 
-    /** @var WardenRequestService $statusService *//*
-    $statusService = $this->get('site_status_service');
-    //$statusService->setConnectionTimeout(10);
-    $statusService->setSite($site);
-    $statusService->processRequest();
+    /** @var WardenRequestService $statusService */
+    try {
+      $statusService = $this->get('site_status_service');
+      //$statusService->setConnectionTimeout(10);
+      if ($site->getAuthUser() && $site->getAuthPass()) {
+        $headers = array(sprintf('Authorization: Basic %s', base64_encode($site->getAuthUser() . ':' . $site->getAuthPass())));
+        $statusService->setConnectionHeaders($headers);
+      }
+      $statusService->setSite($site);
+      $statusService->processRequest();
+    } catch (\Exception $e) {
+      $this->get('session')->getFlashBag()->add('error', 'General Error - Unable to retrieve data from the site: ' . $e->getMessage());
+      return $this->redirect($this->generateUrl('sites_show', array('id' => $id)));
+    }
 
     $coreVersion = $statusService->getCoreVersion();
     $moduleData = $statusService->getModuleData();
@@ -119,18 +148,18 @@ class SitesController extends Controller {
     ksort($moduleData);
     $requestTime = $statusService->getRequestTime();
 
-    /** @var SiteManager $manager *//*
+    /** @var SiteManager $manager */
     $manager = $this->get('site_manager');
     $site->setIsNew(FALSE);
     $site->setName($siteName);
     $site->setCoreVersion($coreVersion);
-    $site->setModules($moduleData);
+    $site->setModules($moduleData, TRUE);
     $manager->updateDocument();
 
-    $this->get('session')->getFlashBag()->add('notice', 'Your site has had the core version updated! (' . $requestTime . ' secs)');
+    $this->get('session')->getFlashBag()->add('notice', 'This site has had it\'s core and module versions updated! This request took ' . $requestTime . ' secs.');
 
-    return $this->redirect($this->generateUrl('sites_edit', array('id' => $id)));
-  }*/
+    return $this->redirect($this->generateUrl('sites_show', array('id' => $id)));
+  }
 
   /*public function EditAction($id, Request $request) {
     /** @var SiteManager $manager *//*

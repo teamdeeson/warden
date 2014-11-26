@@ -26,13 +26,13 @@ sites_show:
 #    path:    /sites/{id}/edit
 #    defaults: { _controller: DeesonWardenBundle:Sites:edit }
 #
-#sites_delete:
-#    path:    /sites/{id}/delete
-#    defaults: { _controller: DeesonWardenBundle:Sites:delete }
-#
-#sites_update_refresh:
-#    path:    /sites/{id}/refresh
-#    defaults: { _controller: DeesonWardenBundle:Sites:refresh }
+sites_delete:
+    path:    /sites/{id}/delete
+    defaults: { _controller: DeesonWardenBundle:Sites:delete }
+
+sites_update_refresh:
+    path:    /sites/{id}/refresh
+    defaults: { _controller: DeesonWardenBundle:Sites:refresh }
 
 modules_list:
     path:    /modules
