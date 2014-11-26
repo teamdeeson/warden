@@ -16,6 +16,7 @@
                 <p><a href="{{ site.getUrl() }}" target="_blank">{{ site.getUrl() }}</a></p>
                 <p>Core Version: {{ site.getCoreVersion() }}</p>
                 <p><button class="btn btn-primary" onclick="location.href='{{ path('sites_update_refresh', {'id': site.getId() }) }}'">Refresh Site Data</button></p>
+                <p><button class="btn btn-danger" onclick="location.href='{{ path('sites_delete', {'id': site.getId() }) }}'">Delete</button></p>
             </div>
             <div class="box-body col-md-8">
                 {% if site.compareCoreVersion() %}{% else %}

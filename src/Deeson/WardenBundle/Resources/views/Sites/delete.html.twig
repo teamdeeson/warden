@@ -1,0 +1,16 @@
+{% extends 'DeesonWardenBundle::layout.html.twig' %}
+
+{% block title %}Delete site: {{ site.getName() }}{% endblock %}
+
+{% block page_title %}View site: {{ site.getName() }}{% endblock %}
+
+{% block content %}
+
+    <p>Are you sure you want to delete this site?</p>
+
+    {{ form(form) }}
+
+    <br />
+    <a href="{{ path('sites_show', {'id': site.getId() }) }}"><< Back</a>
+
+{% endblock %}

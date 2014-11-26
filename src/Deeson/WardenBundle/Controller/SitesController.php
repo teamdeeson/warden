@@ -82,16 +82,36 @@ class SitesController extends Controller {
    *
    * @param int $id
    *   The site id to delete.
+   * @param Request $request
    *
-   * @return \Symfony\Component\HttpFoundation\RedirectResponse
+   * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
    */
-  /*public function DeleteAction($id) {
-    /** @var SiteManager $manager *//*
+  public function DeleteAction($id, Request $request) {
+    /** @var SiteManager $manager */
     $manager = $this->get('site_manager');
-    $manager->deleteDocument($id);
+    $site = $manager->getDocumentById($id);
 
-    return $this->redirect($this->generateUrl('sites_list'));
-  }*/
+    $form = $this->createFormBuilder()
+            ->add('Delete', 'submit', array(
+              'attr' => array('class' => 'btn btn-danger')
+            ))
+            ->getForm();
+
+    $form->handleRequest($request);
+
+    if ($form->isValid()) {
+      $manager->deleteDocument($id);
+      $this->get('session')->getFlashBag()->add('notice', 'The site [' . $site->getName() . '] has been deleted.');
+
+      return $this->redirect($this->generateUrl('sites_list'));
+    }
+
+    $params = array(
+      'site' => $site,
+      'form' => $form->createView(),
+    );
+    return $this->render('DeesonWardenBundle:Sites:delete.html.twig', $params);
+  }
 
   /**
    * Updates the core & module versions for this site.
