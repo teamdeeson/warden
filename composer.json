@@ -1,8 +1,8 @@
 {
-    "name": "symfony/framework-standard-edition",
+    "name": "teamdeeson/warden",
     "license": "MIT",
     "type": "project",
-    "description": "The \"Symfony Standard Edition\" distribution",
+    "description": "Warden website monitoring tool",
     "autoload": {
         "psr-0": { "": "src/" }
     },
