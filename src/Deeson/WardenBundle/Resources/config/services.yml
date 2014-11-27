@@ -1,6 +1,3 @@
-parameters:
-    site_config_file: %kernel.root_dir%/../src/Deeson/WardenBundle/Resources/config/site_config.yml
-
 services:
     # cURL client for Buzz
     buzz.client.file_get_contents:
@@ -41,4 +38,8 @@ services:
 
     user_provider:
         class: Deeson\WardenBundle\Services\UserProviderService
-        arguments: [%site_config_file%]
+        arguments: [%kernel.root_dir%]
+
+    warden_setup:
+        class: Deeson\WardenBundle\Services\WardenSetupService
+        arguments: [%kernel.root_dir%]

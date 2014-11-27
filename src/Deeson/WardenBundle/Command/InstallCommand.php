@@ -8,7 +8,8 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
-use Symfony\Component\Yaml\Yaml;
+use Deeson\WardenBundle\Services\WardenSetupService;
+use Deeson\WardenBundle\Services\UserProviderService;
 
 class InstallCommand extends ContainerAwareCommand {
 
@@ -19,9 +20,14 @@ class InstallCommand extends ContainerAwareCommand {
   }
 
   protected function execute(InputInterface $input, OutputInterface $output) {
-    $configFile = $this->getContainer()->getParameter('site_config_file');
-    if (file_exists($configFile) && !$input->getOption('regenerate')) {
-      $output->writeln('Config file already exists.');
+    /** @var WardenSetupService $wardenSetupService */
+    $wardenSetupService = $this->getContainer()->get('warden_setup');
+
+    /** @var UserProviderService $userProviderService */
+    $userProviderService = $this->getContainer()->get('user_provider');
+
+    if ($userProviderService->isSetup() && !$input->getOption('regenerate')) {
+      $output->writeln('Warden username and password is already setup - check the README file if you need to regenerate.');
       return;
     }
 
@@ -41,44 +47,19 @@ class InstallCommand extends ContainerAwareCommand {
 
       return $value;
     });
+
     $passwordQuestion->setMaxAttempts(3);
     $passwordQuestion->setHidden(TRUE);
     $passwordQuestion->setHiddenFallback(FALSE);
 
     $password = $helper->ask($input, $output, $passwordQuestion);
 
-    $this->generateConfigFiles($configFile, $username, $password);
-    $output->writeln('Generated config file.');
-  }
+    $output->writeln(' - Setting up the password file ...');
+    $userProviderService->generateLoginFile($username, $password);
+    $output->writeln(' - Setting up the CSS file ...');
+    $wardenSetupService->generateCSSFile();
 
-  /**
-   * Generate the config files for the application.
-   *
-   * @param string $configFile
-   * @param string $username
-   * @param string $password
-   */
-  protected function generateConfigFiles($configFile, $username, $password) {
-    $configData = array(
-      'users' => array(
-        $username => array(
-          'pass' => hash('sha512', $password),
-          'roles' => array(
-            'ROLE_USER'
-          )
-        )
-      )
-    );
-    $siteConfig = Yaml::dump($configData);
-    file_put_contents($configFile, $siteConfig);
-
-    // Create custom css file
-    $appRoot = $this->getContainer()->get('kernel')->getRootDir();
-    $customCssFile = $appRoot . '/../src/Deeson/WardenBundle/Resources/public/css/warden-custom.css';
-
-    if (!file_exists($customCssFile)) {
-      file_put_contents($customCssFile, '');
-    }
+    $output->writeln('Warden installation complete.');
   }
 
 }

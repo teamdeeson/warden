@@ -9,18 +9,22 @@ use Symfony\Component\Yaml\Yaml;
 
 class UserProviderService implements UserProviderInterface {
 
-  protected $siteConfigFile = '';
+  protected $securityConfigurationFile = '';
 
-  public function __construct($siteConfigFile) {
-    $this->siteConfigFile = $siteConfigFile;
+  public function __construct($appDir) {
+    $this->securityConfigurationFile = $appDir . '/config/warden-security.yml';
   }
 
+  /**
+   * @param string $username
+   * @return UserInterface|void
+   */
   public function loadUserByUsername($username) {
-    if (!file_exists($this->siteConfigFile)) {
+    if (!file_exists($this->securityConfigurationFile)) {
       throw new UsernameNotFoundException(sprintf("Username %s not found", $username));
     }
 
-    $siteConfig = Yaml::parse(file_get_contents($this->siteConfigFile));
+    $siteConfig = Yaml::parse(file_get_contents($this->securityConfigurationFile));
     foreach ($siteConfig['users'] as $name => $userData) {
       if ($name == $username) {
         $roles = $userData['roles'];
@@ -39,6 +43,45 @@ class UserProviderService implements UserProviderInterface {
 
   public function supportsClass($class) {
     return $class === 'Symfony\Component\Security\Core\User\User';
+  }
+
+  /**
+   * Determine if setup has already been done
+   *
+   * @return bool
+   *   True if warden thinks it is already setup.
+   */
+  public function isSetup() {
+    return file_exists($this->securityConfigurationFile);
+  }
+
+  /**
+   * Generate the config files for the application.
+   *
+   * @param string $username
+   * @param string $password
+   *
+   * @throws \Exception
+   */
+  public function generateLoginFile($username, $password) {
+
+    if ($password == '') {
+      throw new \Exception('Password cannot be empty');
+    }
+
+    $configData = array(
+      'users' => array(
+        $username => array(
+          'pass' => hash('sha512', $password),
+          'roles' => array(
+            'ROLE_USER'
+          )
+        )
+      )
+    );
+
+    $siteConfig = Yaml::dump($configData);
+    file_put_contents($this->securityConfigurationFile, $siteConfig);
   }
 
 }

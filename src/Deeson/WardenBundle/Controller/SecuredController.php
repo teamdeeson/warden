@@ -2,6 +2,7 @@
 
 namespace Deeson\WardenBundle\Controller;
 
+use Deeson\WardenBundle\Services\UserProviderService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\SecurityContext;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -18,8 +19,10 @@ class SecuredController extends Controller {
    * @Template()
    */
   public function loginAction(Request $request) {
-    $configFile = $this->container->getParameter('site_config_file');
-    if (!file_exists($configFile)) {
+    /** @var UserProviderService $userProviderService */
+    $userProviderService = $this->container->get('user_provider');
+
+    if (!$userProviderService->isSetup()) {
       return $this->render('DeesonWardenBundle:Secured:install.html.twig');
     }
 
