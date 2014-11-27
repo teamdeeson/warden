@@ -34,7 +34,7 @@ class ScriptHandler {
 
       $password = '';
       while (strlen($password) < 8) {
-        $password = $output->ask('Please enter the admin password (minimum of 8 characters): ', '');
+        $password = $output->askAndHideAnswer('Please enter the admin password (minimum of 8 characters): ', '');
       }
 
       $output->write(' - Setting up the password file ...');
