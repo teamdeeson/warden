@@ -1,5 +1,5 @@
-Warden Installation
-===================
+Warden
+======
 
 Warden is for people managing multiple websites.  It provides a central
 dashboard for reviewing the status of every website, highlighting those
