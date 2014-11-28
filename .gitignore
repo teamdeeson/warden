@@ -13,7 +13,6 @@
 
 # Application
 app/config/warden-security.yml
-src/Deeson/WardenBundle/Resources/config/site_config.yml
 src/Deeson/WardenBundle/Resources/public/css/warden-custom.css
 
 # PHP Storm

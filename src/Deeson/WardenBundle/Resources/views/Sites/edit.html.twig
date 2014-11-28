@@ -10,14 +10,11 @@
 
     <p>URL: {{ site.getUrl() }}</p>
     <p>Core Version: {{ site.getCoreVersion() }} ({{ site.getLatestCoreVersion() }}, {% if site.compareCoreVersion() %}Y{% else %}N{% endif %})</p>
-    <p>System Status Token: {{ site.getSystemStatusToken() }}</p>
-    <p>System Status Encrypt Token: {{ site.getSystemStatusEncryptToken() }}</p>
+    <p>Warden Token: {{ site.getWardenToken() }}</p>
+    <p>Waren Encrypt Token: {{ site.getWardenEncryptToken() }}</p>
 
     {{ form(form) }}
 
-    <br />
-    <br />
-    <a href="{{ path('sites_update_refresh', {'id': site.getId() }) }}">Refresh site data</a>
     <br />
     <br />
 

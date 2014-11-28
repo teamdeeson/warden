@@ -6,11 +6,11 @@
 
 {% block content %}
 
-    <p>Are you sure you want to delete this site?</p>
+    <p>This will permanently remove this site and all its data from Warden.</p>
 
     {{ form(form) }}
 
     <br />
-    <a href="{{ path('sites_show', {'id': site.getId() }) }}"><< Back</a>
+    <a href="{{ path('sites_show', {'id': site.getId() }) }}">Cancel</a>
 
 {% endblock %}
