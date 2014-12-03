@@ -99,12 +99,12 @@ class DrupalUpdateCommand extends ContainerAwareCommand {
         /** @var SiteDocument $site */
         $output->writeln('Updating site: ' . $site->getId() . ' - ' . $site->getUrl());
 
-        if (!isset($moduleLatestVersion[$version])) {
-          $output->writeln("\tNo module version for version: " . $version);
-          continue;
-        }
         if ($site->getCoreReleaseVersion() != $version) {
           continue;
+        }
+
+        if (isset($moduleLatestVersion[$version])) {
+          $site->setModulesLatestVersion($moduleLatestVersion[$version]);
         }
 
         if ($updateNewSitesOnly) {
@@ -112,7 +112,6 @@ class DrupalUpdateCommand extends ContainerAwareCommand {
         }
 
         $site->setLatestCoreVersion($moduleVersions['version'], $moduleVersions['isSecurity']);
-        $site->setModulesLatestVersion($moduleLatestVersion[$version]);
         $siteManager->updateDocument();
       }
     }
