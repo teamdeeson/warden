@@ -2,6 +2,8 @@
 
 namespace Deeson\WardenBundle\Controller;
 
+use Deeson\WardenBundle\Document\SiteHaveIssueDocument;
+use Deeson\WardenBundle\Managers\SiteHaveIssueManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Deeson\WardenBundle\Managers\SiteManager;
@@ -106,6 +108,7 @@ class SitesController extends Controller {
 
     if ($form->isValid()) {
       $manager->deleteDocument($id);
+      $this->updateDashboard($site, TRUE);
       $this->get('session')->getFlashBag()->add('notice', 'The site [' . $site->getName() . '] has been deleted.');
 
       return $this->redirect($this->generateUrl('sites_list'));
@@ -155,6 +158,7 @@ class SitesController extends Controller {
       $statusService->setSite($site);
       $statusService->processRequest();
     } catch (\Exception $e) {
+      $this->updateDashboard($site);
       $this->get('session')->getFlashBag()->add('error', 'General Error - Unable to retrieve data from the site: ' . $e->getMessage());
       return $this->redirect($this->generateUrl('sites_show', array('id' => $id)));
     }
@@ -173,9 +177,75 @@ class SitesController extends Controller {
     $site->setModules($moduleData, TRUE);
     $manager->updateDocument();
 
+    $this->updateDashboard($site);
+
     $this->get('session')->getFlashBag()->add('notice', 'This site has had it\'s core and module versions updated! This request took ' . $requestTime . ' secs.');
 
     return $this->redirect($this->generateUrl('sites_show', array('id' => $id)));
+  }
+
+  /**
+   * Updates the dashboard following an update to a site.
+   *
+   * @param SiteDocument $site
+   *   The site object to update the dashboard for.
+   * @param bool $forceDelete
+   *   If true, then the site will just be deleted from the dashboard.
+   *
+   * @throws \Doctrine\ODM\MongoDB\MongoDBException
+   */
+  protected function updateDashboard(SiteDocument $site, $forceDelete = FALSE) {
+    /** @var SiteHaveIssueManager $siteHaveIssueManager */
+    $siteHaveIssueManager = $this->get('site_have_issue_manager');
+
+    /** @var SiteHaveIssueManager $issueSite */
+    $qb = $siteHaveIssueManager->createQueryBuilder();
+    $qb->field('siteId')->equals(new \MongoId($site->getId()));
+    $cursor = $qb->getQuery()->execute()->toArray();
+    $issueSite = array_pop($cursor);
+    if (empty($issueSite)) {
+      return;
+    }
+    $siteHaveIssueManager->deleteDocument($issueSite->getId());
+
+    if ($forceDelete) {
+      return;
+    }
+
+    $isModuleSecurityUpdate = FALSE;
+    $modulesNeedUpdate = array();
+    foreach ($site->getModules() as $siteModule) {
+      if (!isset($siteModule['latestVersion'])) {
+        continue;
+      }
+      if ($siteModule['version'] == $siteModule['latestVersion']) {
+        continue;
+      }
+      if (is_null($siteModule['version'])) {
+        continue;
+      }
+
+      if ($siteModule['isSecurity']) {
+        $isModuleSecurityUpdate = TRUE;
+      }
+
+      $modulesNeedUpdate[] = $siteModule;
+    }
+
+    if ($site->getLatestCoreVersion() == $site->getCoreVersion() && !$isModuleSecurityUpdate) {
+      return;
+    }
+
+    /** @var SiteHaveIssueDocument $needUpdate */
+    $needUpdate = $siteHaveIssueManager->makeNewItem();
+    $needUpdate->setName($site->getName());
+    $needUpdate->setSiteId($site->getId());
+    $needUpdate->setUrl($site->getUrl());
+    $needUpdate->setCoreVersion($site->getCoreVersion(), $site->getLatestCoreVersion(), $site->getIsSecurityCoreVersion());
+    $needUpdate->setAdditionalIssues($site->getAdditionalIssues());
+    $needUpdate->setModules($modulesNeedUpdate);
+
+    $siteHaveIssueManager->saveDocument($needUpdate);
   }
 
   /*public function EditAction($id, Request $request) {
