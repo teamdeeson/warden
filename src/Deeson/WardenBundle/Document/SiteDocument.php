@@ -76,20 +76,6 @@ class SiteDocument extends BaseDocument {
   }
 
   /**
-   * @return mixed
-   */
-  public function getWardenEncryptToken() {
-    return $this->wardenEncryptToken;
-  }
-
-  /**
-   * @param mixed $wardenEncryptToken
-   */
-  public function setWardenEncryptToken($wardenEncryptToken) {
-    $this->wardenEncryptToken = $wardenEncryptToken;
-  }
-
-  /**
    * @return string
    */
   public function getWardenToken() {

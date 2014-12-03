@@ -39,14 +39,16 @@ class SiteUpdateCommand extends ContainerAwareCommand {
       /** @var SiteDocument $site */
       $output->writeln('Updating site: ' . $site->getId() . ' - ' . $site->getUrl());
 
-      /** @var WardenRequestService $statusService */
       try {
-        $statusService = $this->getContainer()->get('site_status_service');
+        /** @var WardenRequestService $statusService */
+        $statusService = $this->getContainer()->get('warden_request_service');
         //$statusService->setConnectionTimeout(10);
+
         if ($site->getAuthUser() && $site->getAuthPass()) {
           $headers = array(sprintf('Authorization: Basic %s', base64_encode($site->getAuthUser() . ':' . $site->getAuthPass())));
           $statusService->setConnectionHeaders($headers);
         }
+
         $statusService->setSite($site);
         $statusService->processRequest();
       /*} catch (SiteStatusRequestException $e) {

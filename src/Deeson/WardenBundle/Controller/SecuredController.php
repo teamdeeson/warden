@@ -42,7 +42,7 @@ class SecuredController extends Controller {
   /**
    * @Route("/login_check", name="_security_check")
    */
-  public function securityCheckAction(Request $request) {
+  public function securityCheckAction() {
     // The security layer will intercept this request
   }
 

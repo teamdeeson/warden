@@ -8,7 +8,7 @@
     },
     "require": {
         "php": ">=5.3.3",
-        "ext-mcrypt": "*",
+        "ext-openssl": "*",
         "symfony/symfony": "2.5.*",
         "doctrine/orm": "~2.2,>=2.2.3",
         "twig/extensions": "1.0.*",

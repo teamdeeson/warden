@@ -16,9 +16,13 @@ services:
         class:     Buzz\Browser
         arguments: ['@buzz.client.curl']
 
-    site_status_service:
+    ssl_encryption:
+        class: Deeson\WardenBundle\Services\SSLEncryptionService
+        arguments: [%public_key_file%, %private_key_file%]
+
+    warden_request_service:
         class: Deeson\WardenBundle\Services\WardenRequestService
-        arguments: ['@buzz.browser']
+        arguments: [@ssl_encryption, '@buzz.browser']
 
     drupal_update_service:
         class: Deeson\WardenBundle\Services\DrupalUpdateRequestService

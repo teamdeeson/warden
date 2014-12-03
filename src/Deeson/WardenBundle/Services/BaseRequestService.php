@@ -80,7 +80,9 @@ abstract class BaseRequestService {
       // Don't verify SSL certificate.
       $this->buzz->getClient()->setVerifyPeer(FALSE);
 
-      $request = $this->buzz->get($this->getRequestUrl(), $this->connectionHeaders);
+      $url = $this->getRequestUrl();
+
+      $request = $this->buzz->get($url, $this->connectionHeaders);
       // @todo check request header, if not 200 throw exception.
       /*$headers = $request->getHeaders();
       if (trim($headers[0]) !== 'HTTP/1.0 200 OK') {

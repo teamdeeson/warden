@@ -41,6 +41,16 @@ class WardenRequestService extends BaseRequestService {
   protected $siteName = '';
 
   /**
+   * @var SSLEncryptionService
+   */
+  protected $sslEncryptionService;
+
+  public function __construct(SSLEncryptionService $sslEncryptionService, $buzz) {
+    parent::__construct($buzz);
+    $this->sslEncryptionService = $sslEncryptionService;
+  }
+
+  /**
    * @param \Deeson\WardenBundle\Document\SiteDocument $site
    */
   public function setSite($site) {
@@ -100,63 +110,29 @@ class WardenRequestService extends BaseRequestService {
     $requestDataObject = json_decode($requestData);
 
     // @todo add logging of response to a file.
-    if (!isset($requestDataObject->warden)) {
+    if (!isset($requestDataObject->data)) {
       throw new WardenRequestException("Invalid return response - possibly access denied");
     }
 
-    if (is_string($requestDataObject->warden) && $requestDataObject->warden == 'encrypted') {
-      $wardenData = $this->decrypt($requestDataObject->data, $this->site->getWardenEncryptToken());
-      $wardenDataObject = json_decode($wardenData);
-    }
-    else {
-      // This request isn't encrypted so don't do anything with it but generate an alert?
-      //throw new SiteStatusRequestException('Request is not encrypted!');
-      $wardenDataObject = $requestDataObject;
-    }
+    $wardenDataObject = $this->sslEncryptionService->decrypt($requestDataObject->data);
+    // @TODO check signature.
 
     // Get the core version from the site.
-    if (isset($wardenDataObject->warden->core->drupal)) {
-      $this->coreVersion = $wardenDataObject->warden->core->drupal->version;
+    if (isset($wardenDataObject->core->drupal)) {
+      $this->coreVersion = $wardenDataObject->core->drupal->version;
     }
     else {
-      // No core data available - probably on pressflow!
-      if (isset($requestDataObject->drupal_version)) {
-        $coreVersion = $requestDataObject->drupal_version;
-      }
-      else {
-        foreach ($wardenDataObject->warden->contrib as $module) {
-          $coreVersion = ModuleDocument::getMajorVersion((string) $module->version);
-          break;
-        }
+      foreach ($wardenDataObject->contrib as $module) {
+        $coreVersion = ModuleDocument::getMajorVersion((string) $module->version);
+        break;
       }
       $this->coreVersion = $coreVersion . '.x';
     }
 
     // Get the site name.
-    $this->siteName = $wardenDataObject->warden->site_name;
+    $this->siteName = $wardenDataObject->site_name;
 
     //$this->coreVersion = isset($wardenDataObject->warden->core->drupal) ? $wardenDataObject->warden->core->drupal->version : '0';
-    $this->moduleData = json_decode(json_encode($wardenDataObject->warden->contrib), TRUE);
+    $this->moduleData = json_decode(json_encode($wardenDataObject->contrib), TRUE);
   }
-
-  /**
-   * Decrypt an encrypted message from the warden module on the site.
-   *
-   * @param string $cipherTextBase64
-   * @param string $encryptToken
-   *
-   * @return string
-   */
-  protected function decrypt($cipherTextBase64, $encryptToken) {
-    $key = hash('SHA256', $encryptToken, TRUE);
-
-    $ivSize = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC);
-    $cipherTextDec = base64_decode($cipherTextBase64);
-    $ivDec = substr($cipherTextDec, 0, $ivSize);
-    $cipherTextDec = substr($cipherTextDec, $ivSize);
-    $plaintextDec = mcrypt_decrypt(MCRYPT_RIJNDAEL_128, $key, $cipherTextDec, MCRYPT_MODE_CBC, $ivDec);
-
-    return utf8_decode(trim($plaintextDec));
-  }
-
 }

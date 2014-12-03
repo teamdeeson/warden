@@ -7,6 +7,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Deeson\WardenBundle\Managers\SiteManager;
 use Deeson\WardenBundle\Services\WardenRequestService;
 use Deeson\WardenBundle\Document\SiteDocument;
+use Deeson\WardenBundle\Services\SSLEncryptionService;
+use Symfony\Component\HttpFoundation\Response;
 
 class SitesController extends Controller {
 
@@ -56,8 +58,12 @@ class SitesController extends Controller {
    */
   public function AddAction() {
     $request = Request::createFromGlobals();
-    $querySiteUrl = $request->query->get('siteUrl');
-    list($siteUrl, $wardenToken, $wardenEncryptToken) = explode('|', $querySiteUrl);
+    /** @var SSLEncryptionService $sslEncryptionService */
+    $sslEncryptionService = $this->container->get('ssl_encryption');
+
+    $querySiteUrl = $sslEncryptionService->decrypt($request->query->get('data'));
+
+    list($siteUrl, $wardenToken) = explode('|', $querySiteUrl);
 
     /** @var SiteManager $manager */
     $manager = $this->get('site_manager');
@@ -66,7 +72,6 @@ class SitesController extends Controller {
       $site = $manager->makeNewItem();
       $site->setUrl($siteUrl);
       $site->setWardenToken($wardenToken);
-      $site->setWardenEncryptToken($wardenEncryptToken);
       $manager->saveDocument($site);
       $this->get('session')->getFlashBag()->add('notice', 'Your site has now been registered.');
     }
@@ -114,6 +119,16 @@ class SitesController extends Controller {
   }
 
   /**
+   * @return Response
+   */
+  public function publickeyAction() {
+    /** @var SSLEncryptionService $sslEncryptionService */
+    $sslEncryptionService = $this->container->get('ssl_encryption');
+    $publicKey = base64_encode($sslEncryptionService->getPublicKey());
+    return new Response($publicKey, 200, array('Content-Type: text/plain'));
+  }
+
+  /**
    * Updates the core & module versions for this site.
    *
    * @param int $id
@@ -127,14 +142,16 @@ class SitesController extends Controller {
     /** @var SiteDocument $site */
     $site = $manager->getDocumentById($id);
 
-    /** @var WardenRequestService $statusService */
     try {
-      $statusService = $this->get('site_status_service');
+      /** @var WardenRequestService $statusService */
+      $statusService = $this->get('warden_request_service');
+
       //$statusService->setConnectionTimeout(10);
       if ($site->getAuthUser() && $site->getAuthPass()) {
         $headers = array(sprintf('Authorization: Basic %s', base64_encode($site->getAuthUser() . ':' . $site->getAuthPass())));
         $statusService->setConnectionHeaders($headers);
       }
+
       $statusService->setSite($site);
       $statusService->processRequest();
     } catch (\Exception $e) {

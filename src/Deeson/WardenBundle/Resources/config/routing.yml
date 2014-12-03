@@ -41,3 +41,7 @@ modules_list:
 modules_show:
     path:    /modules/{projectName}
     defaults: { _controller: DeesonWardenBundle:Modules:show }
+
+public_key:
+    path:    /public-key
+    defaults: { _controller: DeesonWardenBundle:Sites:publickey }

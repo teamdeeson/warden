@@ -17,3 +17,7 @@ src/Deeson/WardenBundle/Resources/public/css/warden-custom.css
 
 # PHP Storm
 .idea
+
+# Key files
+app/config/key.private
+app/config/key.public

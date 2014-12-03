@@ -23,7 +23,9 @@ security:
         add_site:
             pattern:  ^/sites/add
             security: false
-
+        public_key:
+            pattern:  ^/public-key
+            security: false
         secured_area:
             pattern:    ^/
             form_login:
