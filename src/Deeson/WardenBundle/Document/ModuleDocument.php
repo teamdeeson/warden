@@ -170,6 +170,23 @@ class ModuleDocument extends BaseDocument {
   }
 
   /**
+   * Updates a site within the module with its latest version information.
+   *
+   * @param $siteId
+   * @param $version
+   */
+  public function updateSite($siteId, $version) {
+    $moduleSites = $this->getSites();
+    foreach ($moduleSites as $key => $site) {
+      if ($site['id'] == $siteId) {
+        $moduleSites[$key]['version'] = $version;
+        break;
+      }
+    }
+    $this->setSites($moduleSites);
+  }
+
+  /**
    * Get the count of the number of sites.
    *
    * @return int
@@ -189,7 +206,7 @@ class ModuleDocument extends BaseDocument {
    * @param int $sitesTotalCount
    */
   public function setUsagePercentage($sitesTotalCount) {
-    $this->usagePercentage = number_format($this->getSiteCount() / $sitesTotalCount * 100, 2);
+    $this->usagePercentage = ($sitesTotalCount < 1) ? 0 : number_format($this->getSiteCount() / $sitesTotalCount * 100, 2);
   }
 
   /**
