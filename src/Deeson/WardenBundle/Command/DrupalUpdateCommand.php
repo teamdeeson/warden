@@ -76,6 +76,8 @@ class DrupalUpdateCommand extends ContainerAwareCommand {
       }
     }
 
+    $output->writeln("\n-----------\n");
+
     foreach ($majorVersions as $version) {
       // Update the core after the modules to update the versions of the modules
       // for a site.
@@ -87,13 +89,10 @@ class DrupalUpdateCommand extends ContainerAwareCommand {
         $output->writeln(' - Unable to update module version [' . $version . ']: ' . $e->getMessage());
       }
 
-      if ($updateNewSitesOnly) {
-        $sites = $siteManager->getDocumentsBy(array('isNew' => TRUE));
-      }
-      else {
-        $sites = $siteManager->getAllDocuments();
-      }
+      $newOnly = ($updateNewSitesOnly) ? array('isNew' => TRUE) : array();
+      $sites = $siteManager->getDocumentsBy(array_merge(array('coreVersion.release' => $version), $newOnly));
 
+      // Update the sites for the major version with the latest core & module version information.
       $moduleVersions = $this->moduleVersions[ModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED];
       foreach ($sites as $site) {
         /** @var SiteDocument $site */
@@ -105,10 +104,6 @@ class DrupalUpdateCommand extends ContainerAwareCommand {
 
         if (isset($moduleLatestVersion[$version])) {
           $site->setModulesLatestVersion($moduleLatestVersion[$version]);
-        }
-
-        if ($updateNewSitesOnly) {
-          $site->setIsNew(FALSE);
         }
 
         $site->setLatestCoreVersion($moduleVersions['version'], $moduleVersions['isSecurity']);
