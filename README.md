@@ -28,17 +28,19 @@ installed and PHP configured to use it.
 Once these dependencies have been installed you will need to follow these steps
 to get your application started:
 
-  * Run ./scripts/install.sh to install the Symfony application fully
-  * Run ./scripts/clear-cache.sh to clear the cache and rebuild the assets
+  * Run 'composer update' to install the Symfony application fully
+  * Run './scripts/clear-cache.sh' to clear the cache and rebuild the assets
 
 Once set up you can log in using the credentials that you entered during the 
 installation process.
 
 The installation parameters are:
 
-* locale   - the language code (e.g. en), currently only en is supported
-* secret   - a long random string used for security
-* protocol - how warden should be accessed, either https (recommended) or http (not secure)
+* locale            - the language code (e.g. en), currently only en is supported
+* secret            - a long random string used for security
+* protocol          - how warden should be accessed, either https (recommended) or http (not secure)
+* public_key_file   - the location of where the Warden app will create the public key
+* private_key_file  - the location of where the Warden app will create the private key
 
 Running a Development Webserver
 -------------------------------
