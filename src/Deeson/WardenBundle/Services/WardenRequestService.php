@@ -2,8 +2,11 @@
 
 namespace Deeson\WardenBundle\Services;
 
-use Deeson\WardenBundle\Document\ModuleDocument;
 use Deeson\WardenBundle\Exception\WardenRequestException;
+use Deeson\WardenBundle\Document\ModuleDocument;
+use Buzz\Browser;
+use Buzz\Exception\ClientException;
+use Symfony\Bridge\Monolog\Logger;
 
 class WardenRequestService extends BaseRequestService {
 
@@ -45,8 +48,12 @@ class WardenRequestService extends BaseRequestService {
    */
   protected $sslEncryptionService;
 
-  public function __construct(SSLEncryptionService $sslEncryptionService, $buzz) {
-    parent::__construct($buzz);
+  /**
+   * @param SSLEncryptionService $sslEncryptionService
+   * @param Browser $buzz
+   */
+  public function __construct(SSLEncryptionService $sslEncryptionService, Browser $buzz, Logger $logger) {
+    parent::__construct($buzz, $logger);
     $this->sslEncryptionService = $sslEncryptionService;
   }
 
@@ -90,7 +97,7 @@ class WardenRequestService extends BaseRequestService {
    * @return mixed
    */
   protected function getRequestUrl() {
-    return $this->site->getUrl() . '/admin/reports/warden/' . $this->site->getWardenToken();
+    return $this->site->getUrl() . '/admin/reports/warden';
   }
 
   /**
@@ -103,20 +110,11 @@ class WardenRequestService extends BaseRequestService {
   /**
    * Processes the data that has come back from the request.
    *
-   * @param $requestData
+   * @param $wardenDataObject
    *   Data that has come back from the request.
    */
-  protected function processRequestData($requestData) {
-    $requestDataObject = json_decode($requestData);
-
+  public function processRequestData($wardenDataObject) {
     // @todo add logging of response to a file.
-    if (!isset($requestDataObject->data)) {
-      throw new WardenRequestException("Invalid return response - possibly access denied");
-    }
-
-    $wardenDataObject = $this->sslEncryptionService->decrypt($requestDataObject->data);
-    // @TODO check signature.
-
     // Get the core version from the site.
     if (isset($wardenDataObject->core->drupal)) {
       $this->coreVersion = $wardenDataObject->core->drupal->version;
@@ -134,5 +132,37 @@ class WardenRequestService extends BaseRequestService {
 
     //$this->coreVersion = isset($wardenDataObject->warden->core->drupal) ? $wardenDataObject->warden->core->drupal->version : '0';
     $this->moduleData = json_decode(json_encode($wardenDataObject->contrib), TRUE);
+  }
+
+  /**
+   * {@InheritDoc}
+   */
+  public function processRequest() {
+    $this->setClientTimeout($this->connectionTimeout);
+
+    try {
+      $startTime = $this->getMicrotimeFloat();
+
+      // Don't verify SSL certificate.
+      // @TODO make this optional
+      $this->buzz->getClient()->setVerifyPeer(FALSE);
+
+      $url = $this->getRequestUrl();
+      $content = http_build_query(array('token' => $this->sslEncryptionService->generateRequestToken()));
+
+      /** @var \Buzz\Message\Response $response */
+      $response = $this->buzz->post($url, $this->connectionHeaders, $content);
+
+      if (!$response->isSuccessful()) {
+        $this->logger->addError("Unable to request data from {$url}\nStatus code: " . $response->getStatusCode() . "\nHeaders: " . print_r($response->getHeaders(), TRUE));
+        throw new WardenRequestException("Unable to request data from {$url}. Check log for details.");
+      }
+
+      $endTime = $this->getMicrotimeFloat();
+      $this->requestTime = $endTime - $startTime;
+    }
+    catch (ClientException $e) {
+      throw new \Exception($e->getMessage());
+    }
   }
 }
