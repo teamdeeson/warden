@@ -26,6 +26,9 @@ security:
         public_key:
             pattern:  ^/public-key
             security: false
+        sites_update:
+            pattern:  ^/site-update
+            security: false
         secured_area:
             pattern:    ^/
             form_login:
