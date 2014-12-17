@@ -94,7 +94,31 @@ class SSLEncryptionService {
   }
 
   /**
-   * Encrypt a message with the public key.
+   * Generate a trust token.
+   *
+   * @return string
+   *   A token string which can be validated.
+   *   It contains a timestamp which can be used for ensuring the request
+   *   is only valid for a short period of time at the remote end.
+   */
+  public function generateRequestToken() {
+    $time = time();
+    $result = openssl_sign($time, $signature, $this->privateKey);
+
+    if ($result === FALSE || empty($signature)) {
+      throw new SSLEncryptionException('Unable to generate a request token: ' . openssl_error_string());
+    }
+
+    $envelope = (object) array(
+      'time' => base64_encode($time),
+      'signature' => base64_encode($signature),
+    );
+
+    return base64_encode(json_encode($envelope));
+  }
+
+  /**
+   * Encrypt a message.
    *
    * @param mixed $data
    *   The data to encrypt.
@@ -107,16 +131,16 @@ class SSLEncryptionService {
   public function encrypt($data) {
     $plaintext = json_encode($data);
 
-    $public_key = $this->getPublicKey();
+    $publicKey = $this->getPublicKey();
 
-    $result = openssl_seal($plaintext, $message, $keys, array($public_key));
+    $result = openssl_seal($plaintext, $message, $keys, array($publicKey));
 
     if ($result === FALSE || empty($keys[0]) || empty($message) || $message === $plaintext) {
       throw new SSLEncryptionException('Unable to encrypt a message: ' . openssl_error_string());
     }
 
     $envelope = (object) array(
-      'key' => base64_encode($keys[0]),
+      'publicKey' => base64_encode($keys[0]),
       'message' => base64_encode($message),
     );
 
@@ -128,8 +152,8 @@ class SSLEncryptionService {
    *
    * @param string $cypherText
    *   The encrypted text
-   * @return string
-   *   The plain text
+   * @return mixed
+   *   The original data
    *
    * @throws SSLEncryptionException
    */
