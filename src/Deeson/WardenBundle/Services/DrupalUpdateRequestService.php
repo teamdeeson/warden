@@ -2,8 +2,8 @@
 
 namespace Deeson\WardenBundle\Services;
 
-
 use Deeson\WardenBundle\Document\ModuleDocument;
+use Buzz\Exception\ClientException;
 
 class DrupalUpdateRequestService extends BaseRequestService {
 
@@ -72,13 +72,47 @@ class DrupalUpdateRequestService extends BaseRequestService {
   }
 
   /**
+   * {@InheritDoc}
+   */
+  public function processRequest() {
+    $this->setClientTimeout($this->connectionTimeout);
+
+    try {
+      $startTime = $this->getMicrotimeFloat();
+
+      // Don't verify SSL certificate.
+      $this->buzz->getClient()->setVerifyPeer(FALSE);
+
+      $url = $this->getRequestUrl();
+
+      $request = $this->buzz->get($url, $this->connectionHeaders);
+      // @todo check request header, if not 200 throw exception.
+      /*$headers = $request->getHeaders();
+      if (trim($headers[0]) !== 'HTTP/1.0 200 OK') {
+        print 'invalid response'."\n";
+        print_r($headers);
+        //return;
+      }*/
+      $requestData = $request->getContent();
+
+      $endTime = $this->getMicrotimeFloat();
+      $this->requestTime = $endTime - $startTime;
+
+      $this->processRequestData($requestData);
+    }
+    catch (ClientException $e) {
+      throw new \Exception($e->getMessage());
+    }
+  }
+
+  /**
    * Processes the data that has come back from the request.
    *
    * @param $requestData
    *   Data that has come back from the request.
    * @throws \Exception
    */
-  protected function processRequestData($requestData) {
+  public function processRequestData($requestData) {
     $requestXmlObject = simplexml_load_string($requestData);
 
     if (!isset($requestXmlObject->title)) {
@@ -157,9 +191,9 @@ class DrupalUpdateRequestService extends BaseRequestService {
         $versionType = $projectStatus;
       }
       else {*/
-        $versionType = ($release->version_major == $recommendedMajorVersion) ?
-          ModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED :
-          ModuleDocument::MODULE_VERSION_TYPE_OTHER;
+      $versionType = ($release->version_major == $recommendedMajorVersion) ?
+        ModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED :
+        ModuleDocument::MODULE_VERSION_TYPE_OTHER;
       //}
 
       $versions[$versionType] = array(
