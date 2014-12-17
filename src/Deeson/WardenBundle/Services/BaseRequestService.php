@@ -2,12 +2,13 @@
 
 namespace Deeson\WardenBundle\Services;
 
-use Buzz\Exception\ClientException;
+use Buzz\Browser;
+use Symfony\Bridge\Monolog\Logger;
 
 abstract class BaseRequestService {
 
   /**
-   * @var \Buzz\Browser
+   * @var Browser
    */
   protected $buzz;
 
@@ -31,10 +32,18 @@ abstract class BaseRequestService {
   protected $requestTime = 0;
 
   /**
-   * Constructor
+   * @var Logger
    */
-  public function __construct($buzz) {
+  protected $logger;
+
+  /**
+   * Constructor
+   *
+   * @param Browser $buzz
+   */
+  public function __construct(Browser $buzz, Logger $logger) {
     $this->buzz = $buzz;
+    $this->logger = $logger;
   }
 
   /**
@@ -68,38 +77,13 @@ abstract class BaseRequestService {
    * This gets the URL from the method: getRequestUrl() and makes a call to
    * method: processRequestData() to process the request data.
    *
+   * @TODO Consider changing the name of this function, its getting latest data
+   * from a remote endpoint rather than processing a request.
+   *
    * @see getRequestUrl()
    * @see processRequestData()
    */
-  public function processRequest() {
-    $this->setClientTimeout($this->connectionTimeout);
-
-    try {
-      $startTime = $this->getMicrotimeFloat();
-
-      // Don't verify SSL certificate.
-      $this->buzz->getClient()->setVerifyPeer(FALSE);
-
-      $url = $this->getRequestUrl();
-
-      $request = $this->buzz->get($url, $this->connectionHeaders);
-      // @todo check request header, if not 200 throw exception.
-      /*$headers = $request->getHeaders();
-      if (trim($headers[0]) !== 'HTTP/1.0 200 OK') {
-        print 'invalid response'."\n";
-        print_r($headers);
-        //return;
-      }*/
-      $requestData = $request->getContent();
-
-      $endTime = $this->getMicrotimeFloat();
-      $this->requestTime = $endTime - $startTime;
-
-      $this->processRequestData($requestData);
-    } catch (ClientException $e) {
-      throw new \Exception($e->getMessage());
-    }
-  }
+  abstract public function processRequest();
 
   /**
    * Processes the data that has come back from the request.
@@ -107,7 +91,7 @@ abstract class BaseRequestService {
    * @param $requestData
    *   Data that has come back from the request.
    */
-  abstract protected function processRequestData($requestData);
+  abstract public function processRequestData($requestData);
 
   /**
    * @return mixed
