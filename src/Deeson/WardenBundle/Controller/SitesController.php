@@ -4,6 +4,7 @@ namespace Deeson\WardenBundle\Controller;
 
 use Deeson\WardenBundle\Document\SiteHaveIssueDocument;
 use Deeson\WardenBundle\Managers\SiteHaveIssueManager;
+use Symfony\Bridge\Monolog\Logger;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Deeson\WardenBundle\Managers\SiteManager;
@@ -157,17 +158,77 @@ class SitesController extends Controller {
 
       $statusService->setSite($site);
       $statusService->processRequest();
-    } catch (\Exception $e) {
+    }
+    catch (\Exception $e) {
       $this->updateDashboard($site);
-      $this->get('session')->getFlashBag()->add('error', 'General Error - Unable to retrieve data from the site: ' . $e->getMessage());
+      $this->get('session')
+        ->getFlashBag()
+        ->add('error', 'General Error - Unable to retrieve data from the site: ' . $e->getMessage());
       return $this->redirect($this->generateUrl('sites_show', array('id' => $id)));
+    }
+
+    $requestTime = $statusService->getRequestTime();
+    $this->get('session')->getFlashBag()->add('notice', 'This site has had it\'s core and module versions updated! This request took ' . $requestTime . ' secs.');
+    return $this->redirect($this->generateUrl('sites_show', array('id' => $id)));
+  }
+
+  /**
+   * Endpoint for a site to update itself
+   *
+   * @param Request $request
+   * @return Response
+   */
+  public function updateAction(Request $request) {
+    /** @var Logger $logger */
+    $logger = $this->get('logger');
+
+    /** @var SiteManager $manager */
+    $manager = $this->get('site_manager');
+
+    /** @var WardenRequestService $statusService */
+    $statusService = $this->get('warden_request_service');
+
+    /** @var SSLEncryptionService $sslEncryptionService */
+    $sslEncryptionService = $this->get('ssl_encryption');
+
+    try {
+      $wardenDataObject = $sslEncryptionService->decrypt($request->getContent());
+
+      if (!is_object($wardenDataObject) || !isset($wardenDataObject->core)) {
+        throw new \Exception("Invalid update request");
+      }
+
+      // Verify the request timestamp.
+      $time = time();
+      if (empty($wardenDataObject->time)
+        || ($wardenDataObject->time > ($time + 20))
+        || ($wardenDataObject->time < ($time - 20))) {
+        throw new \Exception("Bad timestamp - possible replay attack");
+      }
+
+      /** @var SiteDocument $site */
+      $site = $manager->getDocumentBy(array('url' => $wardenDataObject->url));
+
+      // Verify the key.
+      if (empty($wardenDataObject->key) || $wardenDataObject->key !== $site->getWardenToken()) {
+        throw new \Exception("Site token does not match one stored for this site. {$wardenDataObject->key} : {$site->getWardenToken()}");
+      }
+
+      $statusService->setSite($site);
+
+      $statusService->processRequestData($wardenDataObject);
+    }
+    catch (\Exception $e) {
+      $logger->addError($e->getMessage());
+      // @TODO - should we be catching here? That stuff underneath probably
+      // should not run if an error has occurred?
+      return new Response('Bad Request', 400, array('Content-Type: text/plain'));
     }
 
     $coreVersion = $statusService->getCoreVersion();
     $moduleData = $statusService->getModuleData();
     $siteName = $statusService->getSiteName();
     ksort($moduleData);
-    $requestTime = $statusService->getRequestTime();
 
     /** @var SiteManager $manager */
     $manager = $this->get('site_manager');
@@ -178,10 +239,7 @@ class SitesController extends Controller {
     $manager->updateDocument();
 
     $this->updateDashboard($site);
-
-    $this->get('session')->getFlashBag()->add('notice', 'This site has had it\'s core and module versions updated! This request took ' . $requestTime . ' secs.');
-
-    return $this->redirect($this->generateUrl('sites_show', array('id' => $id)));
+    return new Response('OK', 200, array('Content-Type: text/plain'));
   }
 
   /**
