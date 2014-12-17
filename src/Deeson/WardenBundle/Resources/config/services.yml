@@ -22,11 +22,11 @@ services:
 
     warden_request_service:
         class: Deeson\WardenBundle\Services\WardenRequestService
-        arguments: [@ssl_encryption, '@buzz.browser']
+        arguments: [@ssl_encryption, '@buzz.browser', @monolog.logger]
 
     drupal_update_service:
         class: Deeson\WardenBundle\Services\DrupalUpdateRequestService
-        arguments: ['@buzz.browser']
+        arguments: ['@buzz.browser', @monolog.logger]
 
     site_manager:
         class: Deeson\WardenBundle\Managers\SiteManager
