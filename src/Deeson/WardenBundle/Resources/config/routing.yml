@@ -45,3 +45,7 @@ modules_show:
 public_key:
     path:    /public-key
     defaults: { _controller: DeesonWardenBundle:Sites:publickey }
+
+sites_update:
+    path:    /site-update
+    defaults: { _controller: DeesonWardenBundle:Sites:update   }
