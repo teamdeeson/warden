@@ -49,20 +49,22 @@ class ModuleUpdateCommand extends ContainerAwareCommand {
         $moduleSites = $module->getSites();
 
         // Check if the site URL is already in the list for this module.
+        $alreadyExists = FALSE;
         if (is_array($moduleSites)) {
-          $alreadyExists = FALSE;
           foreach ($moduleSites as $moduleSite) {
             if ($moduleSite['url'] == $site->getUrl()) {
               $alreadyExists = TRUE;
               break;
             }
           }
-          if ($alreadyExists) {
-            continue;
-          }
         }
 
-        $module->addSite($site->getId(), $site->getUrl(), $siteModule['version']);
+        if ($alreadyExists) {
+          $module->updateSite($site->getId(), $siteModule['version']);
+        }
+        else {
+          $module->addSite($site->getId(), $site->getUrl(), $siteModule['version']);
+        }
         $moduleManager->updateDocument();
       }
     }

@@ -1,16 +1,29 @@
 #! /bin/bash
 
+function usage
+{
+    echo "usage: ../scripts/run-updates.sh [--new-only] | [-h]"
+    echo "--new-only (optional) use to ONLY update sites that have recently been registered."
+}
+
 NEWONLY=""
-if [[ -n "$1" ]]; then
-  # new flag is passed in but if the time is 04:00 then run full import instead.
-  TIME=$(date "+%k%M")
-  echo $TIME
-  if [[ $TIME -ge 400 ]] && [[ $TIME -lt 405 ]]; then
-    echo "Run full update"
-  else
-    echo "Run new only import"
-    NEWONLY='--import-new'
-  fi
+
+while [ "$1" != "" ]; do
+    case $1 in
+        --new-only )   NEWONLY="--import-new"
+                       ;;
+        -h | --help )  usage
+                       exit
+                       ;;
+    esac
+    shift
+done
+
+
+if [[ -n "$NEWONLY" ]]; then
+  echo "Only import newly registered sites....."
+else
+  echo "Run full update....."
 fi
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -21,8 +34,8 @@ echo "$OUTPUT"
 SIZE=${#OUTPUT}
 
 if [[ "$SIZE" -gt 0 ]]; then
-  "${DIR}/update-modules.sh" ${NEWONLY}
   "${DIR}/update-drupal.sh" ${NEWONLY}
+  "${DIR}/update-modules.sh" ${NEWONLY}
   "${DIR}/build-sites-have-issues.sh"
 else
   echo "Nothing to be updated"

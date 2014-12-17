@@ -4,6 +4,7 @@ namespace Deeson\WardenBundle\Command;
 
 use Deeson\WardenBundle\Document\ModuleDocument;
 use Deeson\WardenBundle\Document\SiteDocument;
+use Deeson\WardenBundle\Exception\DocumentNotFoundException;
 use Deeson\WardenBundle\Services\WardenRequestService;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
@@ -29,11 +30,17 @@ class SiteUpdateCommand extends ContainerAwareCommand {
     $moduleManager = $this->getContainer()->get('module_manager');
 
     if ($input->getOption('import-new')) {
-      $sites = $siteManager->getDocumentsBy(array('isNew' => TRUE));
+      try {
+        $sites = $siteManager->getDocumentsBy(array('isNew' => TRUE));
+      } catch (DocumentNotFoundException $e) {
+        $sites = array();
+      }
     }
     else {
       $sites = $siteManager->getAllDocuments();
     }
+
+    $updateNewSitesOnly = $input->getOption('import-new');
 
     foreach ($sites as $site) {
       /** @var SiteDocument $site */
@@ -89,7 +96,10 @@ class SiteUpdateCommand extends ContainerAwareCommand {
 
       $output->writeln('request time: ' . $requestTime);
 
-      //$site->setIsNew(FALSE);
+      if ($updateNewSitesOnly) {
+        $site->setIsNew(FALSE);
+      }
+
       $site->setName($siteName);
       $site->setCoreVersion($coreVersion);
       $site->setModules($moduleData, TRUE);
