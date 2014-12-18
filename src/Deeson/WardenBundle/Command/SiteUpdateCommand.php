@@ -26,8 +26,6 @@ class SiteUpdateCommand extends ContainerAwareCommand {
   protected function execute(InputInterface $input, OutputInterface $output) {
     /** @var SiteManager $siteManager */
     $siteManager = $this->getContainer()->get('site_manager');
-    /** @var ModuleManager $moduleManager */
-    $moduleManager = $this->getContainer()->get('module_manager');
 
     if ($input->getOption('import-new')) {
       try {
@@ -39,8 +37,6 @@ class SiteUpdateCommand extends ContainerAwareCommand {
     else {
       $sites = $siteManager->getAllDocuments();
     }
-
-    $updateNewSitesOnly = $input->getOption('import-new');
 
     foreach ($sites as $site) {
       /** @var SiteDocument $site */
@@ -58,55 +54,10 @@ class SiteUpdateCommand extends ContainerAwareCommand {
 
         $statusService->setSite($site);
         $statusService->processRequest();
-      /*} catch (SiteStatusRequestException $e) {
-        $output->writeln('Request Error: ' . $e->getMessage());
-        continue;*/
       } catch (\Exception $e) {
         $output->writeln('General Error - Unable to retrieve data from the site: ' . $e->getMessage());
         continue;
       }
-
-      $coreVersion = $statusService->getCoreVersion();
-      $moduleData = $statusService->getModuleData();
-      $siteName = $statusService->getSiteName();
-      ksort($moduleData);
-      $requestTime = $statusService->getRequestTime();
-      $additionalIssues = $statusService->getAdditionalIssues();
-
-      foreach ($moduleData as $name => $version) {
-        $majorVersion = ModuleDocument::getMajorVersion($version['version']);
-        $moduleExists = $moduleManager->nameExists($name, $majorVersion);
-
-        $moduleExistsCount = $moduleExists->count();
-        /** @var ModuleDocument $module */
-        $module = $moduleExists->getNext();
-
-        $moduleLatestVersion = ($moduleExistsCount > 0) ? $module->getLatestVersion() : array();
-        if ($moduleExistsCount > 0 && isset($moduleLatestVersion[$majorVersion])) {
-          continue;
-        }
-        if ($moduleExistsCount < 1) {
-          $module = $moduleManager->makeNewItem();
-        }
-
-        $module->setProjectName($name);
-        $module->setLatestVersion($majorVersion);
-        $moduleManager->saveDocument($module);
-      }
-
-      $output->writeln('request time: ' . $requestTime);
-
-      if ($updateNewSitesOnly) {
-        $site->setIsNew(FALSE);
-      }
-
-      $site->setName($siteName);
-      $site->setCoreVersion($coreVersion);
-      $site->setModules($moduleData, TRUE);
-      $site->setAdditionalIssues($additionalIssues);
-      $siteManager->updateDocument();
-
-      $output->writeln('Update version: ' . $coreVersion);
     }
   }
 
