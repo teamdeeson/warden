@@ -2,7 +2,9 @@
 
 namespace Deeson\WardenBundle\Controller;
 
+use Deeson\WardenBundle\Document\ModuleDocument;
 use Deeson\WardenBundle\Document\SiteHaveIssueDocument;
+use Deeson\WardenBundle\Managers\ModuleManager;
 use Deeson\WardenBundle\Managers\SiteHaveIssueManager;
 use Symfony\Bridge\Monolog\Logger;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -76,10 +78,14 @@ class SitesController extends Controller {
       $site->setUrl($siteUrl);
       $site->setWardenToken($wardenToken);
       $manager->saveDocument($site);
-      $this->get('session')->getFlashBag()->add('notice', 'Your site has now been registered.');
+      $this->get('session')
+        ->getFlashBag()
+        ->add('notice', 'Your site has now been registered.');
     }
     else {
-      $this->get('session')->getFlashBag()->add('error', 'Your site is already registered!');
+      $this->get('session')
+        ->getFlashBag()
+        ->add('error', 'Your site is already registered!');
     }
 
     return $this->redirect($this->generateUrl('sites_list'));
@@ -100,17 +106,19 @@ class SitesController extends Controller {
     $site = $manager->getDocumentById($id);
 
     $form = $this->createFormBuilder()
-            ->add('Delete', 'submit', array(
-              'attr' => array('class' => 'btn btn-danger')
-            ))
-            ->getForm();
+      ->add('Delete', 'submit', array(
+        'attr' => array('class' => 'btn btn-danger')
+      ))
+      ->getForm();
 
     $form->handleRequest($request);
 
     if ($form->isValid()) {
       $manager->deleteDocument($id);
       $this->updateDashboard($site, TRUE);
-      $this->get('session')->getFlashBag()->add('notice', 'The site [' . $site->getName() . '] has been deleted.');
+      $this->get('session')
+        ->getFlashBag()
+        ->add('notice', 'The site [' . $site->getName() . '] has been deleted.');
 
       return $this->redirect($this->generateUrl('sites_list'));
     }
@@ -158,8 +166,7 @@ class SitesController extends Controller {
 
       $statusService->setSite($site);
       $statusService->processRequest();
-    }
-    catch (\Exception $e) {
+    } catch (\Exception $e) {
       $this->updateDashboard($site);
       $this->get('session')
         ->getFlashBag()
@@ -168,7 +175,9 @@ class SitesController extends Controller {
     }
 
     $requestTime = $statusService->getRequestTime();
-    $this->get('session')->getFlashBag()->add('notice', 'This site has had it\'s core and module versions updated! This request took ' . $requestTime . ' secs.');
+    $this->get('session')
+      ->getFlashBag()
+      ->add('notice', 'This site has had it\'s core and module versions updated! This request took ' . $requestTime . ' secs.');
     return $this->redirect($this->generateUrl('sites_show', array('id' => $id)));
   }
 
@@ -182,8 +191,11 @@ class SitesController extends Controller {
     /** @var Logger $logger */
     $logger = $this->get('logger');
 
-    /** @var SiteManager $manager */
-    $manager = $this->get('site_manager');
+    /** @var SiteManager $siteManager */
+    $siteManager = $this->get('site_manager');
+
+    /** @var ModuleManager $moduleManager */
+    $moduleManager = $this->get('module_manager');
 
     /** @var WardenRequestService $statusService */
     $statusService = $this->get('warden_request_service');
@@ -202,44 +214,41 @@ class SitesController extends Controller {
       $time = time();
       if (empty($wardenDataObject->time)
         || ($wardenDataObject->time > ($time + 20))
-        || ($wardenDataObject->time < ($time - 20))) {
+        || ($wardenDataObject->time < ($time - 20))
+      ) {
         throw new \Exception("Bad timestamp - possible replay attack");
       }
 
       /** @var SiteDocument $site */
-      $site = $manager->getDocumentBy(array('url' => $wardenDataObject->url));
+      $site = $siteManager->getDocumentBy(array('url' => $wardenDataObject->url));
 
       // Verify the key.
       if (empty($wardenDataObject->key) || $wardenDataObject->key !== $site->getWardenToken()) {
         throw new \Exception("Site token does not match one stored for this site. {$wardenDataObject->key} : {$site->getWardenToken()}");
       }
 
-      $statusService->setSite($site);
+      // @todo change to an event "Site Requests Update"
 
+      $statusService->setSite($site);
       $statusService->processRequestData($wardenDataObject);
-    }
-    catch (\Exception $e) {
+      $moduleData = $statusService->getModuleData();
+      ksort($moduleData);
+      $moduleManager->addModules($moduleData);
+      $additionalIssues = $statusService->getAdditionalIssues();
+      $coreVersion = $statusService->getCoreVersion();
+      $siteName = $statusService->getSiteName();
+      $site->setName($siteName);
+      $site->setCoreVersion($coreVersion);
+      $site->setModules($moduleData, TRUE);
+      $site->setAdditionalIssues($additionalIssues);
+      $siteManager->updateDocument();
+
+      return new Response('OK', 200, array('Content-Type: text/plain'));
+
+    } catch (\Exception $e) {
       $logger->addError($e->getMessage());
-      // @TODO - should we be catching here? That stuff underneath probably
-      // should not run if an error has occurred?
       return new Response('Bad Request', 400, array('Content-Type: text/plain'));
     }
-
-    $coreVersion = $statusService->getCoreVersion();
-    $moduleData = $statusService->getModuleData();
-    $siteName = $statusService->getSiteName();
-    ksort($moduleData);
-
-    /** @var SiteManager $manager */
-    $manager = $this->get('site_manager');
-    $site->setIsNew(FALSE);
-    $site->setName($siteName);
-    $site->setCoreVersion($coreVersion);
-    $site->setModules($moduleData, TRUE);
-    $manager->updateDocument();
-
-    $this->updateDashboard($site);
-    return new Response('OK', 200, array('Content-Type: text/plain'));
   }
 
   /**
