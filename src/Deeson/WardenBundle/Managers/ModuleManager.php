@@ -12,10 +12,17 @@ class ModuleManager extends BaseManager {
    *
    * @param string $name
    *
-   * @return bool
+   * @return ModuleDocument
    */
-  public function nameExists($name) {
-    return $this->getRepository()->findBy(array('projectName' => $name));
+  public function getModule($name) {
+    $result = $this->getRepository()->findBy(array('projectName' => $name));
+    $moduleExistsCount = $result->count();
+
+    if ($moduleExistsCount == 0) {
+      return NULL;
+    }
+
+    return $result->getNext();
   }
 
   /**
@@ -29,7 +36,7 @@ class ModuleManager extends BaseManager {
   /**
    * Create a new empty type of the object.
    *
-   * @return Site
+   * @return ModuleDocument
    */
   public function makeNewItem() {
     return new ModuleDocument();
@@ -71,5 +78,28 @@ class ModuleManager extends BaseManager {
       $results[] = $result;
     }
     return $results;
+  }
+
+  /**
+   * Add a list of modules to Warden.
+   *
+   * @param array $moduleData
+   */
+  public function addModules(array $moduleData) {
+    foreach ($moduleData as $name => $version) {
+      $majorVersion = ModuleDocument::getMajorVersion($version['version']);
+      $module = $this->getModule($name);
+
+      if (empty($module)) {
+        $module = $this->makeNewItem();
+      }
+
+      if (!array_key_exists($majorVersion, $module->getLatestVersion())) {
+        $this->logger->addInfo('ModuleManager: Going to add details about module: ' . $name . ' version: ' . $version);
+        $module->setProjectName($name);
+        $module->setLatestVersion($majorVersion);
+        $this->saveDocument($module);
+      }
+    }
   }
 }
