@@ -30,15 +30,15 @@ services:
 
     site_manager:
         class: Deeson\WardenBundle\Managers\SiteManager
-        arguments: [@doctrine_mongodb]
+        arguments: [@doctrine_mongodb, @monolog.logger]
 
     module_manager:
         class: Deeson\WardenBundle\Managers\ModuleManager
-        arguments: [@doctrine_mongodb]
+        arguments: [@doctrine_mongodb, @monolog.logger]
 
     site_have_issue_manager:
         class: Deeson\WardenBundle\Managers\SiteHaveIssueManager
-        arguments: [@doctrine_mongodb]
+        arguments: [@doctrine_mongodb, @monolog.logger]
 
     user_provider:
         class: Deeson\WardenBundle\Services\UserProviderService
