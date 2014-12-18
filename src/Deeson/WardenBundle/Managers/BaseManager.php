@@ -5,6 +5,7 @@ namespace Deeson\WardenBundle\Managers;
 use Deeson\WardenBundle\Document\BaseDocument;
 use Deeson\WardenBundle\Exception\DocumentMethodNotFoundException;
 use Deeson\WardenBundle\Exception\DocumentNotFoundException;
+use Monolog\Logger;
 
 abstract class BaseManager {
 
@@ -19,13 +20,19 @@ abstract class BaseManager {
   protected $doctrineManager;
 
   /**
+   * @var Logger
+   */
+  protected $logger;
+
+  /**
    * @var string
    */
   protected $type;
 
-  public function __construct($doctrine) {
+  public function __construct($doctrine, Logger $logger) {
     $this->doctrine = $doctrine;
     $this->doctrineManager = $this->doctrine->getManager();
+    $this->logger = $logger;
   }
 
   /**
