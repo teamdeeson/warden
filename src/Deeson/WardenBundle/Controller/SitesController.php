@@ -190,6 +190,7 @@ class SitesController extends Controller {
    * @return Response
    */
   public function updateAction(Request $request) {
+    // @todo can these services be passed into the method?
     /** @var Logger $logger */
     $logger = $this->get('logger');
 
@@ -222,11 +223,13 @@ class SitesController extends Controller {
       $site = $siteManager->getDocumentBy(array('url' => $wardenDataObject->url));
 
       if (empty($site)) {
+        // @todo have a proper exception here.
         throw new \Exception("No such site registered with Warden: {$wardenDataObject->url}");
       }
 
       // Verify the key.
       if (empty($wardenDataObject->key) || $wardenDataObject->key !== $site->getWardenToken()) {
+        // @todo have a proper exception here.
         throw new \Exception("Site token does not match one stored for this site. {$wardenDataObject->key} : {$site->getWardenToken()}");
       }
 
@@ -236,7 +239,7 @@ class SitesController extends Controller {
       $siteManager->updateDocument();
 
       return new Response('OK', 200, array('Content-Type: text/plain'));
-
+      
     } catch (\Exception $e) {
       $logger->addError($e->getMessage());
       return new Response('Bad Request', 400, array('Content-Type: text/plain'));

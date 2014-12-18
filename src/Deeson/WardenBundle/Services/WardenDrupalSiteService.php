@@ -186,11 +186,11 @@ class WardenDrupalSiteService extends BaseRequestService {
 
     // @todo determine if this is a Drupal site.
 
+    $this->setSite($site);
+    $this->processRequestData($data);
     $siteName = $this->getSiteName();
     $this->logger->addInfo('This is the start of the Drupal Site Event for ' . $siteName);
 
-    $this->setSite($site);
-    $this->processRequestData($data);
     $moduleData = $this->getModuleData();
     $this->drupalModuleManager->addModules($moduleData);
     $additionalIssues = $this->getAdditionalIssues();
