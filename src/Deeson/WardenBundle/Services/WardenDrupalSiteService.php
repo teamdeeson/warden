@@ -2,13 +2,16 @@
 
 namespace Deeson\WardenBundle\Services;
 
+use Deeson\WardenBundle\Document\SiteDocument;
+use Deeson\WardenBundle\Event\SiteUpdateEvent;
 use Deeson\WardenBundle\Exception\WardenRequestException;
 use Deeson\WardenBundle\Document\ModuleDocument;
 use Buzz\Browser;
 use Buzz\Exception\ClientException;
+use Deeson\WardenBundle\Managers\ModuleManager;
 use Symfony\Bridge\Monolog\Logger;
 
-class WardenRequestService extends BaseRequestService {
+class WardenDrupalSiteService extends BaseRequestService {
 
   /**
    * Drupal core version.
@@ -49,18 +52,25 @@ class WardenRequestService extends BaseRequestService {
   protected $sslEncryptionService;
 
   /**
+   * @var ModuleManager
+   */
+  protected $drupalModuleManager;
+
+  /**
+   * @param ModuleManager $drupalModuleManager
    * @param SSLEncryptionService $sslEncryptionService
    * @param Browser $buzz
    */
-  public function __construct(SSLEncryptionService $sslEncryptionService, Browser $buzz, Logger $logger) {
+  public function __construct(ModuleManager $drupalModuleManager, SSLEncryptionService $sslEncryptionService, Browser $buzz, Logger $logger) {
     parent::__construct($buzz, $logger);
     $this->sslEncryptionService = $sslEncryptionService;
+    $this->drupalModuleManager = $drupalModuleManager;
   }
 
   /**
-   * @param \Deeson\WardenBundle\Document\SiteDocument $site
+   * @param SiteDocument $site
    */
-  public function setSite($site) {
+  public function setSite(SiteDocument $site) {
     $this->site = $site;
   }
 
@@ -79,6 +89,7 @@ class WardenRequestService extends BaseRequestService {
    * @return array
    */
   public function getModuleData() {
+    ksort($this->moduleData);
     return $this->moduleData;
   }
 
@@ -164,5 +175,30 @@ class WardenRequestService extends BaseRequestService {
     catch (ClientException $e) {
       throw new \Exception($e->getMessage());
     }
+  }
+
+  /**
+   * @param SiteUpdateEvent $event
+   */
+  public function onWardenSiteUpdate(SiteUpdateEvent $event) {
+    $site = $event->getSite();
+    $data = $event->getData();
+
+    // @todo determine if this is a Drupal site.
+
+    $siteName = $this->getSiteName();
+    $this->logger->addInfo('This is the start of the Drupal Site Event for ' . $siteName);
+
+    $this->setSite($site);
+    $this->processRequestData($data);
+    $moduleData = $this->getModuleData();
+    $this->drupalModuleManager->addModules($moduleData);
+    $additionalIssues = $this->getAdditionalIssues();
+    $coreVersion = $this->getCoreVersion();
+    $site->setName($siteName);
+    $site->setCoreVersion($coreVersion);
+    $site->setModules($moduleData, TRUE);
+    $site->setAdditionalIssues($additionalIssues);
+    $this->logger->addInfo('This is the end of the Drupal Site Event');
   }
 }

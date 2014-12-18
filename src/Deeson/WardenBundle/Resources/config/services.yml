@@ -20,20 +20,22 @@ services:
         class: Deeson\WardenBundle\Services\SSLEncryptionService
         arguments: [%public_key_file%, %private_key_file%]
 
-    warden_request_service:
-        class: Deeson\WardenBundle\Services\WardenRequestService
-        arguments: [@ssl_encryption, '@buzz.browser', @monolog.logger]
+    warden.drupal.module:
+        class: Deeson\WardenBundle\Managers\ModuleManager
+        arguments: [@doctrine_mongodb, @monolog.logger]
 
-    drupal_update_service:
+    warden.drupal.site:
+        class: Deeson\WardenBundle\Services\WardenDrupalSiteService
+        arguments: ['@warden.drupal.module', @ssl_encryption, '@buzz.browser', @monolog.logger]
+        tags:
+            - { name: kernel.event_listener, event: warden.site-update, method: onWardenSiteUpdate  }
+
+    warden.drupal.module_version:
         class: Deeson\WardenBundle\Services\DrupalUpdateRequestService
         arguments: ['@buzz.browser', @monolog.logger]
 
-    site_manager:
+    warden.site_manager:
         class: Deeson\WardenBundle\Managers\SiteManager
-        arguments: [@doctrine_mongodb, @monolog.logger]
-
-    module_manager:
-        class: Deeson\WardenBundle\Managers\ModuleManager
         arguments: [@doctrine_mongodb, @monolog.logger]
 
     site_have_issue_manager:

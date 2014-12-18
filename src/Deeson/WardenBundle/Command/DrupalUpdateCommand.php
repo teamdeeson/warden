@@ -38,12 +38,12 @@ class DrupalUpdateCommand extends ContainerAwareCommand {
 
   protected function execute(InputInterface $input, OutputInterface $output) {
     /** @var DrupalUpdateRequestService drupalUpdateService */
-    $this->drupalUpdateService = $this->getContainer()->get('drupal_update_service');
+    $this->drupalUpdateService = $this->getContainer()->get('warden.drupal.module_version');
 
     /** @var SiteManager $siteManager */
-    $siteManager = $this->getContainer()->get('site_manager');
+    $siteManager = $this->getContainer()->get('warden.site_manager');
     /** @var ModuleManager $moduleManager */
-    $moduleManager = $this->getContainer()->get('module_manager');
+    $moduleManager = $this->getContainer()->get('warden.drupal.module');
 
     $updateNewSitesOnly = ($input->getOption('import-new'));
 

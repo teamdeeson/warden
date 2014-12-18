@@ -2,15 +2,17 @@
 
 namespace Deeson\WardenBundle\Controller;
 
-use Deeson\WardenBundle\Document\ModuleDocument;
+use Deeson\WardenBundle\Event\SiteUpdateEvent;
 use Deeson\WardenBundle\Document\SiteHaveIssueDocument;
+use Deeson\WardenBundle\Event\WardenEvents;
 use Deeson\WardenBundle\Managers\ModuleManager;
 use Deeson\WardenBundle\Managers\SiteHaveIssueManager;
 use Symfony\Bridge\Monolog\Logger;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\Request;
 use Deeson\WardenBundle\Managers\SiteManager;
-use Deeson\WardenBundle\Services\WardenRequestService;
+use Deeson\WardenBundle\Services\WardenDrupalSiteService;
 use Deeson\WardenBundle\Document\SiteDocument;
 use Deeson\WardenBundle\Services\SSLEncryptionService;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,7 +26,7 @@ class SitesController extends Controller {
    */
   public function IndexAction() {
     /** @var SiteManager $manager */
-    $manager = $this->get('site_manager');
+    $manager = $this->get('warden.site_manager');
     $sites = $manager->getDocumentsBy(array(), array('url' => 'asc'));
 
     $params = array(
@@ -44,7 +46,7 @@ class SitesController extends Controller {
    */
   public function ShowAction($id) {
     /** @var SiteManager $manager */
-    $manager = $this->get('site_manager');
+    $manager = $this->get('warden.site_manager');
     $site = $manager->getDocumentById($id);
     $modulesRequiringUpdates = $site->getModulesRequiringUpdates();
 
@@ -71,7 +73,7 @@ class SitesController extends Controller {
     list($siteUrl, $wardenToken) = explode('|', $querySiteUrl);
 
     /** @var SiteManager $manager */
-    $manager = $this->get('site_manager');
+    $manager = $this->get('warden.site_manager');
 
     if (!$manager->urlExists($siteUrl)) {
       $site = $manager->makeNewItem();
@@ -102,7 +104,7 @@ class SitesController extends Controller {
    */
   public function DeleteAction($id, Request $request) {
     /** @var SiteManager $manager */
-    $manager = $this->get('site_manager');
+    $manager = $this->get('warden.site_manager');
     $site = $manager->getDocumentById($id);
 
     $form = $this->createFormBuilder()
@@ -150,13 +152,13 @@ class SitesController extends Controller {
    */
   public function RefreshAction($id) {
     /** @var SiteManager $manager */
-    $manager = $this->get('site_manager');
+    $manager = $this->get('warden.site_manager');
     /** @var SiteDocument $site */
     $site = $manager->getDocumentById($id);
 
     try {
-      /** @var WardenRequestService $statusService */
-      $statusService = $this->get('warden_request_service');
+      /** @var WardenDrupalSiteService $statusService */
+      $statusService = $this->get('warden.drupal.site');
 
       //$statusService->setConnectionTimeout(10);
       if ($site->getAuthUser() && $site->getAuthPass()) {
@@ -192,16 +194,13 @@ class SitesController extends Controller {
     $logger = $this->get('logger');
 
     /** @var SiteManager $siteManager */
-    $siteManager = $this->get('site_manager');
-
-    /** @var ModuleManager $moduleManager */
-    $moduleManager = $this->get('module_manager');
-
-    /** @var WardenRequestService $statusService */
-    $statusService = $this->get('warden_request_service');
+    $siteManager = $this->get('warden.site_manager');
 
     /** @var SSLEncryptionService $sslEncryptionService */
     $sslEncryptionService = $this->get('ssl_encryption');
+
+    /** @var EventDispatcher $dispatcher */
+    $dispatcher = $this->get('event_dispatcher');
 
     try {
       $wardenDataObject = $sslEncryptionService->decrypt($request->getContent());
@@ -222,25 +221,18 @@ class SitesController extends Controller {
       /** @var SiteDocument $site */
       $site = $siteManager->getDocumentBy(array('url' => $wardenDataObject->url));
 
+      if (empty($site)) {
+        throw new \Exception("No such site registered with Warden: {$wardenDataObject->url}");
+      }
+
       // Verify the key.
       if (empty($wardenDataObject->key) || $wardenDataObject->key !== $site->getWardenToken()) {
         throw new \Exception("Site token does not match one stored for this site. {$wardenDataObject->key} : {$site->getWardenToken()}");
       }
 
-      // @todo change to an event "Site Requests Update"
+      $event = new SiteUpdateEvent($site, $wardenDataObject);
+      $dispatcher->dispatch(WardenEvents::WARDEN_SITE_UPDATE, $event);
 
-      $statusService->setSite($site);
-      $statusService->processRequestData($wardenDataObject);
-      $moduleData = $statusService->getModuleData();
-      ksort($moduleData);
-      $moduleManager->addModules($moduleData);
-      $additionalIssues = $statusService->getAdditionalIssues();
-      $coreVersion = $statusService->getCoreVersion();
-      $siteName = $statusService->getSiteName();
-      $site->setName($siteName);
-      $site->setCoreVersion($coreVersion);
-      $site->setModules($moduleData, TRUE);
-      $site->setAdditionalIssues($additionalIssues);
       $siteManager->updateDocument();
 
       return new Response('OK', 200, array('Content-Type: text/plain'));
@@ -317,7 +309,7 @@ class SitesController extends Controller {
 
   /*public function EditAction($id, Request $request) {
     /** @var SiteManager $manager *//*
-    $manager = $this->get('site_manager');
+    $manager = $this->get('warden.site_manager');
     $site = $manager->getDocumentById($id);
 
     $form = $this->createFormBuilder($site)

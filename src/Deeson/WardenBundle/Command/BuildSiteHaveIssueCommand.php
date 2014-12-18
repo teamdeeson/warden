@@ -21,7 +21,7 @@ class BuildSiteHaveIssueCommand extends ContainerAwareCommand {
 
   protected function execute(InputInterface $input, OutputInterface $output) {
     /** @var SiteManager $siteManager */
-    $siteManager = $this->getContainer()->get('site_manager');
+    $siteManager = $this->getContainer()->get('warden.site_manager');
     /** @var SiteHaveIssueManager $siteHaveIssueManager */
     $siteHaveIssueManager = $this->getContainer()->get('site_have_issue_manager');
 

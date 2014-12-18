@@ -5,7 +5,7 @@ namespace Deeson\WardenBundle\Command;
 use Deeson\WardenBundle\Document\ModuleDocument;
 use Deeson\WardenBundle\Document\SiteDocument;
 use Deeson\WardenBundle\Exception\DocumentNotFoundException;
-use Deeson\WardenBundle\Services\WardenRequestService;
+use Deeson\WardenBundle\Services\WardenDrupalSiteService;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -25,7 +25,7 @@ class SiteUpdateCommand extends ContainerAwareCommand {
 
   protected function execute(InputInterface $input, OutputInterface $output) {
     /** @var SiteManager $siteManager */
-    $siteManager = $this->getContainer()->get('site_manager');
+    $siteManager = $this->getContainer()->get('warden.site_manager');
 
     if ($input->getOption('import-new')) {
       try {
@@ -43,8 +43,8 @@ class SiteUpdateCommand extends ContainerAwareCommand {
       $output->writeln('Updating site: ' . $site->getId() . ' - ' . $site->getUrl());
 
       try {
-        /** @var WardenRequestService $statusService */
-        $statusService = $this->getContainer()->get('warden_request_service');
+        /** @var WardenDrupalSiteService $statusService */
+        $statusService = $this->getContainer()->get('warden.drupal.site');
         //$statusService->setConnectionTimeout(10);
 
         if ($site->getAuthUser() && $site->getAuthPass()) {

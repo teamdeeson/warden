@@ -15,9 +15,10 @@ class ModulesController extends Controller {
    */
   public function IndexAction() {
     /** @var ModuleManager $manager */
-    $moduleManager = $this->get('module_manager');
+    $moduleManager = $this->get('warden.drupal.module');
+
     /** @var SiteManager $siteManager */
-    $siteManager = $this->get('site_manager');
+    $siteManager = $this->get('warden.site_manager');
 
     $sites = $siteManager->getAllDocuments();
     $sitesTotalCount = (is_array($sites)) ? 0 : $sites->count();

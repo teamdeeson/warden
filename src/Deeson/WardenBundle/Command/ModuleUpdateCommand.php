@@ -23,9 +23,9 @@ class ModuleUpdateCommand extends ContainerAwareCommand {
 
   protected function execute(InputInterface $input, OutputInterface $output) {
     /** @var SiteManager $siteManager */
-    $siteManager = $this->getContainer()->get('site_manager');
+    $siteManager = $this->getContainer()->get('warden.site_manager');
     /** @var ModuleManager $moduleManager */
-    $moduleManager = $this->getContainer()->get('module_manager');
+    $moduleManager = $this->getContainer()->get('warden.drupal.module');
 
     if ($input->getOption('import-new')) {
       $sites = $siteManager->getDocumentsBy(array('isNew' => TRUE));
