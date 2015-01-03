@@ -18,5 +18,17 @@ final class WardenEvents {
    *
    * @var string
    */
-  const WARDEN_SITE_UPDATE = 'warden.site-update';
+  const WARDEN_SITE_UPDATE = 'warden.site.update';
+
+  /**
+   * The warden.site-load event is thrown when Warden loads a site from the
+   * database.
+   */
+  const WARDEN_SITE_LOAD = 'warden.site.load';
+
+  /**
+   * The warden.site.refresh event is thrown when an administrator requests for
+   * a site to be updated.
+   */
+  const WARDEN_SITE_REFRESH = 'warden.site.refresh';
 }
