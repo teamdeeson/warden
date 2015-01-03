@@ -16,9 +16,13 @@ services:
         class:     Buzz\Browser
         arguments: ['@buzz.client.curl']
 
-    ssl_encryption:
+    warden.ssl_encryption:
         class: Deeson\WardenBundle\Services\SSLEncryptionService
         arguments: [%public_key_file%, %private_key_file%]
+
+    warden.site_connection:
+        class: Deeson\WardenBundle\Services\SiteConnectionService
+        arguments: ['@buzz.browser', '@warden.ssl_encryption', @monolog.logger]
 
     warden.drupal.module:
         class: Deeson\WardenBundle\Managers\ModuleManager
@@ -26,9 +30,10 @@ services:
 
     warden.drupal.site:
         class: Deeson\WardenBundle\Services\WardenDrupalSiteService
-        arguments: ['@warden.drupal.module', @ssl_encryption, '@buzz.browser', @monolog.logger]
+        arguments: ['@warden.drupal.module', '@warden.site_connection', @monolog.logger]
         tags:
-            - { name: kernel.event_listener, event: warden.site-update, method: onWardenSiteUpdate  }
+            - { name: kernel.event_listener, event: warden.site.update, method: onWardenSiteUpdate  }
+            - { name: kernel.event_listener, event: warden.site.refresh, method: onRefreshSiteRequest  }
 
     warden.drupal.module_version:
         class: Deeson\WardenBundle\Services\DrupalUpdateRequestService
