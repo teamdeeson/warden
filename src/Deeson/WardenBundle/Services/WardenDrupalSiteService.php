@@ -4,8 +4,10 @@ namespace Deeson\WardenBundle\Services;
 
 use Deeson\WardenBundle\Document\SiteDocument;
 use Deeson\WardenBundle\Event\SiteEvent;
+use Deeson\WardenBundle\Event\SiteShowEvent;
 use Deeson\WardenBundle\Event\SiteUpdateEvent;
 use Deeson\WardenBundle\Managers\ModuleManager;
+use Deeson\WardenBundle\Tabs\WardenTableSiteTab;
 use Symfony\Bridge\Monolog\Logger;
 
 class WardenDrupalSiteService {
@@ -92,7 +94,7 @@ class WardenDrupalSiteService {
     $this->logger->addInfo('This is the start of a Drupal Site Refresh Event: ' . $site->getUrl());
     $this->siteConnectionService->post($this->getSiteRequestUrl($site), $site);
     $event->addMessage('A Drupal site has been updated: ' . $site->getUrl());
-    $this->logger->addInfo('This is the start of a Drupal Site Refresh Event: ' . $site->getUrl());
+    $this->logger->addInfo('This is the end of a Drupal Site Refresh Event: ' . $site->getUrl());
   }
 
   /**
@@ -111,6 +113,26 @@ class WardenDrupalSiteService {
     $this->logger->addInfo('This is the start of a Drupal Site Update Event: ' . $event->getSite()->getUrl());
     $this->processUpdate($event->getSite(), $event->getData());
     $this->logger->addInfo('This is the end of a Drupal Site Update Event: ' . $event->getSite()->getUrl());
+  }
+
+  /**
+   * @param SiteShowEvent $event
+   */
+  public function onWardenSiteShow(SiteShowEvent $event) {
+    $site = $event->getSite();
+    if (!$this->isDrupalSite($site)) {
+      return;
+    }
+
+    $this->logger->addInfo('This is the start of a Drupal show site event: ' . $site->getUrl());
+
+    $event->addTemplate('DeesonWardenBundle:Drupal:moduleUpdates.html.twig');
+    $event->addParam('modulesRequiringUpdates', $site->getModulesRequiringUpdates());
+
+    $event->addTemplate('DeesonWardenBundle:Drupal:modules.html.twig');
+    $event->addParam('modules', $site->getModules());
+
+    $this->logger->addInfo('This is the end of a Drupal show site event: ' . $site->getUrl());
   }
 
   /**
