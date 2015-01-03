@@ -11,12 +11,7 @@ namespace Deeson\WardenBundle\Event;
 use Symfony\Component\EventDispatcher\Event;
 use Deeson\WardenBundle\Document\SiteDocument;
 
-class SiteUpdateEvent extends Event {
-
-  /**
-   * @var SiteDocument
-   */
-  protected $site;
+class SiteUpdateEvent extends SiteEvent {
 
   /**
    * @var
@@ -30,13 +25,6 @@ class SiteUpdateEvent extends Event {
   public function __construct(SiteDocument $site, $data) {
     $this->site = $site;
     $this->data = $data;
-  }
-
-  /**
-   * @return SiteDocument
-   */
-  public function getSite() {
-    return $this->site;
   }
 
   /**
