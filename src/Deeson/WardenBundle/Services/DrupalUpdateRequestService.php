@@ -5,7 +5,7 @@ namespace Deeson\WardenBundle\Services;
 use Deeson\WardenBundle\Document\ModuleDocument;
 use Buzz\Exception\ClientException;
 
-class DrupalUpdateRequestService extends BaseRequestService {
+class DrupalUpdateRequestService {
 
   /**
    * The name of the module.
@@ -212,6 +212,16 @@ class DrupalUpdateRequestService extends BaseRequestService {
    */
   protected function getRequestUrl() {
     return 'http://updates.drupal.org/release-history/' . $this->moduleRequestName . '/' . $this->moduleRequestVersion;
+  }
+
+  /**
+   * Get the microtime.
+   *
+   * @return float
+   */
+  protected function getMicrotimeFloat() {
+    list($usec, $sec) = explode(' ', microtime());
+    return ((float)$usec + (float)$sec);
   }
 
 }
