@@ -1,0 +1,23 @@
+<div class="box-header">
+    <h3 class="box-title">Modules requiring updates</h3>
+</div>
+<div class="box-body table-responsive no-padding">
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th width="60%">Name</th>
+            <th>Version</th>
+            <th>Latest Version</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for module in modulesRequiringUpdates %}
+            <tr class="{% if site.getModuleIsSecurity(module) %}alert alert-danger{% else %}{% if module.version != site.getModuleLatestVersion(module) %}alert alert-warning{% endif %}{% endif %}">
+                <td><a href="{{ path('modules_show', {'projectName': module.name }) }}">{{ module.name }}</a></td>
+                <td>{{ module.version }}</td>
+                <td>{{ site.getModuleLatestVersion(module) }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>

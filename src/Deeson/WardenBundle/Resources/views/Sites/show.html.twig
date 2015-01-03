@@ -21,24 +21,28 @@
                     </button>
                     <ul class="dropdown-menu" role="menu">
                         {#<li><a href="{{ path('sites_edit', {'id': site.getId() }) }}">Edit Site</a></li>#}
-                        {% if site.isNew() %}{% else %}<li><a href="{{ path('sites_update_refresh', {'id': site.getId() }) }}">Refresh Site Data</a></li>
-                        <li class="divider"></li>{% endif %}
+                        {% if site.isNew() %}{% else %}
+                            <li><a href="{{ path('sites_update_refresh', {'id': site.getId() }) }}">Refresh Site
+                                    Data</a></li>
+                            <li class="divider"></li>{% endif %}
                         <li><a href="{{ path('sites_delete', {'id': site.getId() }) }}">Delete Site</a></li>
                     </ul>
                 </div>
             </div>
             <div class="col-md-4">
                 <p><a href="{{ site.getUrl() }}" target="_blank">{{ site.getUrl() }}</a></p>
+
                 <p>Core Version: {{ site.getCoreVersion() }}</p>
             </div>
             <div class="box-body col-md-8">
                 {% if site.compareCoreVersion() == false %}
-                {% if site.getIsSecurityCoreVersion() %}
-                <div class="alert alert-danger alert-dismissable">
-                    <i class="fa fa-ban"></i>
-                    <b>Alert!</b> There is a core security update required for this site: {{ site.getLatestCoreVersion() }}
-                </div>
-                {% endif %}
+                    {% if site.getIsSecurityCoreVersion() %}
+                        <div class="alert alert-danger alert-dismissable">
+                            <i class="fa fa-ban"></i>
+                            <b>Alert!</b> There is a core security update required for this
+                            site: {{ site.getLatestCoreVersion() }}
+                        </div>
+                    {% endif %}
                 {% endif %}
                 {% if site.isNew() %}
                     <div class="alert alert-info alert-dismissable">
@@ -46,90 +50,18 @@
                         <b>Info:</b> This site is currently pending data retrieval.
                     </div>
                 {% endif %}
-                {#<div class="alert alert-danger alert-dismissable">
-                    <i class="fa fa-ban"></i>
-                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                    <b>Alert!</b> Danger alert preview. This alert is dismissable. A wonderful serenity has taken possession of my entire soul, like these sweet mornings of spring which I enjoy with my whole heart.
-                </div>
-                <div class="alert alert-info alert-dismissable">
-                    <i class="fa fa-info"></i>
-                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                    <b>Alert!</b> Info alert preview. This alert is dismissable.
-                </div>
-                <div class="alert alert-warning alert-dismissable">
-                    <i class="fa fa-warning"></i>
-                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                    <b>Alert!</b> Warning alert preview. This alert is dismissable.
-                </div>
-                <div class="alert alert-success alert-dismissable">
-                    <i class="fa fa-check"></i>
-                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                    <b>Alert!</b> Success alert preview. This alert is dismissable.
-                </div>#}
-            </div><!-- /.box-body -->
-        </div>
-    </div>
-
-    {% if modulesRequiringUpdates %}
-    <div class="row">
-        <div class="col-xs-12">
-            <div class="box">
-                <div class="box-header">
-                    <h3 class="box-title">Modules Requiring Updates</h3>
-                </div><!-- /.box-header -->
-                <div class="box-body table-responsive no-padding">
-                    <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th width="60%">Name</th>
-                            <th>Version</th>
-                            <th>Latest Version</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    {% for module in modulesRequiringUpdates %}
-                        <tr class="{% if site.getModuleIsSecurity(module) %}alert alert-danger{% else %}{% if module.version != site.getModuleLatestVersion(module) %}alert alert-warning{% endif %}{% endif %}">
-                            <td><a href="{{ path('modules_show', {'projectName': module.name }) }}">{{ module.name }}</a></td>
-                            <td>{{ module.version }}</td>
-                            <td>{{ site.getModuleLatestVersion(module) }}</td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                    </table>
-                </div>
             </div>
         </div>
     </div>
-    {% endif %}
 
-    {% if site.isNew() == false %}
-    <div class="row">
-        <div class="col-xs-12">
-            <div class="box">
-                <div class="box-header">
-                    <h3 class="box-title">Installed Modules</h3>
-                </div><!-- /.box-header -->
-                <div class="box-body table-responsive no-padding">
-                    <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th width="60%">Name</th>
-                            <th>Version</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    {% for module in site.getModules() %}
-                        <tr>
-                            <td><a href="{{ path('modules_show', {'projectName': module.name }) }}">{{ module.name }}</a></td>
-                            <td>{{ module.version }}</td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                    </table>
+    {% for template in templates %}
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box">
+                    {% include template %}
                 </div>
             </div>
         </div>
-    </div>
-    {% endif %}
+    {% endfor %}
 
 {% endblock %}
