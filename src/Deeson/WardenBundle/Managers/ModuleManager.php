@@ -88,6 +88,12 @@ class ModuleManager extends BaseManager {
   public function addModules(array $moduleData) {
     foreach ($moduleData as $name => $version) {
       $majorVersion = ModuleDocument::getMajorVersion($version['version']);
+
+      if (!is_string($majorVersion)) {
+        $this->logger->addWarning("Badly formed major version for module $name");
+        continue;
+      }
+
       $module = $this->getModule($name);
 
       if (empty($module)) {
