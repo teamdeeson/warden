@@ -163,6 +163,7 @@ class SiteDocument extends BaseDocument {
   /**
    * Get the site modules.
    *
+   * @todo move this into the DrupalSiteService
    * @return mixed
    */
   public function getModules() {
@@ -239,6 +240,7 @@ class SiteDocument extends BaseDocument {
   /**
    * Sets the latest versions of each of the modules for the site.
    *
+   * @todo move this into the DrupalSiteService
    * @param $moduleLatestVersions
    */
   public function setModulesLatestVersion($moduleLatestVersions) {
@@ -287,7 +289,7 @@ class SiteDocument extends BaseDocument {
 
   /**
    * Get a list of site modules that require updating.
-   *
+   * @todo move this into the DrupalSiteService
    * @return array
    */
   public function getModulesRequiringUpdates() {
