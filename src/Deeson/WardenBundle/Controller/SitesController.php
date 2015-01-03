@@ -2,6 +2,7 @@
 
 namespace Deeson\WardenBundle\Controller;
 
+use Deeson\WardenBundle\Event\SiteEvent;
 use Deeson\WardenBundle\Event\SiteUpdateEvent;
 use Deeson\WardenBundle\Document\SiteHaveIssueDocument;
 use Deeson\WardenBundle\Event\WardenEvents;
@@ -66,7 +67,7 @@ class SitesController extends Controller {
   public function AddAction() {
     $request = Request::createFromGlobals();
     /** @var SSLEncryptionService $sslEncryptionService */
-    $sslEncryptionService = $this->container->get('ssl_encryption');
+    $sslEncryptionService = $this->container->get('warden.ssl_encryption');
 
     $querySiteUrl = $sslEncryptionService->decrypt($request->query->get('data'));
 
@@ -137,7 +138,7 @@ class SitesController extends Controller {
    */
   public function publickeyAction() {
     /** @var SSLEncryptionService $sslEncryptionService */
-    $sslEncryptionService = $this->container->get('ssl_encryption');
+    $sslEncryptionService = $this->container->get('warden.ssl_encryption');
     $publicKey = base64_encode($sslEncryptionService->getPublicKey());
     return new Response($publicKey, 200, array('Content-Type: text/plain'));
   }
@@ -153,22 +154,19 @@ class SitesController extends Controller {
   public function RefreshAction($id) {
     /** @var SiteManager $manager */
     $manager = $this->get('warden.site_manager');
+
     /** @var SiteDocument $site */
     $site = $manager->getDocumentById($id);
 
+    /** @var EventDispatcher $dispatcher */
+    $dispatcher = $this->get('event_dispatcher');
+
+    $event = new SiteEvent($site);
+
     try {
-      /** @var WardenDrupalSiteService $statusService */
-      $statusService = $this->get('warden.drupal.site');
-
-      //$statusService->setConnectionTimeout(10);
-      if ($site->getAuthUser() && $site->getAuthPass()) {
-        $headers = array(sprintf('Authorization: Basic %s', base64_encode($site->getAuthUser() . ':' . $site->getAuthPass())));
-        $statusService->setConnectionHeaders($headers);
-      }
-
-      $statusService->setSite($site);
-      $statusService->processRequest();
-    } catch (\Exception $e) {
+      $dispatcher->dispatch(WardenEvents::WARDEN_SITE_REFRESH, $event);
+    }
+    catch (\Exception $e) {
       $this->updateDashboard($site);
       $this->get('session')
         ->getFlashBag()
@@ -176,10 +174,12 @@ class SitesController extends Controller {
       return $this->redirect($this->generateUrl('sites_show', array('id' => $id)));
     }
 
-    $requestTime = $statusService->getRequestTime();
-    $this->get('session')
-      ->getFlashBag()
-      ->add('notice', 'This site has had it\'s core and module versions updated! This request took ' . $requestTime . ' secs.');
+    if ($event->hasMessage()) {
+      $this->get('session')
+        ->getFlashBag()
+        ->add('notice', $event->getMessage());
+    }
+
     return $this->redirect($this->generateUrl('sites_show', array('id' => $id)));
   }
 
@@ -198,7 +198,7 @@ class SitesController extends Controller {
     $siteManager = $this->get('warden.site_manager');
 
     /** @var SSLEncryptionService $sslEncryptionService */
-    $sslEncryptionService = $this->get('ssl_encryption');
+    $sslEncryptionService = $this->get('warden.ssl_encryption');
 
     /** @var EventDispatcher $dispatcher */
     $dispatcher = $this->get('event_dispatcher');
@@ -239,7 +239,7 @@ class SitesController extends Controller {
       $siteManager->updateDocument();
 
       return new Response('OK', 200, array('Content-Type: text/plain'));
-      
+
     } catch (\Exception $e) {
       $logger->addError($e->getMessage());
       return new Response('Bad Request', 400, array('Content-Type: text/plain'));
