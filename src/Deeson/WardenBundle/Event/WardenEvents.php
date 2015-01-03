@@ -27,6 +27,12 @@ final class WardenEvents {
   const WARDEN_SITE_LOAD = 'warden.site.load';
 
   /**
+   * The warden.site.show event is thrown when Warden is trying to render the
+   * details of a site.
+   */
+  const WARDEN_SITE_SHOW = 'warden.site.show';
+
+  /**
    * The warden.site.refresh event is thrown when an administrator requests for
    * a site to be updated.
    */
