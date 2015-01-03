@@ -55,7 +55,7 @@ class ModulesController extends Controller {
    */
   public function ShowAction($projectName) {
     /** @var ModuleManager $manager */
-    $manager = $this->get('module_manager');
+    $manager = $this->get('warden.drupal.module');
     $module = $manager->getDocumentBy(array('projectName' => $projectName));
 
     $params = array(
