@@ -3,11 +3,13 @@
 namespace Deeson\WardenBundle\Controller;
 
 use Deeson\WardenBundle\Event\SiteEvent;
+use Deeson\WardenBundle\Event\SiteShowEvent;
 use Deeson\WardenBundle\Event\SiteUpdateEvent;
 use Deeson\WardenBundle\Document\SiteHaveIssueDocument;
 use Deeson\WardenBundle\Event\WardenEvents;
 use Deeson\WardenBundle\Managers\ModuleManager;
 use Deeson\WardenBundle\Managers\SiteHaveIssueManager;
+use Deeson\WardenBundle\Tabs\WardenTableSiteTab;
 use Symfony\Bridge\Monolog\Logger;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -48,13 +50,23 @@ class SitesController extends Controller {
   public function ShowAction($id) {
     /** @var SiteManager $manager */
     $manager = $this->get('warden.site_manager');
+
+    /** @var EventDispatcher $dispatcher */
+    $dispatcher = $this->get('event_dispatcher');
+
     $site = $manager->getDocumentById($id);
-    $modulesRequiringUpdates = $site->getModulesRequiringUpdates();
+
+    $event = new SiteShowEvent($site);
+    $dispatcher->dispatch(WardenEvents::WARDEN_SITE_SHOW, $event);
 
     $params = array(
       'site' => $site,
-      'modulesRequiringUpdates' => $modulesRequiringUpdates,
+      'templates' => $event->getTemplates(),
     );
+
+    foreach ($event->getParams() as $key => $value) {
+      $params[$key] = $value;
+    }
 
     return $this->render('DeesonWardenBundle:Sites:show.html.twig', $params);
   }
