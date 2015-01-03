@@ -34,6 +34,7 @@ services:
         tags:
             - { name: kernel.event_listener, event: warden.site.update, method: onWardenSiteUpdate  }
             - { name: kernel.event_listener, event: warden.site.refresh, method: onRefreshSiteRequest  }
+            - { name: kernel.event_listener, event: warden.site.show, method: onWardenSiteShow  }
 
     warden.drupal.module_version:
         class: Deeson\WardenBundle\Services\DrupalUpdateRequestService
