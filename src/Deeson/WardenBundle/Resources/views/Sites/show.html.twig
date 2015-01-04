@@ -8,6 +8,7 @@
 
     <div class="box">
         <br/>
+
         <div class="clearfix">
             <div class="col-md-10">
                 <h2 style="margin-top: 0;">Name: {{ site.getName() }}</h2>
@@ -31,19 +32,8 @@
             </div>
             <div class="col-md-4">
                 <p><a href="{{ site.getUrl() }}" target="_blank">{{ site.getUrl() }}</a></p>
-
-                <p>Core Version: {{ site.getCoreVersion() }}</p>
             </div>
             <div class="box-body col-md-8">
-                {% if site.compareCoreVersion() == false %}
-                    {% if site.getIsSecurityCoreVersion() %}
-                        <div class="alert alert-danger alert-dismissable">
-                            <i class="fa fa-ban"></i>
-                            <b>Alert!</b> There is a core security update required for this
-                            site: {{ site.getLatestCoreVersion() }}
-                        </div>
-                    {% endif %}
-                {% endif %}
                 {% if site.isNew() %}
                     <div class="alert alert-info alert-dismissable">
                         <i class="fa fa-info"></i>
@@ -57,9 +47,7 @@
     {% for template in templates %}
         <div class="row">
             <div class="col-xs-12">
-                <div class="box">
-                    {% include template %}
-                </div>
+                {% include template %}
             </div>
         </div>
     {% endfor %}
