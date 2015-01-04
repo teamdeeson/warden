@@ -7,7 +7,6 @@ use Deeson\WardenBundle\Event\SiteEvent;
 use Deeson\WardenBundle\Event\SiteShowEvent;
 use Deeson\WardenBundle\Event\SiteUpdateEvent;
 use Deeson\WardenBundle\Managers\ModuleManager;
-use Deeson\WardenBundle\Tabs\WardenTableSiteTab;
 use Symfony\Bridge\Monolog\Logger;
 
 class WardenDrupalSiteService {
@@ -110,9 +109,11 @@ class WardenDrupalSiteService {
       return;
     }
 
-    $this->logger->addInfo('This is the start of a Drupal Site Update Event: ' . $event->getSite()->getUrl());
+    $this->logger->addInfo('This is the start of a Drupal Site Update Event: ' . $event->getSite()
+        ->getUrl());
     $this->processUpdate($event->getSite(), $event->getData());
-    $this->logger->addInfo('This is the end of a Drupal Site Update Event: ' . $event->getSite()->getUrl());
+    $this->logger->addInfo('This is the end of a Drupal Site Update Event: ' . $event->getSite()
+        ->getUrl());
   }
 
   /**
@@ -125,6 +126,14 @@ class WardenDrupalSiteService {
     }
 
     $this->logger->addInfo('This is the start of a Drupal show site event: ' . $site->getUrl());
+
+    if (!$site->compareCoreVersion() && $site->getIsSecurityCoreVersion()) {
+      $event->addTemplate('DeesonWardenBundle:Drupal:securityUpdateRequired.html.twig');
+      $event->addParam('latestCoreVersion', $site->getLatestCoreVersion());
+    }
+
+    $event->addTemplate('DeesonWardenBundle:Drupal:siteDetails.html.twig');
+    $event->addParam('coreVersion', $site->getCoreVersion());
 
     $event->addTemplate('DeesonWardenBundle:Drupal:moduleUpdates.html.twig');
     $event->addParam('modulesRequiringUpdates', $site->getModulesRequiringUpdates());
