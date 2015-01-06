@@ -22,6 +22,7 @@ class BuildSiteHaveIssueCommand extends ContainerAwareCommand {
   protected function execute(InputInterface $input, OutputInterface $output) {
     /** @var SiteManager $siteManager */
     $siteManager = $this->getContainer()->get('warden.site_manager');
+
     /** @var SiteHaveIssueManager $siteHaveIssueManager */
     $siteHaveIssueManager = $this->getContainer()->get('site_have_issue_manager');
 
@@ -35,7 +36,6 @@ class BuildSiteHaveIssueCommand extends ContainerAwareCommand {
       // @todo site could be right core version, but module might have security issue.
 
       $output->writeln('Checking site: ' . $site->getId() . ' - ' . $site->getUrl());
-      //print "\t{$site->getLatestCoreVersion()} == {$site->getCoreVersion()}\n";
 
       $isModuleSecurityUpdate = FALSE;
       $modulesNeedUpdate = array();
