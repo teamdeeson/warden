@@ -29,8 +29,6 @@ class WardenCronCommand extends ContainerAwareCommand {
     /** @var EventDispatcher $dispatcher */
     $dispatcher = $this->getContainer()->get('event_dispatcher');
 
-    $dispatcher->dispatch(WardenEvents::WARDEN_CRON);
-
     if ($input->getOption('import-new')) {
       try {
         $sites = $siteManager->getDocumentsBy(array('isNew' => TRUE));
@@ -40,6 +38,10 @@ class WardenCronCommand extends ContainerAwareCommand {
     }
     else {
       $sites = $siteManager->getAllDocuments();
+    }
+
+    if (!empty($sites)) {
+      $dispatcher->dispatch(WardenEvents::WARDEN_CRON);
     }
 
     foreach ($sites as $site) {
