@@ -2,10 +2,12 @@
 
 namespace Deeson\WardenBundle\Services;
 
+use Deeson\WardenBundle\Document\ModuleDocument;
 use Deeson\WardenBundle\Document\SiteDocument;
 use Deeson\WardenBundle\Event\SiteEvent;
 use Deeson\WardenBundle\Event\SiteShowEvent;
 use Deeson\WardenBundle\Event\SiteUpdateEvent;
+use Deeson\WardenBundle\Exception\DocumentNotFoundException;
 use Deeson\WardenBundle\Managers\ModuleManager;
 use Symfony\Bridge\Monolog\Logger;
 
@@ -61,6 +63,44 @@ class WardenDrupalSiteService {
   }
 
   /**
+   * @param SiteDocument $site
+   */
+  protected function updateModules(SiteDocument $site) {
+    foreach ($site->getModules() as $siteModule) {
+      /** @var ModuleDocument $module */
+      try {
+        $module = $this->drupalModuleManager->findByProjectName($siteModule['name']);
+      } catch (DocumentNotFoundException $e) {
+        // @todo want to put output this onto the screen.
+        $this->logger->addWarning('Error getting module [' . $siteModule['name'] . ']: ' . $e->getMessage());
+        continue;
+      }
+
+      $moduleSites = $module->getSites();
+
+      // Check if the site URL is already in the list for this module.
+      $alreadyExists = FALSE;
+      if (is_array($moduleSites)) {
+        foreach ($moduleSites as $moduleSite) {
+          if ($moduleSite['url'] == $site->getUrl()) {
+            $alreadyExists = TRUE;
+            break;
+          }
+        }
+      }
+
+      if ($alreadyExists) {
+        $module->updateSite($site->getId(), $siteModule['version']);
+      }
+      else {
+        $module->addSite($site->getId(), $site->getUrl(), $siteModule['version']);
+      }
+
+      $this->drupalModuleManager->updateDocument();
+    }
+  }
+
+  /**
    * Processes the data that has come back from the request.
    *
    * @param SiteDocument $site
@@ -74,6 +114,7 @@ class WardenDrupalSiteService {
     $site->setName($data->site_name);
     $site->setCoreVersion($data->core->drupal->version);
     $site->setModules($moduleData, TRUE);
+    $this->updateModules($site);
   }
 
   /**
