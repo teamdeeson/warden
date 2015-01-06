@@ -228,7 +228,7 @@ class SitesController extends Controller {
         || ($wardenDataObject->time > ($time + 20))
         || ($wardenDataObject->time < ($time - 20))
       ) {
-        throw new \Exception("Bad timestamp - possible replay attack");
+        throw new \Exception("Update {$wardenDataObject->url} : Bad timestamp - possible replay attack");
       }
 
       /** @var SiteDocument $site */
@@ -236,13 +236,13 @@ class SitesController extends Controller {
 
       if (empty($site)) {
         // @todo have a proper exception here.
-        throw new \Exception("No such site registered with Warden: {$wardenDataObject->url}");
+        throw new \Exception("Update {$wardenDataObject->url} : No such site registered with Warden: {$wardenDataObject->url}");
       }
 
       // Verify the key.
       if (empty($wardenDataObject->key) || $wardenDataObject->key !== $site->getWardenToken()) {
         // @todo have a proper exception here.
-        throw new \Exception("Site token does not match one stored for this site. {$wardenDataObject->key} : {$site->getWardenToken()}");
+        throw new \Exception("Update {$wardenDataObject->url} : Site token does not match one stored for this site. {$wardenDataObject->key} : {$site->getWardenToken()}");
       }
 
       $event = new SiteUpdateEvent($site, $wardenDataObject);
