@@ -36,13 +36,15 @@ services:
             - { name: kernel.event_listener, event: warden.site.refresh, method: onRefreshSiteRequest  }
             - { name: kernel.event_listener, event: warden.site.show, method: onWardenSiteShow  }
 
-    warden.drupal.module_version:
-        class: Deeson\WardenBundle\Services\DrupalUpdateRequestService
-        arguments: ['@buzz.browser', @monolog.logger]
-
     warden.site_manager:
         class: Deeson\WardenBundle\Managers\SiteManager
         arguments: [@doctrine_mongodb, @monolog.logger]
+
+    warden.drupal.module_version:
+        class: Deeson\WardenBundle\Services\DrupalUpdateRequestService
+        arguments: ['@buzz.browser', '@warden.site_manager', '@warden.drupal.module', '@monolog.logger']
+        tags:
+            - { name: kernel.event_listener, event: warden.cron, method: onWardenCron  }
 
     site_have_issue_manager:
         class: Deeson\WardenBundle\Managers\SiteHaveIssueManager
