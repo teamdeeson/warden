@@ -228,7 +228,7 @@ class SitesController extends Controller {
         || ($wardenDataObject->time > ($time + 20))
         || ($wardenDataObject->time < ($time - 20))
       ) {
-        throw new \Exception("Update {$wardenDataObject->url} : Bad timestamp - possible replay attack");
+        throw new \Exception("Update {$wardenDataObject->url} : Bad timestamp - possible replay attack or the remote site server time is wrong.");
       }
 
       /** @var SiteDocument $site */
