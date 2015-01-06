@@ -2,8 +2,13 @@
 
 namespace Deeson\WardenBundle\Services;
 
+use Buzz\Browser;
 use Deeson\WardenBundle\Document\ModuleDocument;
 use Buzz\Exception\ClientException;
+use Deeson\WardenBundle\Document\SiteDocument;
+use Deeson\WardenBundle\Managers\ModuleManager;
+use Deeson\WardenBundle\Managers\SiteManager;
+use Monolog\Logger;
 
 class DrupalUpdateRequestService {
 
@@ -35,6 +40,39 @@ class DrupalUpdateRequestService {
    * @var string
    */
   protected $projectStatus;
+
+  /**
+   * @var ModuleManager
+   */
+  protected $drupalModuleManager;
+
+  /**
+   * @var Logger
+   */
+  protected $logger;
+
+  /**
+   * @var Browser
+   */
+  protected $buzz;
+
+  /**
+   * @var SiteManager
+   */
+  protected $siteManager;
+
+  /**
+   * @param Browser $buzz
+   * @param SiteManager $siteManager
+   * @param ModuleManager $drupalModuleManager
+   * @param Logger $logger
+   */
+  public function __construct(Browser $buzz, SiteManager $siteManager, ModuleManager $drupalModuleManager, Logger $logger) {
+    $this->drupalModuleManager = $drupalModuleManager;
+    $this->buzz = $buzz;
+    $this->logger = $logger;
+    $this->siteManager = $siteManager;
+  }
 
   /**
    * @param string $moduleVersion
@@ -75,7 +113,7 @@ class DrupalUpdateRequestService {
    * {@InheritDoc}
    */
   public function processRequest() {
-    $this->setClientTimeout($this->connectionTimeout);
+    $this->buzz->getClient()->setTimeout(30);
 
     try {
       $startTime = $this->getMicrotimeFloat();
@@ -85,7 +123,7 @@ class DrupalUpdateRequestService {
 
       $url = $this->getRequestUrl();
 
-      $request = $this->buzz->get($url, $this->connectionHeaders);
+      $request = $this->buzz->get($url);
       // @todo check request header, if not 200 throw exception.
       /*$headers = $request->getHeaders();
       if (trim($headers[0]) !== 'HTTP/1.0 200 OK') {
@@ -117,13 +155,7 @@ class DrupalUpdateRequestService {
 
     if (!isset($requestXmlObject->title)) {
       throw new \Exception('Error getting date for module: ' . $this->moduleRequestName);
-      //throw new DrupalUpdateException();
     }
-
-    //print_r($requestXmlObject);
-    //$title = $requestXmlObject->xpath('/project');
-    //$title = (string) $requestXmlObject->title;
-    //print_r($title);
 
     $projectStatus = (string) $requestXmlObject->project_status;
 
@@ -187,14 +219,9 @@ class DrupalUpdateRequestService {
         }
       }
 
-      /*if ($projectStatus != ModuleDocument::MODULE_PROJECT_STATUS_PUBLISHED) {
-        $versionType = $projectStatus;
-      }
-      else {*/
       $versionType = ($release->version_major == $recommendedMajorVersion) ?
         ModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED :
         ModuleDocument::MODULE_VERSION_TYPE_OTHER;
-      //}
 
       $versions[$versionType] = array(
         'version' => (string) $release->version,
@@ -222,6 +249,102 @@ class DrupalUpdateRequestService {
   protected function getMicrotimeFloat() {
     list($usec, $sec) = explode(' ', microtime());
     return ((float)$usec + (float)$sec);
+  }
+
+  /**
+   * Event: Triggered on cron runs.
+   */
+  public function onWardenCron() {
+    $this->updateAllDrupalModules(FALSE);
+  }
+
+  /**
+   * @param bool $updateNewSitesOnly
+   *   Only update modules on sites marked as new.
+   */
+  public function updateAllDrupalModules($updateNewSitesOnly = FALSE) {
+    $this->logger->addInfo('*** Starting Drupal Update Request Service ***');
+
+    $moduleLatestVersion = array();
+    $majorVersions = $this->siteManager->getAllMajorVersionReleases();
+
+    foreach ($majorVersions as $version) {
+      $modules = $this->drupalModuleManager->getAllByVersion($version);
+
+      /** @var ModuleDocument $module */
+      foreach ($modules as $module) {
+        $this->logger->addInfo('Updating - ' . $module->getProjectName() . ' for version: ' . $version);
+
+        try {
+          $this->processDrupalUpdateData($module->getProjectName(), $version);
+        } catch (\Exception $e) {
+          $this->logger->addWarning(' - Unable to update module version [' . $version . ']: ' . $e->getMessage());
+          continue;
+        }
+
+        $moduleVersions = $this->moduleVersions;
+        $moduleLatestVersion[$version][$module->getProjectName()] = $moduleVersions;
+
+        $module->setName($this->getModuleName());
+        $module->setIsNew(FALSE);
+        $module->setLatestVersion($version, $moduleVersions);
+        $module->setProjectStatus($this->projectStatus);
+        $this->drupalModuleManager->updateDocument();
+      }
+    }
+
+    foreach ($majorVersions as $version) {
+      // Update the core after the modules to update the versions of the modules
+      // for a site.
+      $this->logger->addInfo('Updating - Drupal version: ' . $version);
+
+      try {
+        $this->processDrupalUpdateData('drupal', $version);
+      } catch (\Exception $e) {
+        $this->logger->addWarning(' - Unable to update module version [' . $version . ']: ' . $e->getMessage());
+      }
+
+      $newOnly = ($updateNewSitesOnly) ? array('isNew' => TRUE) : array();
+      $sites = $this->siteManager->getDocumentsBy(array_merge(array('coreVersion.release' => $version), $newOnly));
+
+      // Update the sites for the major version with the latest core & module version information.
+      $moduleVersions = $this->moduleVersions[ModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED];
+
+      /** @var SiteDocument $site */
+      foreach ($sites as $site) {
+        $this->logger->addInfo('Updating site: ' . $site->getId() . ' - ' . $site->getUrl());
+
+        if ($site->getCoreReleaseVersion() != $version) {
+          continue;
+        }
+
+        if (isset($moduleLatestVersion[$version])) {
+          $site->setModulesLatestVersion($moduleLatestVersion[$version]);
+        }
+
+        $site->setLatestCoreVersion($moduleVersions['version'], $moduleVersions['isSecurity']);
+        $this->siteManager->updateDocument();
+      }
+    }
+
+    $this->logger->addInfo('*** FINISHED Drupal Update Request Service ***');
+  }
+
+  /**
+   * Gets the latest information on a module from Drupal.org.
+   *
+   * @param string $moduleName
+   * @param int $version
+   *
+   * @throws \Exception
+   */
+  protected function processDrupalUpdateData($moduleName, $version) {
+    $this->setModuleRequestName($moduleName);
+    $this->setModuleRequestVersion($version);
+    $this->processRequest();
+
+    $this->moduleVersions = $this->getModuleVersions();
+    $this->projectStatus = $this->getProjectStatus();
   }
 
 }
