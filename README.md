@@ -29,7 +29,7 @@ Once these dependencies have been installed you will need to follow these steps
 to get your application started:
 
   * Run 'composer update' to install the Symfony application fully
-  * Run './scripts/clear-cache.sh' to clear the cache and rebuild the assets
+  * Run './scripts/clear-cache.sh @dev' to clear the cache and rebuild the assets (for dev environment)
 
 Once set up you can log in using the credentials that you entered during the 
 installation process.
@@ -42,21 +42,6 @@ The installation parameters are:
 * public_key_file   - the location of where the Warden app will create the public key
 * private_key_file  - the location of where the Warden app will create the private key
 
-Running a Development Webserver
--------------------------------
-
-Symfony has a built in webserver that you can use when working on a development
-environment. To start this webserver run:
-
-    ./scripts/run-webserver.sh
-
-You can optionally pass in the environment that you would like to run (if no
-parameter is passed in then it default to dev).
-
-    ./scripts/run-webserver.sh [ENV]
-
-Where [ENV] is the environment that you are running on - @dev/ @test/ @prod
-
 How it Works
 ------------
 
@@ -67,14 +52,13 @@ by Warden.
 To update Warden with the latest information for the sites and from Drupal.org,
 the following script will need to be run:
 
-    ./scripts/run-updates.sh
+    ./scripts/cron.sh @ENV [new]
 
 This will perform a full update of all the sites registered with Warden.
+@ENV is the environment to run cron on (e.g. @dev, @test or @prod)
 
-There is an additional parameter that can be passed to this script which will only
+The new parameter can be passed to this script which will only tell Warden to only
 update the sites that are in a 'pending' state.
-
-    ./scripts/run-updates.sh new
 
 Cron Scripts
 ------------
@@ -85,16 +69,16 @@ and Drupal module information.
 In order to keep the site and module information up to date, you will need to setup
 a cron entry to run the script: 
 
-    ./scripts/run-updates.sh new
+    ./scripts/cron.sh @ENV new
 
-This will update any sites in a 'pending' state and update theire data within 
+This will update any sites in a 'pending' state and update their data within 
 Warden.
 
-It is recommended to run this as often as you can - ideally every 1 or 2 minutes,
+It is recommended to run this as often as you can - ideally every 5 minutes,
 as this should be a relatively short process to run as it is only importing new sites.
  
 The script currently, will check the time on the server and if it is between 04:00 
-and 04:05 the script will do a full update of all the site data and the Druapl
+and 04:05 the script will do a full update of all the site data and the Drupal
 module data.
 
 Security
