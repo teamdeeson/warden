@@ -37,4 +37,10 @@ final class WardenEvents {
    * a site to be updated.
    */
   const WARDEN_SITE_REFRESH = 'warden.site.refresh';
+
+  /**
+   * The warden.cron event is thrown to indicate that periodic cron tasks should
+   * now run.
+   */
+  const WARDEN_CRON = 'warden.cron';
 }
