@@ -101,7 +101,7 @@ class ModuleManager extends BaseManager {
       }
 
       if (!array_key_exists($majorVersion, $module->getLatestVersion())) {
-        $this->logger->addInfo('ModuleManager: Going to add details about module: ' . $name . ' version: ' . $version);
+        $this->logger->addInfo('ModuleManager: Going to add details about module: ' . $name . ' version: ' . $version['version']);
         $module->setProjectName($name);
         $module->setLatestVersion($majorVersion);
         $this->saveDocument($module);
