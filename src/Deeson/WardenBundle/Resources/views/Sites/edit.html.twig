@@ -1,24 +1,19 @@
 {% extends 'DeesonWardenBundle::layout.html.twig' %}
 
-{% block title %}Edit site: {{ site.getUrl() }}{% endblock %}
+{% block title %}Edit site: {{ site.getName() }}{% endblock %}
 
-{% block content_header '' %}
+{% block page_title %}Edit site: {{ site.getName() }}{% endblock %}
 
 {% block content %}
 
-    <p>Edit the details of site:</p>
-
-    <p>URL: {{ site.getUrl() }}</p>
     <p>Core Version: {{ site.getCoreVersion() }} ({{ site.getLatestCoreVersion() }}, {% if site.compareCoreVersion() %}Y{% else %}N{% endif %})</p>
-    <p>Warden Token: {{ site.getWardenToken() }}</p>
-    <p>Waren Encrypt Token: {{ site.getWardenEncryptToken() }}</p>
 
     {{ form(form) }}
 
     <br />
     <br />
 
-    <a href="{{ path('sites_list') }}"><< Back</a>
+    <a href="{{ path('sites_show', {'id': site.getId() }) }}"><< Back</a>
     {#<br />
     <br />
     <a href="{{ path('sites_delete', {'id': site.getId() }) }}">DELETE</a>#}

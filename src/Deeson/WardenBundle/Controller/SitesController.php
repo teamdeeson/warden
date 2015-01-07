@@ -322,16 +322,26 @@ class SitesController extends Controller {
     $siteHaveIssueManager->saveDocument($needUpdate);
   }
 
-  /*public function EditAction($id, Request $request) {
-    /** @var SiteManager $manager *//*
+  public function EditAction($id, Request $request) {
+    /** @var SiteManager $manager */
     $manager = $this->get('warden.site_manager');
     $site = $manager->getDocumentById($id);
 
     $form = $this->createFormBuilder($site)
-            //->add('systemStatusToken', 'text')
-            //->add('systemStatusEncryptToken', 'text')
-            ->add('authUser', 'text')
-            ->add('authPass', 'text')
+            ->add('name', 'text')
+            ->add('url', 'text', array(
+              'label' => 'URL'
+            ))
+            ->add('wardenToken', 'text')
+            ->add('authUser', 'text', array(
+              'required' => false
+            ))
+            ->add('authPass', 'text', array(
+              'required' => false
+            ))
+            ->add('isNew', 'checkbox', array(
+              'required' => false
+            ))
             ->add('save', 'submit')
             ->getForm();
 
@@ -340,6 +350,7 @@ class SitesController extends Controller {
     if ($form->isValid()) {
       $manager->updateDocument();
       $this->get('session')->getFlashBag()->add('notice', 'Site updated successfully');
+      return $this->redirect($this->generateUrl('sites_show', array('id' => $id)));
     }
 
     $params = array(
@@ -348,5 +359,5 @@ class SitesController extends Controller {
     );
 
     return $this->render('DeesonWardenBundle:Sites:edit.html.twig', $params);
-  }*/
+  }
 }

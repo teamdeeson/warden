@@ -22,10 +22,10 @@ sites_show:
     path:    /sites/{id}
     defaults: { _controller: DeesonWardenBundle:Sites:show }
 
-#sites_edit:
-#    path:    /sites/{id}/edit
-#    defaults: { _controller: DeesonWardenBundle:Sites:edit }
-#
+sites_edit:
+    path:    /sites/{id}/edit
+    defaults: { _controller: DeesonWardenBundle:Sites:edit }
+
 sites_delete:
     path:    /sites/{id}/delete
     defaults: { _controller: DeesonWardenBundle:Sites:delete }
