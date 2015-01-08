@@ -1,0 +1,17 @@
+{% extends 'DeesonWardenBundle::layout.html.twig' %}
+
+{% block title %}Warden Error - {{ exception.statusCode }}{% endblock %}
+
+{% block page_title %}Warden Error - {{ exception.statusCode }}{% endblock %}
+
+{% block content %}
+
+    <h1>Error {{ exception.statusCode }}</h1>
+
+    <div>
+       Ouch, something broke. Please send us an email and let us know
+        what you were doing when this error occurred. We will fix it as soon
+        as possible. Sorry for any inconvenience caused.
+    </div>
+
+{% endblock %}
