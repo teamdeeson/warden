@@ -1,4 +1,10 @@
 services:
+    kernel.listener.warden_exception_listener:
+        class: Deeson\WardenBundle\Listener\ExceptionListener
+        arguments: [@templating, @kernel]
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }
+
     # cURL client for Buzz
     buzz.client.file_get_contents:
         class:  Buzz\Client\FileGetContents

@@ -21,7 +21,7 @@
                         <span class="sr-only">Toggle Dropdown</span>
                     </button>
                     <ul class="dropdown-menu" role="menu">
-                        {#<li><a href="{{ path('sites_edit', {'id': site.getId() }) }}">Edit Site</a></li>#}
+                        <li><a href="{{ path('sites_edit', {'id': site.getId() }) }}">Edit Site</a></li>
                         {% if site.isNew() %}{% else %}
                             <li><a href="{{ path('sites_update_refresh', {'id': site.getId() }) }}">Refresh Site
                                     Data</a></li>
