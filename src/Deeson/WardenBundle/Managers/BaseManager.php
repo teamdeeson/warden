@@ -83,7 +83,7 @@ abstract class BaseManager {
   public function getDocumentsBy(array $criteria, array $orderBy = null, $limit = null, $offset = null) {
     $result = $this->getRepository()->findBy($criteria, $orderBy, $limit, $offset);
     if (empty($result)) {
-      throw new DocumentNotFoundException("No documents found for {$this->getType()}");
+      throw new DocumentNotFoundException("No documents found for {$this->getType()}, with criteria: " . print_r($criteria, true));
     }
     return $result;
   }
@@ -99,7 +99,7 @@ abstract class BaseManager {
   public function getDocumentBy(array $criteria) {
     $result = $this->getRepository()->findOneBy($criteria);
     if (empty($result)) {
-      throw new DocumentNotFoundException("No documents found for {$this->getType()}");
+      throw new DocumentNotFoundException("No documents found for {$this->getType()}, with criteria: " . print_r($criteria, true));
     }
     return $result;
   }
