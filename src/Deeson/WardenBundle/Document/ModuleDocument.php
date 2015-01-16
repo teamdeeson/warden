@@ -314,8 +314,8 @@ class ModuleDocument extends BaseDocument {
     }
 
     return array(
-      'major' => $matches[1],
-      'minor' => $matches[2],
+      'major' => (isset($matches[1])) ? $matches[1] : NULL,
+      'minor' => (isset($matches[2])) ? $matches[2] : NULL,
       'other' => (isset($matches[3])) ? $matches[3] : NULL,
       'extra' => (isset($matches[4])) ? $matches[4] : NULL,
     );
