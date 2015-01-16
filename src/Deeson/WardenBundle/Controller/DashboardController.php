@@ -11,7 +11,7 @@ class DashboardController extends Controller {
   public function indexAction() {
     /** @var SiteHaveIssueManager $siteHaveIssueManager */
     $siteHaveIssueManager = $this->get('site_have_issue_manager');
-    $sites = $siteHaveIssueManager->getAllDocuments();
+    $sites = $siteHaveIssueManager->getDocumentsBy(array(), array('name' => 'asc'));
 
     $params = array(
       'sites' => $sites,

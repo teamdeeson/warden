@@ -30,7 +30,7 @@ class SitesController extends Controller {
   public function IndexAction() {
     /** @var SiteManager $manager */
     $manager = $this->get('warden.site_manager');
-    $sites = $manager->getDocumentsBy(array(), array('url' => 'asc'));
+    $sites = $manager->getDocumentsBy(array(), array('name' => 'asc'));
 
     $params = array(
       'sites' => $sites,
@@ -342,7 +342,9 @@ class SitesController extends Controller {
             ->add('isNew', 'checkbox', array(
               'required' => false
             ))
-            ->add('save', 'submit')
+            ->add('save', 'submit', array(
+              'attr' => array('class' => 'btn btn-danger')
+            ))
             ->getForm();
 
     $form->handleRequest($request);
