@@ -314,11 +314,12 @@ class SiteDocument extends BaseDocument {
     ksort($modulesList);
 
     $modulesForUpdating = array();
-    foreach ($modulesList as $moduleSeverity) {
+    foreach ($modulesList as $severity => $moduleSeverity) {
       foreach ($moduleSeverity as $module) {
-        $modulesForUpdating[] = $module;
+        $modulesForUpdating[$severity.$module['name']] = $module;
       }
     }
+    ksort($modulesForUpdating);
 
     return $modulesForUpdating;
   }
