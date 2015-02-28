@@ -21,7 +21,7 @@
         "sensio/buzz-bundle":"@stable",
         "doctrine/mongodb-odm": "1.0.*@dev",
         "doctrine/mongodb-odm-bundle": "3.0.*@dev",
-        "doctrine/mongodb": "1.0.9"
+        "doctrine/mongodb": "1.0.11"
     },
     "scripts": {
         "post-install-cmd": [
