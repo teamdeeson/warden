@@ -323,6 +323,7 @@ class DrupalUpdateRequestService {
         }
 
         $site->setLatestCoreVersion($moduleVersions['version'], $moduleVersions['isSecurity']);
+        $site->setIsNew(FALSE);
         $this->siteManager->updateDocument();
       }
     }
