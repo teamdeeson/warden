@@ -154,7 +154,7 @@ class DrupalUpdateRequestService {
     $requestXmlObject = simplexml_load_string($requestData);
 
     if (!isset($requestXmlObject->title)) {
-      throw new \Exception('Error getting date for module: ' . $this->moduleRequestName);
+      throw new \Exception('Error getting data for module: ' . $this->moduleRequestName);
     }
 
     $projectStatus = (string) $requestXmlObject->project_status;
@@ -177,24 +177,24 @@ class DrupalUpdateRequestService {
           $latestReleaseVersions[$supportedMajorVersions[$key]][] = $release;
 
           // Get the version information for this release version.
-          $versionInfo = ModuleDocument::getVersionInfo($release->version);
+          //$versionInfo = ModuleDocument::getVersionInfo($release->version);
           // If the version info extra data is set than this must be a non-stable
           // release (alpha, beta, rc, bug etc).
-          if (!is_null($versionInfo['extra'])) {
+          /*if (!is_null($versionInfo['extra'])) {
             continue;
-          }
+          }*/
 
           $releaseVersions[] = $release;
           unset($supportedMajorVersions[$key]);
         }
-        if (count($supportedMajorVersions) < 1) {
+        /*if (count($supportedMajorVersions) < 1) {
           break;
-        }
+        }*/
       }
       else {
         // This isn't a supported version, so just return the latest release.
         $releaseVersions[] = $release;
-        break;
+        //break;
       }
     }
 
@@ -214,7 +214,6 @@ class DrupalUpdateRequestService {
         foreach ($release->terms->term as $term) {
           if (strtolower($term->value) == 'security update') {
             $isSecurityRelease = TRUE;
-            break;
           }
         }
       }
@@ -223,7 +222,7 @@ class DrupalUpdateRequestService {
         ModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED :
         ModuleDocument::MODULE_VERSION_TYPE_OTHER;
 
-      $versions[$versionType] = array(
+      $versions[$versionType][] = array(
         'version' => (string) $release->version,
         'isSecurity' => $isSecurityRelease,
       );
@@ -282,8 +281,20 @@ class DrupalUpdateRequestService {
           continue;
         }
 
-        $moduleVersions = $this->moduleVersions;
-        $moduleLatestVersion[$version][$module->getProjectName()] = $moduleVersions;
+        $drupalModuleVersions = $this->moduleVersions;
+        $moduleVersions = array();
+        // Get the recommended module version.
+        if (isset($drupalModuleVersions[ModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED])) {
+          $moduleRecommendedLatestVersion = $drupalModuleVersions[ModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED][0];
+          $moduleVersions[ModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED] = $moduleRecommendedLatestVersion;
+          $moduleLatestVersion[$version][$module->getProjectName()][ModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED] = $moduleRecommendedLatestVersion;
+        }
+        // Get the other module version.
+        if (isset($drupalModuleVersions[ModuleDocument::MODULE_VERSION_TYPE_OTHER])) {
+          $moduleOtherLatestVersion = $drupalModuleVersions[ModuleDocument::MODULE_VERSION_TYPE_OTHER][0];
+          $moduleVersions[ModuleDocument::MODULE_VERSION_TYPE_OTHER] = $moduleOtherLatestVersion;
+          $moduleLatestVersion[$version][$module->getProjectName()][ModuleDocument::MODULE_VERSION_TYPE_OTHER] = $moduleOtherLatestVersion;
+        }
 
         $module->setName($this->getModuleName());
         $module->setIsNew(FALSE);
@@ -322,7 +333,19 @@ class DrupalUpdateRequestService {
           $site->setModulesLatestVersion($moduleLatestVersion[$version]);
         }
 
-        $site->setLatestCoreVersion($moduleVersions['version'], $moduleVersions['isSecurity']);
+        $siteCurrentVersion = $site->getCoreVersion();
+        $needsSecurityUpdate = FALSE;
+        foreach ($moduleVersions as $moduleVersion) {
+          if ($moduleVersion['version'] < $siteCurrentVersion) {
+            break;
+          }
+
+          if ($moduleVersion['isSecurity']) {
+            $needsSecurityUpdate = TRUE;
+          }
+        }
+
+        $site->setLatestCoreVersion($moduleVersions[0]['version'], $needsSecurityUpdate);
         $site->setIsNew(FALSE);
         $this->siteManager->updateDocument();
       }

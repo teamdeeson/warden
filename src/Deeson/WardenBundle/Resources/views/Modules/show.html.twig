@@ -18,10 +18,11 @@
                     {% for version, moduleVersion in module.getLatestVersion() %}
                         {{ version }}:
                         {% if moduleVersion.recommended is defined %}
-                           Recommended - {{ moduleVersion.recommended.version }} {% if moduleVersion.recommended.isSecurity %}(Security Update){% endif %}
+                           recommended - {{ moduleVersion.recommended.version }} {% if moduleVersion.recommended.isSecurity %}(Security Update){% endif %}
                         {% endif %}
                         {% if moduleVersion.other is defined %}
-                            , also available - {{ moduleVersion.other.version }} {% if moduleVersion.other.isSecurity %}(Security Update){% endif %}
+                            {% if moduleVersion.recommended is defined %}, {% endif %}
+                            also available - {{ moduleVersion.other.version }} {% if moduleVersion.other.isSecurity %}(Security Update){% endif %}
                         {% endif %}
                         <br/>
                     {% endfor %}
