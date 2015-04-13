@@ -187,6 +187,23 @@ class ModuleDocument extends BaseDocument {
   }
 
   /**
+   * Remove the site from the modules.
+   *
+   * @param $siteId
+   */
+  public function removeSite($siteId) {
+    $moduleSites = $this->getSites();
+    foreach ($moduleSites as $key => $site) {
+      if ($site['id'] == $siteId) {
+        unset($moduleSites[$key]);
+        break;
+      }
+    }
+    $this->setSites($moduleSites);
+
+  }
+
+  /**
    * Get the count of the number of sites.
    *
    * @return int

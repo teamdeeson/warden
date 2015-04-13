@@ -2,11 +2,13 @@
 
 namespace Deeson\WardenBundle\Controller;
 
+use Deeson\WardenBundle\Document\ModuleDocument;
 use Deeson\WardenBundle\Event\SiteEvent;
 use Deeson\WardenBundle\Event\SiteShowEvent;
 use Deeson\WardenBundle\Event\SiteUpdateEvent;
 use Deeson\WardenBundle\Document\SiteHaveIssueDocument;
 use Deeson\WardenBundle\Event\WardenEvents;
+use Deeson\WardenBundle\Exception\DocumentNotFoundException;
 use Deeson\WardenBundle\Managers\ModuleManager;
 use Deeson\WardenBundle\Managers\SiteHaveIssueManager;
 use Deeson\WardenBundle\Tabs\WardenTableSiteTab;
@@ -130,6 +132,7 @@ class SitesController extends Controller {
 
     if ($form->isValid()) {
       $manager->deleteDocument($id);
+      $this->updateModules($site);
       $this->updateDashboard($site, TRUE);
       $this->get('session')
         ->getFlashBag()
@@ -255,6 +258,28 @@ class SitesController extends Controller {
     } catch (\Exception $e) {
       $logger->addError($e->getMessage());
       return new Response('Bad Request', 400, array('Content-Type: text/plain'));
+    }
+  }
+
+  /**
+   * Update the modules to remove the site.
+   *
+   * @param \Deeson\WardenBundle\Document\SiteDocument $site
+   */
+  protected function updateModules(SiteDocument $site) {
+    /** @var ModuleManager $moduleManager */
+    $moduleManager = $this->get('warden.drupal.module');
+
+    foreach ($site->getModules() as $siteModule) {
+      /** @var ModuleDocument $module */
+      try {
+        $module = $moduleManager->findByProjectName($siteModule['name']);
+      } catch (DocumentNotFoundException $e) {
+        print('Error getting module [' . $siteModule['name'] . ']: ' . $e->getMessage());
+        continue;
+      }
+      $module->removeSite($site->getId());
+      $moduleManager->updateDocument();
     }
   }
 
