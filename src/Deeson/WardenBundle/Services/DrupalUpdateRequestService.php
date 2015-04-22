@@ -312,7 +312,8 @@ class DrupalUpdateRequestService {
       try {
         $this->processDrupalUpdateData('drupal', $version);
       } catch (\Exception $e) {
-        $this->logger->addWarning(' - Unable to update module version [' . $version . ']: ' . $e->getMessage());
+        $this->logger->addWarning(' - Unable to update drupal version [' . $version . ']: ' . $e->getMessage());
+        continue;
       }
 
       $newOnly = ($updateNewSitesOnly) ? array('isNew' => TRUE) : array();
