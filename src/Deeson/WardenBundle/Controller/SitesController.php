@@ -6,11 +6,11 @@ use Deeson\WardenBundle\Document\ModuleDocument;
 use Deeson\WardenBundle\Event\SiteEvent;
 use Deeson\WardenBundle\Event\SiteShowEvent;
 use Deeson\WardenBundle\Event\SiteUpdateEvent;
-use Deeson\WardenBundle\Document\SiteHaveIssueDocument;
+use Deeson\WardenBundle\Document\DashboardDocument;
 use Deeson\WardenBundle\Event\WardenEvents;
 use Deeson\WardenBundle\Exception\DocumentNotFoundException;
 use Deeson\WardenBundle\Managers\ModuleManager;
-use Deeson\WardenBundle\Managers\SiteHaveIssueManager;
+use Deeson\WardenBundle\Managers\DashboardManager;
 use Deeson\WardenBundle\Tabs\WardenTableSiteTab;
 use Symfony\Bridge\Monolog\Logger;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -294,18 +294,18 @@ class SitesController extends Controller {
    * @throws \Doctrine\ODM\MongoDB\MongoDBException
    */
   protected function updateDashboard(SiteDocument $site, $forceDelete = FALSE) {
-    /** @var SiteHaveIssueManager $siteHaveIssueManager */
-    $siteHaveIssueManager = $this->get('site_have_issue_manager');
+    /** @var DashboardManager $dashboardManager */
+    $dashboardManager = $this->get('warden.dashboard_manager');
 
-    /** @var SiteHaveIssueManager $issueSite */
-    $qb = $siteHaveIssueManager->createQueryBuilder();
+    /** @var DashboardManager $dashboardSite */
+    $qb = $dashboardManager->createQueryBuilder();
     $qb->field('siteId')->equals(new \MongoId($site->getId()));
     $cursor = $qb->getQuery()->execute()->toArray();
-    $issueSite = array_pop($cursor);
-    if (empty($issueSite)) {
+    $dashboardSite = array_pop($cursor);
+    if (empty($dashboardSite)) {
       return;
     }
-    $siteHaveIssueManager->deleteDocument($issueSite->getId());
+    $dashboardManager->deleteDocument($dashboardSite->getId());
 
     if ($forceDelete) {
       return;
@@ -335,16 +335,16 @@ class SitesController extends Controller {
       return;
     }
 
-    /** @var SiteHaveIssueDocument $needUpdate */
-    $needUpdate = $siteHaveIssueManager->makeNewItem();
-    $needUpdate->setName($site->getName());
-    $needUpdate->setSiteId($site->getId());
-    $needUpdate->setUrl($site->getUrl());
-    $needUpdate->setCoreVersion($site->getCoreVersion(), $site->getLatestCoreVersion(), $site->getIsSecurityCoreVersion());
-    $needUpdate->setAdditionalIssues($site->getAdditionalIssues());
-    $needUpdate->setModules($modulesNeedUpdate);
+    /** @var DashboardDocument $dashboard */
+    $dashboard = $dashboardManager->makeNewItem();
+    $dashboard->setName($site->getName());
+    $dashboard->setSiteId($site->getId());
+    $dashboard->setUrl($site->getUrl());
+    $dashboard->setCoreVersion($site->getCoreVersion(), $site->getLatestCoreVersion(), $site->getIsSecurityCoreVersion());
+    $dashboard->setAdditionalIssues($site->getAdditionalIssues());
+    $dashboard->setModules($modulesNeedUpdate);
 
-    $siteHaveIssueManager->saveDocument($needUpdate);
+    $dashboardManager->saveDocument($dashboard);
   }
 
   public function EditAction($id, Request $request) {

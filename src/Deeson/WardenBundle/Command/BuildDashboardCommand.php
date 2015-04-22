@@ -3,31 +3,31 @@
 namespace Deeson\WardenBundle\Command;
 
 use Deeson\WardenBundle\Document\SiteDocument;
-use Deeson\WardenBundle\Document\SiteHaveIssueDocument;
+use Deeson\WardenBundle\Document\DashboardDocument;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Deeson\WardenBundle\Managers\SiteManager;
-use Deeson\WardenBundle\Managers\SiteHaveIssueManager;
+use Deeson\WardenBundle\Managers\DashboardManager;
 
-class BuildSiteHaveIssueCommand extends ContainerAwareCommand {
+class BuildDashboardCommand extends ContainerAwareCommand {
 
   protected function configure() {
-    $this->setName('deeson:warden:build-sites-have-issues')
-      ->setDescription('Builds list of sites that have issues reported.');
+    $this->setName('deeson:warden:build-dashboard')
+      ->setDescription('Builds list of sites that need to be displayed on the dashboard.');
   }
 
   protected function execute(InputInterface $input, OutputInterface $output) {
     /** @var SiteManager $siteManager */
     $siteManager = $this->getContainer()->get('warden.site_manager');
 
-    /** @var SiteHaveIssueManager $siteHaveIssueManager */
-    $siteHaveIssueManager = $this->getContainer()->get('site_have_issue_manager');
+    /** @var DashboardManager $dashboardManager */
+    $dashboardManager = $this->getContainer()->get('warden.dashboard_manager');
 
     // Remove all 'have_issue' documents.
-    $siteHaveIssueManager->deleteAll();
+    $dashboardManager->deleteAll();
 
     // Rebuild the new ones.
     $sites = $siteManager->getDocumentsBy(array('isNew' => FALSE));
@@ -63,8 +63,8 @@ class BuildSiteHaveIssueCommand extends ContainerAwareCommand {
 
       $output->writeln('Adding site to dashboard: ' . $site->getId() . ' - ' . $site->getUrl());
 
-      /** @var SiteHaveIssueDocument $needUpdate */
-      $needUpdate = $siteHaveIssueManager->makeNewItem();
+      /** @var DashboardDocument $needUpdate */
+      $needUpdate = $dashboardManager->makeNewItem();
       $needUpdate->setName($site->getName());
       $needUpdate->setSiteId($site->getId());
       $needUpdate->setUrl($site->getUrl());
@@ -72,7 +72,7 @@ class BuildSiteHaveIssueCommand extends ContainerAwareCommand {
       $needUpdate->setAdditionalIssues($site->getAdditionalIssues());
       $needUpdate->setModules($modulesNeedUpdate);
 
-      $siteHaveIssueManager->saveDocument($needUpdate);
+      $dashboardManager->saveDocument($needUpdate);
     }
   }
 

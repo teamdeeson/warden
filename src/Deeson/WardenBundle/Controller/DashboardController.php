@@ -2,16 +2,16 @@
 
 namespace Deeson\WardenBundle\Controller;
 
-use Deeson\WardenBundle\Managers\SiteHaveIssueManager;
+use Deeson\WardenBundle\Managers\DashboardManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 
 class DashboardController extends Controller {
 
   public function indexAction() {
-    /** @var SiteHaveIssueManager $siteHaveIssueManager */
-    $siteHaveIssueManager = $this->get('site_have_issue_manager');
-    $sites = $siteHaveIssueManager->getDocumentsBy(array(), array('name' => 'asc'));
+    /** @var DashboardManager $dashboardManager */
+    $dashboardManager = $this->get('warden.dashboard_manager');
+    $sites = $dashboardManager->getDocumentsBy(array(), array('name' => 'asc'));
 
     $params = array(
       'sites' => $sites,

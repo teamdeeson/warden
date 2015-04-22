@@ -6,10 +6,10 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 
 /**
  * @MongoDB\Document(
- *     collection="sites-have-issues"
+ *     collection="dashboard"
  * )
  */
-class SiteHaveIssueDocument extends BaseDocument {
+class DashboardDocument extends BaseDocument {
 
   /**
    * @Mongodb\String

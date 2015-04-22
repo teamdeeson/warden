@@ -52,8 +52,8 @@ services:
         tags:
             - { name: kernel.event_listener, event: warden.cron, method: onWardenCron  }
 
-    site_have_issue_manager:
-        class: Deeson\WardenBundle\Managers\SiteHaveIssueManager
+    warden.dashboard_manager:
+        class: Deeson\WardenBundle\Managers\DashboardManager
         arguments: [@doctrine_mongodb, @monolog.logger]
 
     user_provider:
