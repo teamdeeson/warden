@@ -2,6 +2,7 @@
 
 namespace Deeson\WardenBundle\Controller;
 
+use Deeson\WardenBundle\Document\SiteDocument;
 use Deeson\WardenBundle\Managers\SiteManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Deeson\WardenBundle\Managers\ModuleManager;
@@ -58,8 +59,28 @@ class ModulesController extends Controller {
     $manager = $this->get('warden.drupal.module');
     $module = $manager->getDocumentBy(array('projectName' => $projectName));
 
+    /** @var SiteManager $manager */
+    $manager = $this->get('warden.site_manager');
+    $sites = $manager->getDocumentsBy(array(), array('name' => 'asc'));
+
+    $sitesNotUsingModule = array();
+    foreach ($sites as $site) {
+      /** @var SiteDocument $site */
+      $usingModule = FALSE;
+      foreach ($site->getModules() as $siteModule) {
+        if ($siteModule['name'] == $module->getProjectName()) {
+          $usingModule = TRUE;
+          break;
+        }
+      }
+      if (!$usingModule) {
+        $sitesNotUsingModule[] = $site;
+      }
+    }
+
     $params = array(
       'module' => $module,
+      'sitesNotUsingModule' => $sitesNotUsingModule,
     );
 
     return $this->render('DeesonWardenBundle:Modules:show.html.twig', $params);
