@@ -9,7 +9,7 @@
     "require": {
         "php": ">=5.3.3",
         "ext-openssl": "*",
-        "symfony/symfony": "2.5.*",
+        "symfony/symfony": "2.6.*",
         "doctrine/orm": "~2.2,>=2.2.3",
         "twig/extensions": "1.0.*",
         "symfony/assetic-bundle": "@stable",
