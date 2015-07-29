@@ -361,7 +361,7 @@ class SitesController extends Controller {
             ->add('authUser', 'text', array(
               'required' => false
             ))
-            ->add('authPass', 'text', array(
+            ->add('authPass', 'password', array(
               'required' => false
             ))
             ->add('isNew', 'checkbox', array(
