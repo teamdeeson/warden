@@ -322,7 +322,7 @@ class DrupalUpdateRequestService {
       $sites = $this->siteManager->getDocumentsBy(array_merge(array('coreVersion.release' => $version), $newOnly));
 
       // Update the sites for the major version with the latest core & module version information.
-      $moduleVersions = $this->moduleVersions[ModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED];
+      $coreVersions = $this->moduleVersions[ModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED];
 
       /** @var SiteDocument $site */
       foreach ($sites as $site) {
@@ -336,21 +336,40 @@ class DrupalUpdateRequestService {
           $site->setModulesLatestVersion($moduleLatestVersion[$version]);
         }
 
+        // Check for if the core version is out of date and requires a security update.
         $siteCurrentVersion = $site->getCoreVersion();
-        $hasCriticalIssue = $site->getIsSecurityCoreVersion();
+        $hasCriticalIssue = FALSE;
         $needsSecurityUpdate = FALSE;
-        foreach ($moduleVersions as $moduleVersion) {
-          if ($moduleVersion['version'] < $siteCurrentVersion) {
+        foreach ($coreVersions as $coreVersion) {
+          if ($coreVersion['version'] == $siteCurrentVersion) {
             break;
           }
 
-          if ($moduleVersion['isSecurity']) {
+          if ($coreVersion['isSecurity']) {
             $needsSecurityUpdate = TRUE;
             $hasCriticalIssue = TRUE;
           }
         }
 
-        $site->setLatestCoreVersion($moduleVersions[0]['version'], $needsSecurityUpdate);
+        // Check all the site modules to see if any of them are out of date and need a security update.
+        foreach ($site->getModules() as $siteModule) {
+          if (!isset($siteModule['latestVersion'])) {
+            continue;
+          }
+          if ($siteModule['version'] == $siteModule['latestVersion']) {
+            continue;
+          }
+          if (is_null($siteModule['version'])) {
+            continue;
+          }
+
+          if ($siteModule['isSecurity']) {
+            $hasCriticalIssue = TRUE;
+            break;
+          }
+        }
+
+        $site->setLatestCoreVersion($coreVersions[0]['version'], $needsSecurityUpdate);
         $site->setIsNew(FALSE);
         $site->setHasCriticalIssue($hasCriticalIssue);
         $this->siteManager->updateDocument();

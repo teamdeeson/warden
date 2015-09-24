@@ -123,6 +123,16 @@ class SiteDocument extends BaseDocument {
   }
 
   /**
+   * @return boolean
+   */
+  public function hasCriticalIssues() {
+    if ($this->getIsSecurityCoreVersion()) {
+      return $this->getCoreVersion() != $this->getLatestCoreVersion();
+    }
+    return FALSE;
+  }
+
+  /**
    * @return mixed
    */
   public function getCoreVersion() {

@@ -41,7 +41,7 @@ class BuildDashboardCommand extends ContainerAwareCommand {
 
       $output->writeln('Checking site: ' . $site->getId() . ' - ' . $site->getUrl());
 
-      $hasCriticalIssue = $site->getIsSecurityCoreVersion();
+      $hasCriticalIssue = $site->hasCriticalIssues();
       $isModuleSecurityUpdate = FALSE;
       $modulesNeedUpdate = array();
       foreach ($site->getModules() as $siteModule) {
