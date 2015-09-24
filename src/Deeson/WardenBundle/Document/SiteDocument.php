@@ -229,8 +229,9 @@ class SiteDocument extends BaseDocument {
         }
       }
 
-      $moduleList[] = $module;
+      $moduleList[$name] = $module;
     }
+    ksort($moduleList);
     $this->modules = $moduleList;
   }
 
