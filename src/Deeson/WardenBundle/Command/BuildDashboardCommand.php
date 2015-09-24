@@ -16,10 +16,15 @@ class BuildDashboardCommand extends ContainerAwareCommand {
 
   protected function configure() {
     $this->setName('deeson:warden:build-dashboard')
-      ->setDescription('Builds list of sites that need to be displayed on the dashboard.');
+      ->setDescription('Builds list of sites that need to be displayed on the dashboard.')
+      ->addOption('import-new', NULL, InputOption::VALUE_NONE, 'If set will only import data on newly created sites');
   }
 
   protected function execute(InputInterface $input, OutputInterface $output) {
+    if ($input->getOption('import-new')) {
+      return;
+    }
+
     /** @var SiteManager $siteManager */
     $siteManager = $this->getContainer()->get('warden.site_manager');
 
@@ -29,14 +34,14 @@ class BuildDashboardCommand extends ContainerAwareCommand {
     // Remove all 'have_issue' documents.
     $dashboardManager->deleteAll();
 
-    // Rebuild the new ones.
+    // Rebuild the dashboard based upon active sites.
     $sites = $siteManager->getDocumentsBy(array('isNew' => FALSE));
     foreach ($sites as $site) {
       /** @var SiteDocument $site */
-      // @todo site could be right core version, but module might have security issue.
 
       $output->writeln('Checking site: ' . $site->getId() . ' - ' . $site->getUrl());
 
+      $hasCriticalIssue = $site->getIsSecurityCoreVersion();
       $isModuleSecurityUpdate = FALSE;
       $modulesNeedUpdate = array();
       foreach ($site->getModules() as $siteModule) {
@@ -52,6 +57,7 @@ class BuildDashboardCommand extends ContainerAwareCommand {
 
         if ($siteModule['isSecurity']) {
           $isModuleSecurityUpdate = TRUE;
+          $hasCriticalIssue = TRUE;
         }
 
         $modulesNeedUpdate[] = $siteModule;
@@ -63,16 +69,17 @@ class BuildDashboardCommand extends ContainerAwareCommand {
 
       $output->writeln('Adding site to dashboard: ' . $site->getId() . ' - ' . $site->getUrl());
 
-      /** @var DashboardDocument $needUpdate */
-      $needUpdate = $dashboardManager->makeNewItem();
-      $needUpdate->setName($site->getName());
-      $needUpdate->setSiteId($site->getId());
-      $needUpdate->setUrl($site->getUrl());
-      $needUpdate->setCoreVersion($site->getCoreVersion(), $site->getLatestCoreVersion(), $site->getIsSecurityCoreVersion());
-      $needUpdate->setAdditionalIssues($site->getAdditionalIssues());
-      $needUpdate->setModules($modulesNeedUpdate);
+      /** @var DashboardDocument $dashboard */
+      $dashboard = $dashboardManager->makeNewItem();
+      $dashboard->setName($site->getName());
+      $dashboard->setSiteId($site->getId());
+      $dashboard->setUrl($site->getUrl());
+      $dashboard->setCoreVersion($site->getCoreVersion(), $site->getLatestCoreVersion(), $site->getIsSecurityCoreVersion());
+      $dashboard->setHasCriticalIssue($hasCriticalIssue);
+      $dashboard->setAdditionalIssues($site->getAdditionalIssues());
+      $dashboard->setModules($modulesNeedUpdate);
 
-      $dashboardManager->saveDocument($needUpdate);
+      $dashboardManager->saveDocument($dashboard);
     }
   }
 

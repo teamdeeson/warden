@@ -57,6 +57,11 @@ class SiteDocument extends BaseDocument {
   protected $authPass;
 
   /**
+   * @Mongodb\Boolean
+   */
+  protected $hasCriticalIssue;
+
+  /**
    * @Mongodb\Hash
    */
   protected $additionalIssues;
@@ -101,6 +106,20 @@ class SiteDocument extends BaseDocument {
    */
   public function setUrl($url) {
     $this->url = $url;
+  }
+
+  /**
+   * @return boolean
+   */
+  public function getHasCriticalIssue() {
+    return $this->hasCriticalIssue;
+  }
+
+  /**
+   * @param boolean $hasCriticalIssue
+   */
+  public function setHasCriticalIssue($hasCriticalIssue) {
+    $this->hasCriticalIssue = $hasCriticalIssue;
   }
 
   /**

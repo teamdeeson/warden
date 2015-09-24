@@ -4,7 +4,6 @@ namespace Deeson\WardenBundle\Controller;
 
 use Deeson\WardenBundle\Managers\DashboardManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\Request;
 
 class DashboardController extends Controller {
 

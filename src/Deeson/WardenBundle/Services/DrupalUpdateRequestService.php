@@ -116,7 +116,7 @@ class DrupalUpdateRequestService {
     $this->buzz->getClient()->setTimeout(30);
 
     try {
-      $startTime = $this->getMicrotimeFloat();
+      //$startTime = $this->getMicrotimeFloat();
 
       // Don't verify SSL certificate.
       $this->buzz->getClient()->setVerifyPeer(FALSE);
@@ -133,8 +133,8 @@ class DrupalUpdateRequestService {
       }*/
       $requestData = $request->getContent();
 
-      $endTime = $this->getMicrotimeFloat();
-      $this->requestTime = $endTime - $startTime;
+      //$endTime = $this->getMicrotimeFloat();
+      //$this->requestTime = $endTime - $startTime;
 
       $this->processRequestData($requestData);
     }
@@ -258,6 +258,8 @@ class DrupalUpdateRequestService {
   }
 
   /**
+   * Update the Drupal Core and Modules with the latest versions.
+   *
    * @param bool $updateNewSitesOnly
    *   Only update modules on sites marked as new.
    */
@@ -335,6 +337,7 @@ class DrupalUpdateRequestService {
         }
 
         $siteCurrentVersion = $site->getCoreVersion();
+        $hasCriticalIssue = $site->getIsSecurityCoreVersion();
         $needsSecurityUpdate = FALSE;
         foreach ($moduleVersions as $moduleVersion) {
           if ($moduleVersion['version'] < $siteCurrentVersion) {
@@ -343,11 +346,13 @@ class DrupalUpdateRequestService {
 
           if ($moduleVersion['isSecurity']) {
             $needsSecurityUpdate = TRUE;
+            $hasCriticalIssue = TRUE;
           }
         }
 
         $site->setLatestCoreVersion($moduleVersions[0]['version'], $needsSecurityUpdate);
         $site->setIsNew(FALSE);
+        $site->setHasCriticalIssue($hasCriticalIssue);
         $this->siteManager->updateDocument();
       }
     }

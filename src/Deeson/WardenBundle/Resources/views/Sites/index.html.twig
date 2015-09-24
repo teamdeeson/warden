@@ -19,7 +19,7 @@
                         <tr>
                             <th width="60%">Site</th>
                             <th>Core Version</th>
-                            <th>Latest Core Version (Out of Date) [Security Update]</th>
+                            <th>Latest Core Version (Out of Date) [Security Update] [critical]</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -31,6 +31,7 @@
                                 {{ site.getLatestCoreVersion() }}
                                 ({% if site.compareCoreVersion() %}N{% else %}Y{% endif %})
                                 [{% if site.getIsSecurityCoreVersion() %}Y{% else %}N{% endif %}]
+                                [{% if site.getHasCriticalIssue() %}Y{% else %}N{% endif %}]
                             </td>
                         </tr>
                     {% endfor %}

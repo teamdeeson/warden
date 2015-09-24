@@ -31,20 +31,17 @@
                         <thead>
                             <tr>
                                 <th width="60%">Site</th>
-                                {# <td width="50%">Website link</td> #}
                                 <th>Core Version</th>
                                 <th>Status</th>
-                                {# <td>Latest Core Version [Security Update]</td> #}
                             </tr>
                         </thead>
                         <tbody>
                         {% for site in sites %}
-                            <tr class="{% if site.getIsSecurityCoreVersion() %}alert alert-danger{% else %}alert alert-warning{% endif %}">
-                                <td><a href="{{ path('sites_show', {'id': site.getSiteId() }) }}">{{ site.getName() }}</a> [{{ site.getUrl() }}]</td>
+                            <tr class="{% if site.getHasCriticalIssue() %}alert alert-danger{% else %}alert alert-warning{% endif %}">
+                                <td><a href="{{ path('sites_show', {'id': site.getSiteId() }) }}">{{ site.getName() }}</a> [{{ site.getUrl() }}] [{% if site.getHasCriticalIssue() %}Y{% else %}N{% endif %}]</td>
                                 <td>{{ site.getCoreVersion() }}</td>
-                                <td style="cursor: pointer;" onclick="document.location = '{{ path('sites_show', {'id': site.getSiteId() }) }}';" {% if site.getIsSecurityCoreVersion() %}class="error"{% endif %}>{% if site.getIsSecurityCoreVersion() %}<span class="fa fa-warning"></span>&nbsp;View {% endif %}</td>
+                                <td style="cursor: pointer;" {% if site.getHasCriticalIssue() %}onclick="document.location = '{{ path('sites_show', {'id': site.getSiteId() }) }}';" class="error"{% endif %}>{% if site.getHasCriticalIssue() %}<span class="fa fa-warning"></span>&nbsp;View {% endif %}</td>
                             </tr>
-
                         {% endfor %}
                         </tbody>
                         </table>

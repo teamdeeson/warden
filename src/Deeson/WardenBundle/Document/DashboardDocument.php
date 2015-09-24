@@ -37,6 +37,11 @@ class DashboardDocument extends BaseDocument {
   protected $modules;
 
   /**
+   * @Mongodb\Boolean
+   */
+  protected $hasCriticalIssue;
+
+  /**
    * @Mongodb\Hash
    */
   protected $additionalIssues;
@@ -66,13 +71,6 @@ class DashboardDocument extends BaseDocument {
    */
   public function getLatestCoreVersion() {
     return (empty($this->coreVersion['latest'])) ? '0' : $this->coreVersion['latest'];
-  }
-
-  /**
-   * @return boolean
-   */
-  public function getIsSecurityCoreVersion() {
-    return (empty($this->coreVersion['isSecurity'])) ? FALSE : $this->coreVersion['isSecurity'];
   }
 
   /**
@@ -129,6 +127,20 @@ class DashboardDocument extends BaseDocument {
    */
   public function setUrl($url) {
     $this->url = $url;
+  }
+
+  /**
+   * @return boolean
+   */
+  public function getHasCriticalIssue() {
+    return $this->hasCriticalIssue;
+  }
+
+  /**
+   * @param boolean $hasCriticalIssue
+   */
+  public function setHasCriticalIssue($hasCriticalIssue) {
+    $this->hasCriticalIssue = $hasCriticalIssue;
   }
 
   /**
