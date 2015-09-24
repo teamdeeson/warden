@@ -180,9 +180,9 @@ class SitesController extends Controller {
 
     try {
       $dispatcher->dispatch(WardenEvents::WARDEN_SITE_REFRESH, $event);
+      $this->updateDashboard($site);
     }
     catch (\Exception $e) {
-      $this->updateDashboard($site);
       $this->get('session')
         ->getFlashBag()
         ->add('error', 'General Error - Unable to retrieve data from the site: ' . $e->getMessage());
@@ -361,7 +361,7 @@ class SitesController extends Controller {
             ->add('authUser', 'text', array(
               'required' => false
             ))
-            ->add('authPass', 'password', array(
+            ->add('authPass', 'text', array(
               'required' => false
             ))
             ->add('isNew', 'checkbox', array(
