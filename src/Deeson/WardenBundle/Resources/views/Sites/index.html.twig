@@ -24,7 +24,7 @@
                     </thead>
                     <tbody>
                     {% for site in sites %}
-                        <tr class="{% if site.compareCoreVersion() %}{% else %}{% if site.getHasCriticalIssue() %}alert alert-danger{% else %}alert alert-warning{% endif %}{% endif %}">
+                        <tr class="{% if site.getHasCriticalIssue() %}alert alert-danger{% endif %}">
                             <td><a href="{{ path('sites_show', {'id': site.getId() }) }}">{{ site.getName() }}</a> [{{ site.getUrl() }}] {% if site.getIsNew() %}(Pending){% endif %}</td>
                             <td>{{ site.getCoreVersion() }}</td>
                             <td>
