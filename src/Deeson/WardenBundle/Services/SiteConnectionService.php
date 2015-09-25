@@ -6,6 +6,7 @@ use Buzz\Browser;
 use Buzz\Exception\ClientException;
 use Deeson\WardenBundle\Document\SiteDocument;
 use Deeson\WardenBundle\Exception\WardenRequestException;
+use Deeson\WardenBundle\Managers\SiteManager;
 use Symfony\Bridge\Monolog\Logger;
 
 
@@ -46,16 +47,23 @@ class SiteConnectionService {
   protected $logger;
 
   /**
+   * @var SiteManager
+   */
+  protected $siteManager;
+
+  /**
    * Constructor
    *
    * @param Browser $buzz
+   * @param SiteManager $siteManager
    * @param SSLEncryptionService $sslEncryptionService
    * @param Logger $logger
    */
-  public function __construct(Browser $buzz, SSLEncryptionService $sslEncryptionService, Logger $logger) {
+  public function __construct(Browser $buzz, SiteManager $siteManager, SSLEncryptionService $sslEncryptionService, Logger $logger) {
     $this->buzz = $buzz;
     $this->sslEncryptionService = $sslEncryptionService;
     $this->logger = $logger;
+    $this->siteManager = $siteManager;
   }
 
   /**
@@ -128,6 +136,9 @@ class SiteConnectionService {
         $this->logger->addError("Unable to request data from {$url}\nStatus code: " . $response->getStatusCode() . "\nHeaders: " . print_r($response->getHeaders(), TRUE));
         throw new WardenRequestException("Unable to request data from {$url}. Check log for details.");
       }
+
+      $site->setLastSuccessfulRequest();
+      $this->siteManager->updateDocument();
 
       return $response->getContent();
     }

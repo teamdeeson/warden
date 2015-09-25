@@ -67,6 +67,11 @@ class SiteDocument extends BaseDocument {
   protected $additionalIssues;
 
   /**
+   * @Mongodb\String
+   */
+  protected $lastSuccessfulRequest;
+
+  /**
    * @return mixed
    */
   public function getName() {
@@ -404,6 +409,20 @@ class SiteDocument extends BaseDocument {
    */
   public function compareCoreVersion() {
     return $this->getCoreVersion() == $this->getLatestCoreVersion();
+  }
+
+  /**
+   * @return mixed
+   */
+  public function getLastSuccessfulRequest() {
+    return !empty($this->lastSuccessfulRequest) ? $this->lastSuccessfulRequest : 'No request completed yet';
+  }
+
+  /**
+   * Set the last successful datetime.
+   */
+  public function setLastSuccessfulRequest() {
+    $this->lastSuccessfulRequest = date('d/m/Y H:i:s');
   }
 
 }
