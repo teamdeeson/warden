@@ -309,6 +309,31 @@ class SiteDocument extends BaseDocument {
   }
 
   /**
+   * Updates a specific module on a site with version and/or security info,
+   *
+   * @param string $moduleName
+   *   The module project name.
+   * @param array $moduleData
+   *   An array of the module data, keyed with version and isSecurity.
+   */
+  public function updateModule($moduleName, $moduleData) {
+    $siteModuleList = $this->getModules();
+    foreach ($siteModuleList as $key => $module) {
+      if ($moduleName != $module['name']) {
+        continue;
+      }
+
+      if (isset($moduleData['version'])) {
+        $siteModuleList[$key]['latestVersion'] = $moduleData['version'];
+      }
+      if (isset($moduleData['isSecurity'])) {
+        $siteModuleList[$key]['isSecurity'] = $moduleData['isSecurity'];
+      }
+    }
+    $this->modules = $siteModuleList;
+  }
+
+  /**
    * @return mixed
    */
   public function getIsNew() {

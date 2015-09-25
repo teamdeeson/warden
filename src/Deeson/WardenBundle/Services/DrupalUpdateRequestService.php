@@ -266,6 +266,7 @@ class DrupalUpdateRequestService {
   public function updateAllDrupalModules($updateNewSitesOnly = FALSE) {
     $this->logger->addInfo('*** Starting Drupal Update Request Service ***');
 
+    $drupalAllModuleVersions = array();
     $moduleLatestVersion = array();
     $majorVersions = $this->siteManager->getAllMajorVersionReleases();
 
@@ -283,7 +284,7 @@ class DrupalUpdateRequestService {
           continue;
         }
 
-        $drupalModuleVersions = $this->moduleVersions;
+        $drupalAllModuleVersions[$version][$module->getProjectName()] = $drupalModuleVersions = $this->moduleVersions;
         $moduleVersions = array();
         // Get the recommended module version.
         if (isset($drupalModuleVersions[ModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED])) {
@@ -361,6 +362,31 @@ class DrupalUpdateRequestService {
           }
           if (is_null($siteModule['version'])) {
             continue;
+          }
+
+          // Check to see if this site's modules require a security update.
+          $siteModuleVersionInfo = ModuleDocument::getVersionInfo($siteModule['version']);
+          $versionType = NULL;
+          if (isset($drupalAllModuleVersions[$version][$siteModule['name']][ModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED])) {
+            $drupalModuleRecommendedVersionInfo = ModuleDocument::getVersionInfo($drupalAllModuleVersions[$version][$siteModule['name']][ModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED][0]['version']);
+            $versionType = $drupalModuleRecommendedVersionInfo['minor'] == $siteModuleVersionInfo['minor'] ? ModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED : NULL;
+          }
+          if (isset($drupalAllModuleVersions[$version][$siteModule['name']][ModuleDocument::MODULE_VERSION_TYPE_OTHER]) && is_null($versionType)) {
+            $drupalModuleOtherVersionInfo = ModuleDocument::getVersionInfo($drupalAllModuleVersions[$version][$siteModule['name']][ModuleDocument::MODULE_VERSION_TYPE_OTHER][0]['version']);
+            $versionType = $drupalModuleOtherVersionInfo['minor'] == $siteModuleVersionInfo['minor'] ? ModuleDocument::MODULE_VERSION_TYPE_OTHER : NULL;
+          }
+          if (!is_null($versionType)) {
+            foreach ($drupalAllModuleVersions[$version][$siteModule['name']][$versionType] as $drupalModule) {
+              if ($drupalModule['version'] == $siteModule['version']) {
+                break;
+              }
+
+              if ($drupalModule['isSecurity']) {
+                unset($drupalModule['version']);
+                $site->updateModule($siteModule['name'], $drupalModule);
+                $siteModule['isSecurity'] = TRUE;
+              }
+            }
           }
 
           if ($siteModule['isSecurity']) {
