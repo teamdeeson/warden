@@ -2,6 +2,8 @@
 
 namespace Deeson\WardenBundle\Document;
 
+use Deeson\WardenBundle\Managers\ModuleManager;
+use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 
 /**
@@ -331,6 +333,47 @@ class SiteDocument extends BaseDocument {
       }
     }
     $this->modules = $siteModuleList;
+  }
+
+  /**
+   * Updates the modules list for the provided site.
+   *
+   * This updates the list of modules that this site has with the module documents.
+   *
+   * @param ModuleManager $moduleManager
+   *
+   * @throws DocumentNotFoundException
+   */
+  public function updateModules(ModuleManager $moduleManager) {
+    foreach ($this->getModules() as $siteModule) {
+      /** @var ModuleDocument $module */
+      try {
+        $module = $moduleManager->findByProjectName($siteModule['name']);
+      } catch (DocumentNotFoundException $e) {
+        throw new DocumentNotFoundException('Error getting module [' . $siteModule['name'] . ']: ' . $e->getMessage());
+        continue;
+      }
+      $moduleSites = $module->getSites();
+
+      // Check if the site URL is already in the list for this module.
+      $alreadyExists = FALSE;
+      if (is_array($moduleSites)) {
+        foreach ($moduleSites as $moduleSite) {
+          if ($moduleSite['id'] == $this->getId()) {
+            $alreadyExists = TRUE;
+            break;
+          }
+        }
+      }
+
+      if ($alreadyExists) {
+        $module->updateSite($this->getId(), $siteModule['version']);
+      }
+      else {
+        $module->addSite($this->getId(), $this->getUrl(), $siteModule['version']);
+      }
+      $moduleManager->updateDocument();
+    }
   }
 
   /**

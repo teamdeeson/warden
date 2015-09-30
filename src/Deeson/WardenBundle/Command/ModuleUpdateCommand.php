@@ -38,34 +38,11 @@ class ModuleUpdateCommand extends ContainerAwareCommand {
       /** @var SiteDocument $site */
       $output->writeln('Updating site: ' . $site->getId() . ' - ' . $site->getUrl());
 
-      foreach ($site->getModules() as $siteModule) {
-        /** @var ModuleDocument $module */
-        try {
-          $module = $moduleManager->findByProjectName($siteModule['name']);
-        } catch (DocumentNotFoundException $e) {
-          $output->writeln('Error getting module [' . $siteModule['name'] . ']: ' . $e->getMessage());
-          continue;
-        }
-        $moduleSites = $module->getSites();
-
-        // Check if the site URL is already in the list for this module.
-        $alreadyExists = FALSE;
-        if (is_array($moduleSites)) {
-          foreach ($moduleSites as $moduleSite) {
-            if ($moduleSite['url'] == $site->getUrl()) {
-              $alreadyExists = TRUE;
-              break;
-            }
-          }
-        }
-
-        if ($alreadyExists) {
-          $module->updateSite($site->getId(), $siteModule['version']);
-        }
-        else {
-          $module->addSite($site->getId(), $site->getUrl(), $siteModule['version']);
-        }
-        $moduleManager->updateDocument();
+      try {
+        $site->updateModules($moduleManager);
+      }
+      catch (DocumentNotFoundException $e) {
+        $output->writeln($e->getMessage());
       }
     }
   }

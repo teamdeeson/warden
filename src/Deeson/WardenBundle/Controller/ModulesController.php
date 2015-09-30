@@ -2,6 +2,7 @@
 
 namespace Deeson\WardenBundle\Controller;
 
+use Deeson\WardenBundle\Document\ModuleDocument;
 use Deeson\WardenBundle\Document\SiteDocument;
 use Deeson\WardenBundle\Managers\SiteManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -27,6 +28,7 @@ class ModulesController extends Controller {
 
     $moduleList = array();
     foreach ($modules as $module) {
+      /** @var ModuleDocument $module */
       $module->setUsagePercentage($sitesTotalCount);
       $moduleList[$module->getSiteCount()][] = $module;
     }
