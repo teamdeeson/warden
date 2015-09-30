@@ -63,7 +63,7 @@ class BuildDashboardCommand extends ContainerAwareCommand {
         $modulesNeedUpdate[] = $siteModule;
       }
 
-      if ($site->getLatestCoreVersion() == $site->getCoreVersion() && !$isModuleSecurityUpdate) {
+      if ($site->getLatestCoreVersion() == $site->getCoreVersion() && !$isModuleSecurityUpdate && !$hasCriticalIssue) {
         continue;
       }
 

@@ -311,6 +311,8 @@ class SitesController extends Controller {
       return;
     }
 
+    // @todo this is the same as dashboard command - refactor.
+    $hasCriticalIssue = $site->hasCriticalIssues();
     $isModuleSecurityUpdate = FALSE;
     $modulesNeedUpdate = array();
     foreach ($site->getModules() as $siteModule) {
@@ -326,12 +328,13 @@ class SitesController extends Controller {
 
       if ($siteModule['isSecurity']) {
         $isModuleSecurityUpdate = TRUE;
+        $hasCriticalIssue = TRUE;
       }
 
       $modulesNeedUpdate[] = $siteModule;
     }
 
-    if ($site->getLatestCoreVersion() == $site->getCoreVersion() && !$isModuleSecurityUpdate) {
+    if ($site->getLatestCoreVersion() == $site->getCoreVersion() && !$isModuleSecurityUpdate && !$hasCriticalIssue) {
       return;
     }
 
@@ -341,6 +344,7 @@ class SitesController extends Controller {
     $dashboard->setSiteId($site->getId());
     $dashboard->setUrl($site->getUrl());
     $dashboard->setCoreVersion($site->getCoreVersion(), $site->getLatestCoreVersion(), $site->getIsSecurityCoreVersion());
+    $dashboard->setHasCriticalIssue($hasCriticalIssue);
     $dashboard->setAdditionalIssues($site->getAdditionalIssues());
     $dashboard->setModules($modulesNeedUpdate);
 
