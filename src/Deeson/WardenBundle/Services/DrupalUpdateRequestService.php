@@ -391,7 +391,6 @@ class DrupalUpdateRequestService {
 
           if ($siteModule['isSecurity']) {
             $hasCriticalIssue = TRUE;
-            break;
           }
         }
 
