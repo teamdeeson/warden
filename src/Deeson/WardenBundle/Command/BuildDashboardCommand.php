@@ -16,15 +16,10 @@ class BuildDashboardCommand extends ContainerAwareCommand {
 
   protected function configure() {
     $this->setName('deeson:warden:build-dashboard')
-      ->setDescription('Builds list of sites that need to be displayed on the dashboard.')
-      ->addOption('import-new', NULL, InputOption::VALUE_NONE, 'If set will only import data on newly created sites');
+      ->setDescription('Builds list of sites that need to be displayed on the dashboard.');
   }
 
   protected function execute(InputInterface $input, OutputInterface $output) {
-    if ($input->getOption('import-new')) {
-      return;
-    }
-
     /** @var SiteManager $siteManager */
     $siteManager = $this->getContainer()->get('warden.site_manager');
 
