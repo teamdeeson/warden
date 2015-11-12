@@ -381,6 +381,11 @@ class DrupalUpdateRequestService {
                 break;
               }
 
+              // Check for site module being a dev version - then skip.
+              if (isset($siteModuleVersionInfo['extra']) && strstr($siteModuleVersionInfo['extra'], 'dev') !== FALSE) {
+                break;
+              }
+
               if ($drupalModule['isSecurity']) {
                 unset($drupalModule['version']);
                 $site->updateModule($siteModule['name'], $drupalModule);

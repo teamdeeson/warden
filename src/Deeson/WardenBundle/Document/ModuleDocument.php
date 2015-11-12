@@ -310,6 +310,7 @@ class ModuleDocument extends BaseDocument {
    * Module version number are in the following formats:
    *  7.x-1.3
    *  7.x-2.0-(alpha|beta|rc-0...|?)
+   *  7.x-2.0+8-dev (dev release)
    *
    * The returned array has the following keys for a value of 7.x-2.0-beta4:
    *   'major' - the major version number (e.g. 7)
@@ -323,11 +324,11 @@ class ModuleDocument extends BaseDocument {
    *   Returns a keys array of each of the version information.
    */
   public static function getVersionInfo($version) {
-    preg_match('/([1-9]).x-([0-9]+).([0-9\.x]+)([a-z0-9\-]+)?/', $version, $matches);
+    preg_match('/([0-9]+).x-([0-9]+).([0-9\.x]+)([a-z0-9\-+]+)?/', $version, $matches);
 
     // Standard version number regex doesn't match, probably Drupal release.
     if (count($matches) < 1) {
-      preg_match('/([1-9]).([0-9]+)/', $version, $matches);
+      preg_match('/([0-9]).([0-9]+)/', $version, $matches);
     }
 
     return array(
