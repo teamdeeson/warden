@@ -1,6 +1,6 @@
 {
     "name": "teamdeeson/warden",
-    "license": "MIT",
+    "license": "GPL3",
     "type": "project",
     "description": "Warden website monitoring tool",
     "autoload": {
