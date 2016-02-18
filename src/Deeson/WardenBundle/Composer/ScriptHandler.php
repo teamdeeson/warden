@@ -32,9 +32,11 @@ class ScriptHandler {
         $username = $output->ask('Please enter the admin username [admin]: ', 'admin');
       }
 
-      $password = '';
-      while (strlen($password) < 8) {
+      for ($password = '', $retries = 0; strlen($password) < 8 && $retries < 5; $retries++) {
         $password = $output->askAndHideAnswer('Please enter the admin password (minimum of 8 characters): ', '');
+      }
+      if (empty($password)) {
+        throw new \InvalidArgumentException('An admin password is required.');
       }
 
       $output->write(' - Setting up the password file ...');
