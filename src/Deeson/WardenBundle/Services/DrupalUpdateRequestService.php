@@ -203,6 +203,14 @@ class DrupalUpdateRequestService {
     // minor release yet.
     if (count($supportedMajorVersions) > 0) {
       foreach ($supportedMajorVersions as $version) {
+        // Handle unsupported major version.
+        if ($version === 9999) {
+          continue;
+        }
+        if (!isset($latestReleaseVersions[$version])) {
+          print "Error: Unknown version key: $version in latest release versions for {$this->moduleRequestName}\n";
+          continue;
+        }
         $releaseVersions[] = $latestReleaseVersions[$version][0];
       }
     }
@@ -218,12 +226,12 @@ class DrupalUpdateRequestService {
         }
       }
 
-      $versionType = ($release->version_major == $recommendedMajorVersion) ?
+      $versionType = (isset($release->version_major) && $release->version_major == $recommendedMajorVersion) ?
         ModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED :
         ModuleDocument::MODULE_VERSION_TYPE_OTHER;
 
       $versions[$versionType][] = array(
-        'version' => (string) $release->version,
+        'version' => isset($release->version) ? (string) $release->version : 0,
         'isSecurity' => $isSecurityRelease,
       );
     }
@@ -323,7 +331,12 @@ class DrupalUpdateRequestService {
       $sites = $this->siteManager->getDocumentsBy(array_merge(array('coreVersion.release' => $version), $newOnly));
 
       // Update the sites for the major version with the latest core & module version information.
-      $coreVersions = $this->moduleVersions[ModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED];
+      $coreVersions = isset($this->moduleVersions[ModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED]) ? $this->moduleVersions[ModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED] : NULL;
+
+      // Check if this is an array and skip on if not.
+      if (!is_array($coreVersions)) {
+        continue;
+      }
 
       /** @var SiteDocument $site */
       foreach ($sites as $site) {
