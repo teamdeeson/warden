@@ -16,13 +16,11 @@ class ModuleManager extends BaseManager {
    */
   public function getModule($name) {
     $result = $this->getRepository()->findBy(array('projectName' => $name));
-    $moduleExistsCount = $result->count();
-
-    if ($moduleExistsCount == 0) {
+    if (count($result) < 0) {
       return NULL;
     }
 
-    return $result->getNext();
+    return array_shift($result);
   }
 
   /**
