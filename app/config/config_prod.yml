@@ -1,6 +1,9 @@
 imports:
     - { resource: config.yml }
 
+framework:
+    trusted_proxies:  [127.0.0.1]
+
 monolog:
     handlers:
         main:
