@@ -9,7 +9,6 @@
 /vendor/
 /bin/
 /composer.phar
-/composer.lock
 
 # Application
 app/config/warden-security.yml
