@@ -49,11 +49,7 @@ class ModuleManager extends BaseManager {
    * @throws DocumentNotFoundException
    */
   public function findByProjectName($name) {
-    try {
-      return $this->getDocumentBy(array('projectName' => $name));
-    } catch (DocumentNotFoundException $e) {
-      throw new DocumentNotFoundException($e->getMessage());
-    }
+    return $this->getDocumentBy(array('projectName' => $name));
   }
 
   /**

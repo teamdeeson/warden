@@ -272,10 +272,9 @@ class SitesController extends Controller {
 
     foreach ($site->getModules() as $siteModule) {
       /** @var ModuleDocument $module */
-      try {
-        $module = $moduleManager->findByProjectName($siteModule['name']);
-      } catch (DocumentNotFoundException $e) {
-        print('Error getting module [' . $siteModule['name'] . ']: ' . $e->getMessage());
+      $module = $moduleManager->findByProjectName($siteModule['name']);
+      if (empty($module)) {
+        print('Error getting module [' . $siteModule['name'] . ']');
         continue;
       }
       $module->removeSite($site->getId());

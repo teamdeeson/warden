@@ -41,15 +41,11 @@ abstract class BaseManager {
    * @param $id
    *   The Mongodb Object Id.
    *
-   * @return BaseDocument
+   * @return Object
    * @throws DocumentNotFoundException
    */
   public function getDocumentById($id) {
-    $result = $this->getRepository()->find($id);
-    if (empty($result)) {
-      throw new DocumentNotFoundException("No {$this->getType()} with id $id");
-    }
-    return $result;
+    return $this->getRepository()->find($id);
   }
 
   /**
@@ -60,12 +56,7 @@ abstract class BaseManager {
    * @throws DocumentNotFoundException
    */
   public function getAllDocuments() {
-    $result = $this->getRepository()->findAll();
-    if (empty($result)) {
-      return array();
-      //throw new DocumentNotFoundException("No documents found for {$this->getType()}");
-    }
-    return $result;
+    return $this->getRepository()->findAll();
   }
 
   /**
@@ -81,11 +72,7 @@ abstract class BaseManager {
    * @throws \Deeson\WardenBundle\Exception\DocumentNotFoundException
    */
   public function getDocumentsBy(array $criteria, array $orderBy = null, $limit = null, $offset = null) {
-    $result = $this->getRepository()->findBy($criteria, $orderBy, $limit, $offset);
-    if (empty($result)) {
-      throw new DocumentNotFoundException("No documents found for {$this->getType()}, with criteria: " . print_r($criteria, true));
-    }
-    return $result;
+    return $this->getRepository()->findBy($criteria, $orderBy, $limit, $offset);
   }
 
   /**
@@ -93,15 +80,11 @@ abstract class BaseManager {
    *
    * @param array $criteria
    *
-   * @return Mongodb document object.
+   * @return Object.
    * @throws \Deeson\WardenBundle\Exception\DocumentNotFoundException
    */
   public function getDocumentBy(array $criteria) {
-    $result = $this->getRepository()->findOneBy($criteria);
-    if (empty($result)) {
-      throw new DocumentNotFoundException("No documents found for {$this->getType()}, with criteria: " . print_r($criteria, true));
-    }
-    return $result;
+    return $this->getRepository()->findOneBy($criteria);
   }
 
   /**

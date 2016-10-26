@@ -14,8 +14,7 @@ class SiteManager extends BaseManager {
    * @return bool
    */
   public function urlExists($url) {
-    $result = $this->getDocumentsBy(array('url' => $url));
-    return $result->count() > 0;
+    return !empty($this->getDocumentsBy(array('url' => $url)));
   }
 
   /**

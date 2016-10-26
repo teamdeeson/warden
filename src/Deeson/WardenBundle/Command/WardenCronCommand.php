@@ -30,11 +30,7 @@ class WardenCronCommand extends ContainerAwareCommand {
     $dispatcher = $this->getContainer()->get('event_dispatcher');
 
     if ($input->getOption('import-new')) {
-      try {
-        $sites = $siteManager->getDocumentsBy(array('isNew' => TRUE));
-      } catch (DocumentNotFoundException $e) {
-        $sites = array();
-      }
+      $sites = $siteManager->getDocumentsBy(array('isNew' => TRUE));
     }
     else {
       $sites = $siteManager->getAllDocuments();

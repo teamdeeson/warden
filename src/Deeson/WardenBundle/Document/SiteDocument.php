@@ -347,10 +347,9 @@ class SiteDocument extends BaseDocument {
   public function updateModules(ModuleManager $moduleManager) {
     foreach ($this->getModules() as $siteModule) {
       /** @var ModuleDocument $module */
-      try {
-        $module = $moduleManager->findByProjectName($siteModule['name']);
-      } catch (DocumentNotFoundException $e) {
-        throw new DocumentNotFoundException('Error getting module [' . $siteModule['name'] . ']: ' . $e->getMessage());
+      $module = $moduleManager->findByProjectName($siteModule['name']);
+      if (empty($module)) {
+        throw new DocumentNotFoundException('Error getting module [' . $siteModule['name'] . ']');
         continue;
       }
       $moduleSites = $module->getSites();
