@@ -310,44 +310,7 @@ class SitesController extends Controller {
       return;
     }
 
-    // @todo this is the same as dashboard command - refactor.
-    $hasCriticalIssue = $site->hasCriticalIssues();
-    $isModuleSecurityUpdate = FALSE;
-    $modulesNeedUpdate = array();
-    foreach ($site->getModules() as $siteModule) {
-      if (!isset($siteModule['latestVersion'])) {
-        continue;
-      }
-      if ($siteModule['version'] == $siteModule['latestVersion']) {
-        continue;
-      }
-      if (is_null($siteModule['version'])) {
-        continue;
-      }
-
-      if ($siteModule['isSecurity']) {
-        $isModuleSecurityUpdate = TRUE;
-        $hasCriticalIssue = TRUE;
-      }
-
-      $modulesNeedUpdate[] = $siteModule;
-    }
-
-    if ($site->getLatestCoreVersion() == $site->getCoreVersion() && !$isModuleSecurityUpdate && !$hasCriticalIssue) {
-      return;
-    }
-
-    /** @var DashboardDocument $dashboard */
-    $dashboard = $dashboardManager->makeNewItem();
-    $dashboard->setName($site->getName());
-    $dashboard->setSiteId($site->getId());
-    $dashboard->setUrl($site->getUrl());
-    $dashboard->setCoreVersion($site->getCoreVersion(), $site->getLatestCoreVersion(), $site->getIsSecurityCoreVersion());
-    $dashboard->setHasCriticalIssue($hasCriticalIssue);
-    $dashboard->setAdditionalIssues($site->getAdditionalIssues());
-    $dashboard->setModules($modulesNeedUpdate);
-
-    $dashboardManager->saveDocument($dashboard);
+    $dashboardManager->addSiteToDashboard($site);
   }
 
   public function EditAction($id, Request $request) {

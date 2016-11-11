@@ -36,45 +36,9 @@ class BuildDashboardCommand extends ContainerAwareCommand {
 
       $output->writeln('Checking site: ' . $site->getId() . ' - ' . $site->getUrl());
 
-      $hasCriticalIssue = $site->hasCriticalIssues();
-      $isModuleSecurityUpdate = FALSE;
-      $modulesNeedUpdate = array();
-      foreach ($site->getModules() as $siteModule) {
-        if (!isset($siteModule['latestVersion'])) {
-          continue;
-        }
-        if ($siteModule['version'] == $siteModule['latestVersion']) {
-          continue;
-        }
-        if (is_null($siteModule['version'])) {
-          continue;
-        }
-
-        if ($siteModule['isSecurity']) {
-          $isModuleSecurityUpdate = TRUE;
-          $hasCriticalIssue = TRUE;
-        }
-
-        $modulesNeedUpdate[] = $siteModule;
+      if ($dashboardManager->addSiteToDashboard($site)) {
+        $output->writeln('Adding site to dashboard: ' . $site->getId() . ' - ' . $site->getUrl());
       }
-
-      if ($site->getLatestCoreVersion() == $site->getCoreVersion() && !$isModuleSecurityUpdate && !$hasCriticalIssue) {
-        continue;
-      }
-
-      $output->writeln('Adding site to dashboard: ' . $site->getId() . ' - ' . $site->getUrl());
-
-      /** @var DashboardDocument $dashboard */
-      $dashboard = $dashboardManager->makeNewItem();
-      $dashboard->setName($site->getName());
-      $dashboard->setSiteId($site->getId());
-      $dashboard->setUrl($site->getUrl());
-      $dashboard->setCoreVersion($site->getCoreVersion(), $site->getLatestCoreVersion(), $site->getIsSecurityCoreVersion());
-      $dashboard->setHasCriticalIssue($hasCriticalIssue);
-      $dashboard->setAdditionalIssues($site->getAdditionalIssues());
-      $dashboard->setModules($modulesNeedUpdate);
-
-      $dashboardManager->saveDocument($dashboard);
     }
   }
 
