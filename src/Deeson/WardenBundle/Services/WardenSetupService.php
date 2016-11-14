@@ -31,6 +31,10 @@ class WardenSetupService {
    */
   public function generateCSSFile() {
     if (!file_exists($this->customCssFile)) {
+      // Create the CSS directory if it doesn't exist.
+      if (!file_exists(dirname($this->customCssFile))) {
+        mkdir(dirname($this->customCssFile));
+      }
       file_put_contents($this->customCssFile, '');
     }
   }
