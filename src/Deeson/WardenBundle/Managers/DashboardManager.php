@@ -35,7 +35,6 @@ class DashboardManager extends BaseManager {
    */
   public function addSiteToDashboard(SiteDocument $site) {
     $hasCriticalIssue = $site->hasCriticalIssues();
-    $isModuleSecurityUpdate = FALSE;
     $modulesNeedUpdate = array();
     foreach ($site->getModules() as $siteModule) {
       if (!isset($siteModule['latestVersion'])) {
@@ -49,14 +48,13 @@ class DashboardManager extends BaseManager {
       }
 
       if ($siteModule['isSecurity']) {
-        $isModuleSecurityUpdate = TRUE;
         $hasCriticalIssue = TRUE;
       }
 
       $modulesNeedUpdate[] = $siteModule;
     }
 
-    if ($site->getLatestCoreVersion() == $site->getCoreVersion() && !$isModuleSecurityUpdate && !$hasCriticalIssue) {
+    if (!$hasCriticalIssue) {
       return false;
     }
 
