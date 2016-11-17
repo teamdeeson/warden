@@ -158,6 +158,7 @@ class DrupalUpdateRequestService {
     }
 
     $projectStatus = (string) $requestXmlObject->project_status;
+    $projectApiVersion = (string) $requestXmlObject->api_version;
 
     $recommendedMajorVersion = 0;
     $supportedMajorVersions = array();
@@ -204,11 +205,11 @@ class DrupalUpdateRequestService {
     if (count($supportedMajorVersions) > 0) {
       foreach ($supportedMajorVersions as $version) {
         // Handle unsupported major version.
-        if ($version === 9999) {
+        if ((int) $version === 9999) {
           continue;
         }
         if (!isset($latestReleaseVersions[$version])) {
-          print "Error: Unknown version key: $version in latest release versions for {$this->moduleRequestName}\n";
+          print "Error: Unknown version key: $version ($projectApiVersion) in latest release versions for {$this->moduleRequestName}\n";
           continue;
         }
         $releaseVersions[] = $latestReleaseVersions[$version][0];
