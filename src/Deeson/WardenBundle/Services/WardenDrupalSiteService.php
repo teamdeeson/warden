@@ -2,14 +2,16 @@
 
 namespace Deeson\WardenBundle\Services;
 
-use Deeson\WardenBundle\Document\ModuleDocument;
 use Deeson\WardenBundle\Document\SiteDocument;
+use Deeson\WardenBundle\Event\DashboardUpdateEvent;
 use Deeson\WardenBundle\Event\SiteEvent;
 use Deeson\WardenBundle\Event\SiteShowEvent;
 use Deeson\WardenBundle\Event\SiteUpdateEvent;
+use Deeson\WardenBundle\Event\WardenEvents;
 use Deeson\WardenBundle\Exception\DocumentNotFoundException;
 use Deeson\WardenBundle\Managers\ModuleManager;
 use Symfony\Bridge\Monolog\Logger;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class WardenDrupalSiteService {
 
@@ -29,14 +31,21 @@ class WardenDrupalSiteService {
   protected $logger;
 
   /**
+   * @var EventDispatcherInterface
+   */
+  protected $dispatcher;
+
+  /**
    * @param ModuleManager $drupalModuleManager
    * @param SiteConnectionService $siteConnectionService
    * @param Logger $logger
+   * @param EventDispatcherInterface $dispatcher
    */
-  public function __construct(ModuleManager $drupalModuleManager, SiteConnectionService $siteConnectionService, Logger $logger) {
+  public function __construct(ModuleManager $drupalModuleManager, SiteConnectionService $siteConnectionService, Logger $logger, EventDispatcherInterface $dispatcher) {
     $this->drupalModuleManager = $drupalModuleManager;
     $this->siteConnectionService = $siteConnectionService;
     $this->logger = $logger;
+    $this->dispatcher = $dispatcher;
   }
 
   /**
@@ -79,6 +88,9 @@ class WardenDrupalSiteService {
 
     try {
       $site->updateModules($this->drupalModuleManager);
+
+      $event = new DashboardUpdateEvent($site);
+      $this->dispatcher->dispatch(WardenEvents::WARDEN_DASHBOARD_UPDATE, $event);
     }
     catch (DocumentNotFoundException $e) {
       $this->logger->addWarning($e->getMessage());
@@ -118,11 +130,9 @@ class WardenDrupalSiteService {
       return;
     }
 
-    $this->logger->addInfo('This is the start of a Drupal Site Update Event: ' . $event->getSite()
-        ->getUrl());
+    $this->logger->addInfo('This is the start of a Drupal Site Update Event: ' . $event->getSite()->getUrl());
     $this->processUpdate($event->getSite(), $event->getData());
-    $this->logger->addInfo('This is the end of a Drupal Site Update Event: ' . $event->getSite()
-        ->getUrl());
+    $this->logger->addInfo('This is the end of a Drupal Site Update Event: ' . $event->getSite()->getUrl());
   }
 
   /**

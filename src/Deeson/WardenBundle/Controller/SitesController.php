@@ -3,21 +3,17 @@
 namespace Deeson\WardenBundle\Controller;
 
 use Deeson\WardenBundle\Document\ModuleDocument;
+use Deeson\WardenBundle\Event\DashboardUpdateEvent;
 use Deeson\WardenBundle\Event\SiteEvent;
 use Deeson\WardenBundle\Event\SiteShowEvent;
 use Deeson\WardenBundle\Event\SiteUpdateEvent;
-use Deeson\WardenBundle\Document\DashboardDocument;
 use Deeson\WardenBundle\Event\WardenEvents;
-use Deeson\WardenBundle\Exception\DocumentNotFoundException;
 use Deeson\WardenBundle\Managers\ModuleManager;
-use Deeson\WardenBundle\Managers\DashboardManager;
-use Deeson\WardenBundle\Tabs\WardenTableSiteTab;
 use Symfony\Bridge\Monolog\Logger;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\Request;
 use Deeson\WardenBundle\Managers\SiteManager;
-use Deeson\WardenBundle\Services\WardenDrupalSiteService;
 use Deeson\WardenBundle\Document\SiteDocument;
 use Deeson\WardenBundle\Services\SSLEncryptionService;
 use Symfony\Component\HttpFoundation\Response;
@@ -95,14 +91,10 @@ class SitesController extends Controller {
       $site->setUrl($siteUrl);
       $site->setWardenToken($wardenToken);
       $manager->saveDocument($site);
-      $this->get('session')
-        ->getFlashBag()
-        ->add('notice', 'Your site has now been registered.');
+      $this->get('session')->getFlashBag()->add('notice', 'Your site has now been registered.');
     }
     else {
-      $this->get('session')
-        ->getFlashBag()
-        ->add('error', 'Your site is already registered!');
+      $this->get('session')->getFlashBag()->add('error', 'Your site is already registered!');
     }
 
     return $this->redirect($this->generateUrl('sites_list'));
@@ -120,6 +112,7 @@ class SitesController extends Controller {
   public function DeleteAction($id, Request $request) {
     /** @var SiteManager $manager */
     $manager = $this->get('warden.site_manager');
+    /** @var SiteDocument $site */
     $site = $manager->getDocumentById($id);
 
     $form = $this->createFormBuilder()
@@ -133,10 +126,13 @@ class SitesController extends Controller {
     if ($form->isValid()) {
       $manager->deleteDocument($id);
       $this->updateModules($site);
-      $this->updateDashboard($site, TRUE);
-      $this->get('session')
-        ->getFlashBag()
-        ->add('notice', 'The site [' . $site->getName() . '] has been deleted.');
+
+      /** @var EventDispatcher $dispatcher */
+      $dispatcher = $this->get('event_dispatcher');
+      $event = new DashboardUpdateEvent($site, TRUE);
+      $dispatcher->dispatch(WardenEvents::WARDEN_DASHBOARD_UPDATE, $event);
+
+      $this->get('session')->getFlashBag()->add('notice', 'The site [' . $site->getName() . '] has been deleted.');
 
       return $this->redirect($this->generateUrl('sites_list'));
     }
@@ -180,19 +176,14 @@ class SitesController extends Controller {
 
     try {
       $dispatcher->dispatch(WardenEvents::WARDEN_SITE_REFRESH, $event);
-      $this->updateDashboard($site);
     }
     catch (\Exception $e) {
-      $this->get('session')
-        ->getFlashBag()
-        ->add('error', 'General Error - Unable to retrieve data from the site: ' . $e->getMessage());
+      $this->get('session')->getFlashBag()->add('error', 'General Error - Unable to retrieve data from the site: ' . $e->getMessage());
       return $this->redirect($this->generateUrl('sites_show', array('id' => $id)));
     }
 
     if ($event->hasMessage()) {
-      $this->get('session')
-        ->getFlashBag()
-        ->add('notice', $event->getMessage());
+      $this->get('session')->getFlashBag()->add('notice', $event->getMessage());
     }
 
     return $this->redirect($this->generateUrl('sites_show', array('id' => $id)));
@@ -205,7 +196,6 @@ class SitesController extends Controller {
    * @return Response
    */
   public function updateAction(Request $request) {
-    // @todo can these services be passed into the method?
     /** @var Logger $logger */
     $logger = $this->get('logger');
 
@@ -280,37 +270,6 @@ class SitesController extends Controller {
       $module->removeSite($site->getId());
       $moduleManager->updateDocument();
     }
-  }
-
-  /**
-   * Updates the dashboard following an update to a site.
-   *
-   * @param SiteDocument $site
-   *   The site object to update the dashboard for.
-   * @param bool $forceDelete
-   *   If true, then the site will just be deleted from the dashboard.
-   *
-   * @throws \Doctrine\ODM\MongoDB\MongoDBException
-   */
-  protected function updateDashboard(SiteDocument $site, $forceDelete = FALSE) {
-    /** @var DashboardManager $dashboardManager */
-    $dashboardManager = $this->get('warden.dashboard_manager');
-
-    /** @var DashboardManager $dashboardSite */
-    $qb = $dashboardManager->createQueryBuilder();
-    $qb->field('siteId')->equals(new \MongoId($site->getId()));
-    $cursor = $qb->getQuery()->execute()->toArray();
-    $dashboardSite = array_pop($cursor);
-    if (empty($dashboardSite)) {
-      return;
-    }
-    $dashboardManager->deleteDocument($dashboardSite->getId());
-
-    if ($forceDelete) {
-      return;
-    }
-
-    $dashboardManager->addSiteToDashboard($site);
   }
 
   public function EditAction($id, Request $request) {

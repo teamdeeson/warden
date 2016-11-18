@@ -4,6 +4,7 @@ namespace Deeson\WardenBundle\Managers;
 
 use Deeson\WardenBundle\Document\DashboardDocument;
 use Deeson\WardenBundle\Document\SiteDocument;
+use Deeson\WardenBundle\Event\DashboardUpdateEvent;
 
 class DashboardManager extends BaseManager {
 
@@ -26,7 +27,36 @@ class DashboardManager extends BaseManager {
   }
 
   /**
-   * Adds the site to the dashboard if needed.
+   * Event: warden.dashboard.update
+   *
+   * Fires when the dashboard needs might need to be updated.
+   *
+   * A check is done on the site to see if it should appear on the dashboard.
+   *
+   * @param DashboardUpdateEvent $event
+   */
+  public function onWardenDashboardUpdate(DashboardUpdateEvent $event) {
+    /** @var SiteDocument $site */
+    $site = $event->getSite();
+
+    $qb = $this->createQueryBuilder();
+    $qb->field('siteId')->equals(new \MongoId($site->getId()));
+    $cursor = $qb->getQuery()->execute()->toArray();
+    $dashboardSite = array_pop($cursor);
+    if (!empty($dashboardSite)) {
+      $this->logger->addInfo('Remove the site [' . $site->getName() . '] from the dashboard');
+      $this->deleteDocument($dashboardSite->getId());
+    }
+
+    if ($event->isForceDelete()) {
+      return;
+    }
+
+    $this->addSiteToDashboard($site);
+  }
+
+  /**
+   * Adds the site to the dashboard, if needed.
    *
    * @param \Deeson\WardenBundle\Document\SiteDocument $site
    *
@@ -54,6 +84,7 @@ class DashboardManager extends BaseManager {
       $modulesNeedUpdate[] = $siteModule;
     }
 
+    // Don't add the site to the dashboard if there are no critical issues.
     if (!$hasCriticalIssue) {
       return false;
     }

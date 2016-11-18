@@ -36,7 +36,7 @@ services:
 
     warden.drupal.site:
         class: Deeson\WardenBundle\Services\WardenDrupalSiteService
-        arguments: ['@warden.drupal.module', '@warden.site_connection', @monolog.logger]
+        arguments: ['@warden.drupal.module', '@warden.site_connection', @monolog.logger, @event_dispatcher]
         tags:
             - { name: kernel.event_listener, event: warden.site.update, method: onWardenSiteUpdate  }
             - { name: kernel.event_listener, event: warden.site.refresh, method: onRefreshSiteRequest  }
@@ -55,6 +55,8 @@ services:
     warden.dashboard_manager:
         class: Deeson\WardenBundle\Managers\DashboardManager
         arguments: [@doctrine_mongodb, @monolog.logger]
+        tags:
+            - { name: kernel.event_listener, event: warden.dashboard.update, method: onWardenDashboardUpdate  }
 
     user_provider:
         class: Deeson\WardenBundle\Services\UserProviderService

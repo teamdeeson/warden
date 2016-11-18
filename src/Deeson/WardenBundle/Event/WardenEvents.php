@@ -39,6 +39,12 @@ final class WardenEvents {
   const WARDEN_SITE_REFRESH = 'warden.site.refresh';
 
   /**
+   * The warden.dashboard.update event is thrown when a site is updated and there
+   * is the need to determine if the site should appear on the dashboard.
+   */
+  const WARDEN_DASHBOARD_UPDATE = 'warden.dashboard.update';
+
+  /**
    * The warden.cron event is thrown to indicate that periodic cron tasks should
    * now run.
    */
