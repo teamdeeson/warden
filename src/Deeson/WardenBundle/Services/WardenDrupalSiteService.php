@@ -146,7 +146,7 @@ class WardenDrupalSiteService {
 
     $this->logger->addInfo('This is the start of a Drupal show site event: ' . $site->getUrl());
 
-    if (!$site->compareCoreVersion() && $site->getIsSecurityCoreVersion()) {
+    if ($site->hasOlderCoreVersion() && $site->getIsSecurityCoreVersion()) {
       $event->addTemplate('DeesonWardenBundle:Drupal:securityUpdateRequired.html.twig');
     }
 

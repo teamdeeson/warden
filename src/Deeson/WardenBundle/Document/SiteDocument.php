@@ -473,9 +473,10 @@ class SiteDocument extends BaseDocument {
    * Compare the current core version with the latest core version.
    *
    * @return bool
+   *   TRUE if the current core version is less than the latest core version.
    */
-  public function compareCoreVersion() {
-    return $this->getCoreVersion() == $this->getLatestCoreVersion();
+  public function hasOlderCoreVersion() {
+    return $this->getCoreVersion() < $this->getLatestCoreVersion();
   }
 
   /**
