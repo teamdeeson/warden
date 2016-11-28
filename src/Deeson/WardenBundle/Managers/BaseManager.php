@@ -60,6 +60,16 @@ abstract class BaseManager {
   }
 
   /**
+   * Get the count for all the documents.
+   *
+   * @return int
+   *   The total document count.
+   */
+  public function getAllDocumentsCount() {
+    return $this->createQueryBuilder()->getQuery()->execute()->count();
+  }
+
+  /**
    * Get all Mongodb documents by a criteria.
    *
    * @param array $criteria

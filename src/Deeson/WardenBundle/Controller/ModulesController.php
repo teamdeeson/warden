@@ -22,8 +22,7 @@ class ModulesController extends Controller {
     /** @var SiteManager $siteManager */
     $siteManager = $this->get('warden.site_manager');
 
-    $sites = $siteManager->getAllDocuments();
-    $sitesTotalCount = (is_array($sites)) ? 0 : $sites->count();
+    $sitesTotalCount = $siteManager->getAllDocumentsCount();
     $modules = $moduleManager->getDocumentsBy(array('isNew' => FALSE), array('projectName' => 'asc'));
 
     $moduleList = array();
