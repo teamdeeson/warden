@@ -29,7 +29,7 @@
                             <td>{{ site.getCoreVersion() }}</td>
                             <td>
                                 {{ site.getLatestCoreVersion() }}
-                                ({% if site.compareCoreVersion() %}N{% else %}Y{% endif %})
+                                ({% if site.hasOlderCoreVersion() %}N{% else %}Y{% endif %})
                                 [{% if site.getIsSecurityCoreVersion() %}Y{% else %}N{% endif %}]
                                 [{% if site.getHasCriticalIssue() %}Y{% else %}N{% endif %}]
                             </td>

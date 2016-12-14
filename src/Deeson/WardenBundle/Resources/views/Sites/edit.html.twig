@@ -6,7 +6,7 @@
 
 {% block content %}
 
-    <p>Core Version: {{ site.getCoreVersion() }} ({{ site.getLatestCoreVersion() }}, {% if site.compareCoreVersion() %}Y{% else %}N{% endif %})</p>
+    <p>Core Version: {{ site.getCoreVersion() }} ({{ site.getLatestCoreVersion() }}, {% if site.hasOlderCoreVersion() %}Y{% else %}N{% endif %})</p>
 
     {{ form(form) }}
 
