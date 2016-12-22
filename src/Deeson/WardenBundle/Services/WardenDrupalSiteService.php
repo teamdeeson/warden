@@ -154,8 +154,11 @@ class WardenDrupalSiteService {
     $event->addParam('coreVersion', $site->getCoreVersion());
     $event->addParam('latestCoreVersion', $site->getLatestCoreVersion());
 
-    $event->addTemplate('DeesonWardenBundle:Drupal:moduleUpdates.html.twig');
-    $event->addParam('modulesRequiringUpdates', $site->getModulesRequiringUpdates());
+    $modulesRequiringUpdates = $site->getModulesRequiringUpdates();
+    if (!empty($modulesRequiringUpdates)) {
+      $event->addTemplate('DeesonWardenBundle:Drupal:moduleUpdates.html.twig');
+      $event->addParam('modulesRequiringUpdates', $modulesRequiringUpdates);
+    }
 
     $event->addTemplate('DeesonWardenBundle:Drupal:modules.html.twig');
     $event->addParam('modules', $site->getModules());
