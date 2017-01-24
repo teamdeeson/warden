@@ -2,5 +2,5 @@ parameters:
     locale:            en
     secret:            ThisTokenIsNotSoSecretChangeIt
     protocol:          https
-    public_key_file:   ~/key.public
-    private_key_file:  ~/key.private
+    public_key_file:   %kernel.root_dir%/config/key.public
+    private_key_file:  %kernel.root_dir%/config/key.private
