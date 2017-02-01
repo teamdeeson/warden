@@ -278,15 +278,26 @@ class SitesController extends Controller {
     $site = $manager->getDocumentById($id);
 
     $form = $this->createFormBuilder($site)
-            ->add('name', 'text')
-            ->add('url', 'text', array(
-              'label' => 'URL'
+            ->add('name', 'text', array(
+              'label' => 'Name: ',
+              'attr' => array('size' => '40'),
             ))
-            ->add('wardenToken', 'text')
+            ->add('url', 'text', array(
+              'label' => 'URL: ',
+              'attr' => array('size' => '40'),
+            ))
+            ->add('wardenToken', 'text', array(
+              'label' => 'Token: ',
+              'attr' => array('size' => '80'),
+            ))
             ->add('authUser', 'text', array(
+              'label' => 'Auth User: ',
+              'attr' => array('size' => '30'),
               'required' => false
             ))
             ->add('authPass', 'text', array(
+              'label' => 'Auth Password: ',
+              'attr' => array('size' => '30'),
               'required' => false
             ))
             ->add('isNew', 'checkbox', array(
