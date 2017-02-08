@@ -9,9 +9,9 @@
     "require": {
         "php": ">=5.5",
         "ext-openssl": "*",
-        "symfony/symfony": "2.6.*",
+        "symfony/symfony": "^2.8",
         "doctrine/orm": "~2.2,>=2.2.3",
-        "twig/extensions": "1.0.*",
+        "twig/extensions": "^1.0",
         "symfony/assetic-bundle": "@stable",
         "symfony/monolog-bundle": "@stable",
         "sensio/distribution-bundle": "~4.0",
