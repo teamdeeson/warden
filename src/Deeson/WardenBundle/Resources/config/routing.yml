@@ -3,11 +3,11 @@ _secured:
     type:     annotation
 
 _unauthorised:
-    pattern: /unauthorised
+    path: /unauthorised
     defaults: { _controller: DeesonWardenBundle:Dashboard:unauthorised }
 
 _dashboard:
-    pattern:  /
+    path:  /
     defaults: { _controller: DeesonWardenBundle:Dashboard:index }
 
 sites_list:
