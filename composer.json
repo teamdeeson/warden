@@ -19,7 +19,7 @@
         "sensio/generator-bundle": "@stable",
         "incenteev/composer-parameter-handler": "~2.0",
         "sensio/buzz-bundle":"@stable",
-        "doctrine/mongodb-odm": "1.0.*@dev",
+        "doctrine/mongodb-odm": "^1.1",
         "doctrine/mongodb-odm-bundle": "3.0.*@dev",
         "doctrine/mongodb": "^1.1",
         "mongodb/mongodb": "^1.0",

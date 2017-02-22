@@ -12,7 +12,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 class DashboardDocument extends BaseDocument {
 
   /**
-   * @Mongodb\String
+   * @Mongodb\Field(type="string")
    */
   protected $name;
 
@@ -22,7 +22,7 @@ class DashboardDocument extends BaseDocument {
   protected $siteId;
 
   /**
-   * @Mongodb\String
+   * @Mongodb\Field(type="string")
    */
   protected $url;
 

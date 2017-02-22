@@ -14,7 +14,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 class SiteDocument extends BaseDocument {
 
   /**
-   * @Mongodb\String
+   * @Mongodb\Field(type="string")
    */
   protected $name;
 
@@ -24,7 +24,7 @@ class SiteDocument extends BaseDocument {
   protected $isNew = TRUE;
 
   /**
-   * @Mongodb\String
+   * @Mongodb\Field(type="string")
    */
   protected $url;
 
@@ -34,12 +34,12 @@ class SiteDocument extends BaseDocument {
   protected $coreVersion;
 
   /**
-   * @Mongodb\String
+   * @Mongodb\Field(type="string")
    */
   protected $wardenToken;
 
   /**
-   * @Mongodb\String
+   * @Mongodb\Field(type="string")
    */
   protected $wardenEncryptToken;
 
@@ -49,12 +49,12 @@ class SiteDocument extends BaseDocument {
   protected $modules;
 
   /**
-   * @Mongodb\String
+   * @Mongodb\Field(type="string")
    */
   protected $authUser;
 
   /**
-   * @Mongodb\String
+   * @Mongodb\Field(type="string")
    */
   protected $authPass;
 
@@ -69,7 +69,7 @@ class SiteDocument extends BaseDocument {
   protected $additionalIssues;
 
   /**
-   * @Mongodb\String
+   * @Mongodb\Field(type="string")
    */
   protected $lastSuccessfulRequest;
 
