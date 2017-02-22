@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "fe0151bc91bb95347296e4747c1b0def",
-    "content-hash": "a1f1d6dac6a51a9b0cba222fe1c94c77",
+    "hash": "3d6b1368cb9aeb2d48a7801c028c18f0",
+    "content-hash": "6375c6c26b39ab64fea1dd6673da2c28",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -672,16 +672,16 @@
         },
         {
             "name": "doctrine/mongodb-odm",
-            "version": "1.0.x-dev",
+            "version": "1.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/mongodb-odm.git",
-                "reference": "052971cd400fe0c6ea48dd3319fa98d145b0a843"
+                "reference": "e839648ef7649757aae3b9818236a6fa47c016cd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/mongodb-odm/zipball/052971cd400fe0c6ea48dd3319fa98d145b0a843",
-                "reference": "052971cd400fe0c6ea48dd3319fa98d145b0a843",
+                "url": "https://api.github.com/repos/doctrine/mongodb-odm/zipball/e839648ef7649757aae3b9818236a6fa47c016cd",
+                "reference": "e839648ef7649757aae3b9818236a6fa47c016cd",
                 "shasum": ""
             },
             "require": {
@@ -691,8 +691,8 @@
                 "doctrine/common": "~2.4",
                 "doctrine/inflector": "~1.0",
                 "doctrine/instantiator": "~1.0.1",
-                "doctrine/mongodb": "~1.2",
-                "php": ">=5.3.2",
+                "doctrine/mongodb": "~1.3",
+                "php": "^5.6 || ^7.0",
                 "symfony/console": "~2.3|~3.0"
             },
             "require-dev": {
@@ -700,12 +700,13 @@
                 "symfony/yaml": "~2.3|~3.0"
             },
             "suggest": {
+                "alcaeus/mongo-php-adapter": "Allows usage of PHP 7",
                 "symfony/yaml": "Enables the YAML metadata mapping driver"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.0.x-dev"
+                    "dev-master": "1.1.x-dev"
                 }
             },
             "autoload": {
@@ -751,36 +752,39 @@
                 "odm",
                 "persistence"
             ],
-            "time": "2016-10-07 09:17:14"
+            "time": "2016-10-07 09:18:05"
         },
         {
             "name": "doctrine/mongodb-odm-bundle",
-            "version": "3.0.x-dev",
+            "version": "3.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/DoctrineMongoDBBundle.git",
-                "reference": "beeed22cd07f9e5fe5ac2524a8be37d4656dd514"
+                "reference": "9ad10aa1c64fe140537ebb1306fe0f4d2357f6fd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/DoctrineMongoDBBundle/zipball/beeed22cd07f9e5fe5ac2524a8be37d4656dd514",
-                "reference": "beeed22cd07f9e5fe5ac2524a8be37d4656dd514",
+                "url": "https://api.github.com/repos/doctrine/DoctrineMongoDBBundle/zipball/9ad10aa1c64fe140537ebb1306fe0f4d2357f6fd",
+                "reference": "9ad10aa1c64fe140537ebb1306fe0f4d2357f6fd",
                 "shasum": ""
             },
             "require": {
-                "doctrine/mongodb-odm": "~1.0",
-                "php": ">=5.3.2",
-                "symfony/config": "~2.2",
-                "symfony/console": "~2.1",
-                "symfony/dependency-injection": "~2.2",
-                "symfony/doctrine-bridge": "~2.1",
-                "symfony/framework-bundle": "~2.1",
-                "symfony/options-resolver": "~2.1"
+                "doctrine/mongodb-odm": "^1.1",
+                "php": "^5.6 || ^7.0",
+                "psr/log": "^1.0",
+                "symfony/config": "^2.7 || ^3.0",
+                "symfony/console": "^2.7 || ^3.0",
+                "symfony/dependency-injection": "^2.7 || ^3.0",
+                "symfony/doctrine-bridge": "^2.7 || ^3.0",
+                "symfony/framework-bundle": "^2.7 || ^3.0",
+                "symfony/options-resolver": "^2.7 || ^3.0"
             },
             "require-dev": {
                 "doctrine/data-fixtures": "@dev",
-                "symfony/form": "~2.3",
-                "symfony/yaml": "~2.1"
+                "phpunit/phpunit": "^5.6",
+                "symfony/form": "^2.7 || ^3.0",
+                "symfony/phpunit-bridge": "^2.7 || ^3.0",
+                "symfony/yaml": "^2.7 || ^3.0"
             },
             "suggest": {
                 "doctrine/data-fixtures": "Load data fixtures"
@@ -788,7 +792,7 @@
             "type": "symfony-bundle",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "3.0-dev"
+                    "dev-master": "3.1-dev"
                 }
             },
             "autoload": {
@@ -821,7 +825,7 @@
                 "persistence",
                 "symfony"
             ],
-            "time": "2016-02-08 21:00:31"
+            "time": "2016-12-08 07:05:40"
         },
         {
             "name": "doctrine/orm",
@@ -2524,9 +2528,7 @@
         "symfony/monolog-bundle": 0,
         "sensio/framework-extra-bundle": 0,
         "sensio/generator-bundle": 0,
-        "sensio/buzz-bundle": 0,
-        "doctrine/mongodb-odm": 20,
-        "doctrine/mongodb-odm-bundle": 20
+        "sensio/buzz-bundle": 0
     },
     "prefer-stable": false,
     "prefer-lowest": false,
