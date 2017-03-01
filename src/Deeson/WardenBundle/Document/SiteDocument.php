@@ -49,6 +49,11 @@ class SiteDocument extends BaseDocument {
   protected $modules;
 
   /**
+   * @Mongodb\Collection
+   */
+  protected $jsLibraries;
+
+  /**
    * @Mongodb\Field(type="string")
    */
   protected $authUser;
@@ -250,6 +255,45 @@ class SiteDocument extends BaseDocument {
     }
     ksort($moduleList);
     $this->modules = $moduleList;
+  }
+
+  /**
+   * Get the site JS libraries.
+   *
+   * @todo move this into the DrupalSiteService
+   * @return mixed
+   */
+  public function getJsLibraries() {
+    return (!empty($this->jsLibraries)) ? $this->jsLibraries : array();
+  }
+
+  /**
+   * Set the current Javascript libraries for the site.
+   *
+   * @param array $jsLibraryData
+   *   List of Javascript library data to add to the site.
+   * @param bool $update
+   *   If true, update the site Javascript library versions while using the existing version
+   *   information.
+   */
+  public function setJsLibraries($jsLibraryData, $update = FALSE) {
+    $curentJsLibrary = ($update) ? $this->getJsLibraries() : array();
+    if (!empty($curentJsLibrary)) {
+      $currentVersions = array();
+      foreach ($curentJsLibrary as $value) {
+        $currentVersions[$value['name']] = $value;
+      }
+    }
+
+    $jsLibraryList = array();
+    foreach ($jsLibraryData as $name => $version) {
+      $jsLibraryList[$name] = array(
+        'name' => $name,
+        'version' => $version['version'],
+      );
+    }
+    ksort($jsLibraryList);
+    $this->jsLibraries = $jsLibraryList;
   }
 
   /**
