@@ -26,14 +26,3 @@ monolog:
 
 assetic:
     use_controller: true
-
-# app/config/config.yml
-doctrine_mongodb:
-    connections:
-        default:
-            server: mongodb://localhost:27017
-            options: {}
-    default_database: warden
-    document_managers:
-        default:
-            auto_mapping: true

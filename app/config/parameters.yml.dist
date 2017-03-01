@@ -2,5 +2,10 @@ parameters:
     locale:            en
     secret:            ThisTokenIsNotSoSecretChangeIt
     protocol:          https
+    db_host:           localhost
+    db_port:           27017
+    db_name:           warden
+    db_username:       ~
+    db_password:       ~
     public_key_file:   %kernel.root_dir%/config/key.public
     private_key_file:  %kernel.root_dir%/config/key.private

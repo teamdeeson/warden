@@ -64,7 +64,7 @@ to get your application started:
 Once set up you can log in using the credentials that you entered during the 
 installation process.
 
-The installation parameters are:
+The basic installation parameters are:
 
   * locale            - the language code (e.g. en), currently only en is supported
   * secret            - a long random string used for security
@@ -72,6 +72,18 @@ The installation parameters are:
   or http (not secure)
   * public_key_file   - the location of where the Warden app will create the public key
   * private_key_file  - the location of where the Warden app will create the private key
+  
+Installation parameters when using Mongodb with authentication are:
+
+  * db_host      - the mongodb host (defaults to localhost)
+  * db_port      - the mongodb port (defaults to 27017)
+  * db_name      - the mongodb database name (defaults to warden)
+  * db_username  - the mongodb authentication username (defaults to null)
+  * db_password  - the mongodb authentication password (defaults to null)
+  
+If you are not using Mongodb with authentication enabled, then you can leave the 
+username and password settings as 'null', otherwise these should be the username
+and password needed to be able to connect the Mongodb database.
 
 How it Works
 ------------
