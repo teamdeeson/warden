@@ -1,0 +1,24 @@
+<div class="box">
+    <div class="box-header">
+        <h3 class="box-title">Installed Javascript Libraries</h3>
+    </div>
+    <!-- /.box-header -->
+    <div class="box-body table-responsive no-padding">
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th width="60%">Name</th>
+                <th>Version</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for library in jsLibraries %}
+                <tr>
+                    <td>{{ library.name }}</td>
+                    <td>{{ library.version }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>

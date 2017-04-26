@@ -20,12 +20,12 @@ class ModuleDocument extends BaseDocument {
   const MODULE_PROJECT_STATUS_UNSUPPORTED = 'unsupported';
 
   /**
-   * @Mongodb\String
+   * @Mongodb\Field(type="string")
    */
   protected $name;
 
   /**
-   * @Mongodb\String
+   * @Mongodb\Field(type="string")
    */
   protected $projectName;
 
@@ -46,7 +46,7 @@ class ModuleDocument extends BaseDocument {
   protected $sites;
 
   /**
-   * @Mongodb\String
+   * @Mongodb\Field(type="string")
    */
   protected $projectStatus = '';
 

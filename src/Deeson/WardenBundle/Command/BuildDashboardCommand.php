@@ -3,11 +3,8 @@
 namespace Deeson\WardenBundle\Command;
 
 use Deeson\WardenBundle\Document\SiteDocument;
-use Deeson\WardenBundle\Document\DashboardDocument;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Deeson\WardenBundle\Managers\SiteManager;
 use Deeson\WardenBundle\Managers\DashboardManager;

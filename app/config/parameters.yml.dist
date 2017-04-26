@@ -2,5 +2,21 @@ parameters:
     locale:            en
     secret:            ThisTokenIsNotSoSecretChangeIt
     protocol:          https
-    public_key_file:   ~/key.public
-    private_key_file:  ~/key.private
+    db_host:           localhost
+    db_port:           27017
+    db_name:           warden
+    db_username:       ~
+    db_password:       ~
+    public_key_file:   %kernel.root_dir%/config/key.public
+    private_key_file:  %kernel.root_dir%/config/key.private
+
+    # Swiftmailer settings
+    mailer_transport:              smtp
+    mailer_host:                   127.0.0.1
+    mailer_port:                   25
+    mailer_user:                   ~
+    mailer_password:               ~
+
+    # Warden settings
+    warden.email.sender_address:          ''
+    warden.email.dashboard.alert_address: ''

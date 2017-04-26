@@ -62,6 +62,21 @@ class DrupalUpdateRequestService {
   protected $siteManager;
 
   /**
+   * @var array
+   */
+  protected $drupalAllModuleVersions = array();
+
+  /**
+   * @var array
+   */
+  protected $moduleLatestVersion = array();
+
+  /**
+   * @var array
+   */
+  protected $majorVersions = array();
+
+  /**
    * @param Browser $buzz
    * @param SiteManager $siteManager
    * @param ModuleManager $drupalModuleManager
@@ -158,7 +173,6 @@ class DrupalUpdateRequestService {
     }
 
     $projectStatus = (string) $requestXmlObject->project_status;
-    $projectApiVersion = (string) $requestXmlObject->api_version;
 
     $recommendedMajorVersion = 0;
     $supportedMajorVersions = array();
@@ -168,7 +182,6 @@ class DrupalUpdateRequestService {
       $supportedMajorVersions = explode(',', $supportedMajor);
     }
 
-    $releaseVersions = array();
     $latestReleaseVersions = array();
     foreach ($requestXmlObject->releases->release as $release) {
       if (count($supportedMajorVersions) > 0) {
@@ -184,57 +197,31 @@ class DrupalUpdateRequestService {
           /*if (!is_null($versionInfo['extra'])) {
             continue;
           }*/
-
-          $releaseVersions[] = $release;
-          unset($supportedMajorVersions[$key]);
         }
-        /*if (count($supportedMajorVersions) < 1) {
-          break;
-        }*/
-      }
-      else {
-        // This isn't a supported version, so just return the latest release.
-        $releaseVersions[] = $release;
-        //break;
-      }
-    }
-
-    // If there is still version data available, then set the release to be the
-    // latest available version as there must not be a stable version for that
-    // minor release yet.
-    if (count($supportedMajorVersions) > 0) {
-      foreach ($supportedMajorVersions as $version) {
-        // Handle unsupported major version.
-        if ((int) $version === 9999) {
-          continue;
-        }
-        if (!isset($latestReleaseVersions[$version])) {
-          print "Error: Unknown version key: $version ($projectApiVersion) in latest release versions for {$this->moduleRequestName}\n";
-          continue;
-        }
-        $releaseVersions[] = $latestReleaseVersions[$version][0];
       }
     }
 
     $versions = array();
-    foreach ($releaseVersions as $release) {
-      $isSecurityRelease = FALSE;
-      if (isset($release->terms)) {
-        foreach ($release->terms->term as $term) {
-          if (strtolower($term->value) == 'security update') {
-            $isSecurityRelease = TRUE;
+    foreach ($latestReleaseVersions as $releaseMajorVersion => $releaseVersions) {
+      foreach ($releaseVersions as $release) {
+        $isSecurityRelease = FALSE;
+        if (isset($release->terms)) {
+          foreach ($release->terms->term as $term) {
+            if (strtolower($term->value) == 'security update') {
+              $isSecurityRelease = TRUE;
+            }
           }
         }
+
+        $versionType = (isset($release->version_major) && $release->version_major == $recommendedMajorVersion) ?
+          ModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED :
+          ModuleDocument::MODULE_VERSION_TYPE_OTHER;
+
+        $versions[$versionType][] = array(
+          'version' => isset($release->version) ? (string) $release->version : 0,
+          'isSecurity' => $isSecurityRelease,
+        );
       }
-
-      $versionType = (isset($release->version_major) && $release->version_major == $recommendedMajorVersion) ?
-        ModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED :
-        ModuleDocument::MODULE_VERSION_TYPE_OTHER;
-
-      $versions[$versionType][] = array(
-        'version' => isset($release->version) ? (string) $release->version : 0,
-        'isSecurity' => $isSecurityRelease,
-      );
     }
 
     $this->projectStatus = $projectStatus;
@@ -263,7 +250,7 @@ class DrupalUpdateRequestService {
    * Event: Triggered on cron runs.
    */
   public function onWardenCron() {
-    $this->updateAllDrupalModules(FALSE);
+    $this->updateAllDrupalModules();
   }
 
   /**
@@ -275,11 +262,19 @@ class DrupalUpdateRequestService {
   public function updateAllDrupalModules($updateNewSitesOnly = FALSE) {
     $this->logger->addInfo('*** Starting Drupal Update Request Service ***');
 
-    $drupalAllModuleVersions = array();
-    $moduleLatestVersion = array();
-    $majorVersions = $this->siteManager->getAllMajorVersionReleases();
+    $this->majorVersions = $this->siteManager->getAllMajorVersionReleases();
 
-    foreach ($majorVersions as $version) {
+    $this->updateContribModules();
+    $this->updateCore($updateNewSitesOnly);
+
+    $this->logger->addInfo('*** FINISHED Drupal Update Request Service ***');
+  }
+
+  /**
+   * Get the contrib module version information.
+   */
+  protected function updateContribModules() {
+    foreach ($this->majorVersions as $version) {
       $modules = $this->drupalModuleManager->getAllByVersion($version);
 
       /** @var ModuleDocument $module */
@@ -288,24 +283,25 @@ class DrupalUpdateRequestService {
 
         try {
           $this->processDrupalUpdateData($module->getProjectName(), $version);
-        } catch (\Exception $e) {
+        }
+        catch (\Exception $e) {
           $this->logger->addWarning(' - Unable to update module version [' . $version . ']: ' . $e->getMessage());
           continue;
         }
 
-        $drupalAllModuleVersions[$version][$module->getProjectName()] = $drupalModuleVersions = $this->moduleVersions;
+        $this->drupalAllModuleVersions[$version][$module->getProjectName()] = $drupalModuleVersions = $this->moduleVersions;
         $moduleVersions = array();
         // Get the recommended module version.
         if (isset($drupalModuleVersions[ModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED])) {
           $moduleRecommendedLatestVersion = $drupalModuleVersions[ModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED][0];
           $moduleVersions[ModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED] = $moduleRecommendedLatestVersion;
-          $moduleLatestVersion[$version][$module->getProjectName()][ModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED] = $moduleRecommendedLatestVersion;
+          $this->moduleLatestVersion[$version][$module->getProjectName()][ModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED] = $moduleRecommendedLatestVersion;
         }
         // Get the other module version.
         if (isset($drupalModuleVersions[ModuleDocument::MODULE_VERSION_TYPE_OTHER])) {
           $moduleOtherLatestVersion = $drupalModuleVersions[ModuleDocument::MODULE_VERSION_TYPE_OTHER][0];
           $moduleVersions[ModuleDocument::MODULE_VERSION_TYPE_OTHER] = $moduleOtherLatestVersion;
-          $moduleLatestVersion[$version][$module->getProjectName()][ModuleDocument::MODULE_VERSION_TYPE_OTHER] = $moduleOtherLatestVersion;
+          $this->moduleLatestVersion[$version][$module->getProjectName()][ModuleDocument::MODULE_VERSION_TYPE_OTHER] = $moduleOtherLatestVersion;
         }
 
         $module->setName($this->getModuleName());
@@ -315,15 +311,23 @@ class DrupalUpdateRequestService {
         $this->drupalModuleManager->updateDocument();
       }
     }
+  }
 
-    foreach ($majorVersions as $version) {
+  /**
+   * Get Core version information.
+   *
+   * @param $updateNewSitesOnly
+   */
+  protected function updateCore($updateNewSitesOnly) {
+    foreach ($this->majorVersions as $version) {
       // Update the core after the modules to update the versions of the modules
       // for a site.
       $this->logger->addInfo('Updating - Drupal version: ' . $version);
 
       try {
         $this->processDrupalUpdateData('drupal', $version);
-      } catch (\Exception $e) {
+      }
+      catch (\Exception $e) {
         $this->logger->addWarning(' - Unable to update drupal version [' . $version . ']: ' . $e->getMessage());
         continue;
       }
@@ -347,8 +351,8 @@ class DrupalUpdateRequestService {
           continue;
         }
 
-        if (isset($moduleLatestVersion[$version])) {
-          $site->setModulesLatestVersion($moduleLatestVersion[$version]);
+        if (isset($this->moduleLatestVersion[$version])) {
+          $site->setModulesLatestVersion($this->moduleLatestVersion[$version]);
         }
 
         // Check for if the core version is out of date and requires a security update.
@@ -380,17 +384,20 @@ class DrupalUpdateRequestService {
 
           // Check to see if this site's modules require a security update.
           $siteModuleVersionInfo = ModuleDocument::getVersionInfo($siteModule['version']);
+          $moduleVersionInfo = $this->drupalAllModuleVersions[$version][$siteModule['name']];
+
           $versionType = NULL;
-          if (isset($drupalAllModuleVersions[$version][$siteModule['name']][ModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED])) {
-            $drupalModuleRecommendedVersionInfo = ModuleDocument::getVersionInfo($drupalAllModuleVersions[$version][$siteModule['name']][ModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED][0]['version']);
-            $versionType = $drupalModuleRecommendedVersionInfo['minor'] == $siteModuleVersionInfo['minor'] ? ModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED : NULL;
-          }
-          if (isset($drupalAllModuleVersions[$version][$siteModule['name']][ModuleDocument::MODULE_VERSION_TYPE_OTHER]) && is_null($versionType)) {
-            $drupalModuleOtherVersionInfo = ModuleDocument::getVersionInfo($drupalAllModuleVersions[$version][$siteModule['name']][ModuleDocument::MODULE_VERSION_TYPE_OTHER][0]['version']);
+          if (isset($moduleVersionInfo[ModuleDocument::MODULE_VERSION_TYPE_OTHER])) {
+            $drupalModuleOtherVersionInfo = ModuleDocument::getVersionInfo($moduleVersionInfo[ModuleDocument::MODULE_VERSION_TYPE_OTHER][0]['version']);
             $versionType = $drupalModuleOtherVersionInfo['minor'] == $siteModuleVersionInfo['minor'] ? ModuleDocument::MODULE_VERSION_TYPE_OTHER : NULL;
           }
+          if (isset($moduleVersionInfo[ModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED]) && is_null($versionType)) {
+            $drupalModuleRecommendedVersionInfo = ModuleDocument::getVersionInfo($moduleVersionInfo[ModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED][0]['version']);
+            $versionType = $drupalModuleRecommendedVersionInfo['minor'] >= $siteModuleVersionInfo['minor'] ? ModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED : NULL;
+          }
+
           if (!is_null($versionType)) {
-            foreach ($drupalAllModuleVersions[$version][$siteModule['name']][$versionType] as $drupalModule) {
+            foreach ($moduleVersionInfo[$versionType] as $drupalModule) {
               if ($drupalModule['version'] == $siteModule['version']) {
                 break;
               }
@@ -419,8 +426,6 @@ class DrupalUpdateRequestService {
         $this->siteManager->updateDocument();
       }
     }
-
-    $this->logger->addInfo('*** FINISHED Drupal Update Request Service ***');
   }
 
   /**

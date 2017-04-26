@@ -3,6 +3,7 @@ imports:
     - { resource: security.yml }
 
 framework:
+    trusted_proxies:  [127.0.0.1]
     #esi:             ~
     #translator:      { fallback: "%locale%" }
     secret:          "%secret%"
@@ -39,13 +40,23 @@ assetic:
         #yui_css:
         #    jar: "%kernel.root_dir%/Resources/java/yuicompressor-2.4.7.jar"
 
-# app/config/config.yml
+# Mongodb Configuration
 doctrine_mongodb:
     connections:
         default:
-            server: mongodb://localhost:27017
-            options: {}
-    default_database: warden
+            server: mongodb://%db_host%:%db_port%
+            options:
+                username: %db_username%
+                password: %db_password%
+    default_database:     "%db_name%"
     document_managers:
         default:
             auto_mapping: true
+
+# Swiftmailer Configuration
+swiftmailer:
+    transport: "%mailer_transport%"
+    host:      "%mailer_host%"
+    port:      '%mailer_port%'
+    username:  "%mailer_user%"
+    password:  "%mailer_password%"

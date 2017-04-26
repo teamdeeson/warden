@@ -81,10 +81,18 @@ class WardenDrupalSiteService {
    */
   public function processUpdate(SiteDocument $site, $data) {
     $moduleData = json_decode(json_encode($data->contrib), TRUE);
+    if (!is_array($moduleData)) {
+      $moduleData = array();
+    }
+    $jsLibraryData = json_decode(json_encode($data->js_library), TRUE);
+    if (!is_array($jsLibraryData)) {
+      $jsLibraryData = array();
+    }
     $this->drupalModuleManager->addModules($moduleData);
     $site->setName($data->site_name);
     $site->setCoreVersion($data->core->drupal->version);
     $site->setModules($moduleData, TRUE);
+    $site->setJsLibraries($jsLibraryData, TRUE);
 
     try {
       $site->updateModules($this->drupalModuleManager);
@@ -146,6 +154,7 @@ class WardenDrupalSiteService {
 
     $this->logger->addInfo('This is the start of a Drupal show site event: ' . $site->getUrl());
 
+    // Check if Drupal core requires a security update.
     if ($site->hasOlderCoreVersion() && $site->getIsSecurityCoreVersion()) {
       $event->addTemplate('DeesonWardenBundle:Drupal:securityUpdateRequired.html.twig');
     }
@@ -154,11 +163,23 @@ class WardenDrupalSiteService {
     $event->addParam('coreVersion', $site->getCoreVersion());
     $event->addParam('latestCoreVersion', $site->getLatestCoreVersion());
 
-    $event->addTemplate('DeesonWardenBundle:Drupal:moduleUpdates.html.twig');
-    $event->addParam('modulesRequiringUpdates', $site->getModulesRequiringUpdates());
+    // Check if there are any Drupal modules that require updates.
+    $modulesRequiringUpdates = $site->getModulesRequiringUpdates();
+    if (!empty($modulesRequiringUpdates)) {
+      $event->addTemplate('DeesonWardenBundle:Drupal:moduleUpdates.html.twig');
+      $event->addParam('modulesRequiringUpdates', $modulesRequiringUpdates);
+    }
 
+    // List the Drupal modules that used on the site.
     $event->addTemplate('DeesonWardenBundle:Drupal:modules.html.twig');
     $event->addParam('modules', $site->getModules());
+
+    // List the Javascript libraries that are used on the site.
+    $jsLibraries = $site->getJsLibraries();
+    if (!empty($jsLibraries)) {
+      $event->addTemplate('DeesonWardenBundle:Drupal:javascript.html.twig');
+      $event->addParam('jsLibraries', $jsLibraries);
+    }
 
     $this->logger->addInfo('This is the end of a Drupal show site event: ' . $site->getUrl());
   }
