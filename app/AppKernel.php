@@ -17,6 +17,7 @@ class AppKernel extends Kernel
             new Deeson\WardenBundle\DeesonWardenBundle(),
             new Sensio\Bundle\BuzzBundle\SensioBuzzBundle(),
             new Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle(),
+            new Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle()
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test', 'local'))) {

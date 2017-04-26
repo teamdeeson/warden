@@ -1,0 +1,290 @@
+{% extends "DeesonWardenBundle:Mail:template.html.twig" %}
+
+{% block subject %}
+    Warden: Sites that require your attention.
+{% endblock %}
+
+{% block body_text %}
+    {% autoescape false %}
+        The following sites require attention:
+        {% for site in sites %}
+            {{ site.getName() }} ({{ url('sites_show', {'id': site.getSiteId() }) }}) [{{ site.getUrl() }}]
+        {% endfor %}
+
+        View the dashboard - {{ url('_dashboard') }}
+    {% endautoescape %}
+{% endblock %}
+
+{% block body_html %}
+    {% autoescape false %}
+        <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+        <html xmlns="http://www.w3.org/1999/xhtml">
+           <head>
+              <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+              <title>Warden: Sites that require your attention</title>
+
+              <style type="text/css">
+                 /* Client-specific Styles */
+                 #outlook a {padding:0;} /* Force Outlook to provide a "view in browser" menu link. */
+                 body{width:100% !important; -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; margin:0; padding:0;}
+                 /* Prevent Webkit and Windows Mobile platforms from changing default font sizes, while not breaking desktop design. */
+                 .ExternalClass {width:100%;} /* Force Hotmail to display emails at full width */
+                 .ExternalClass, .ExternalClass p, .ExternalClass span, .ExternalClass font, .ExternalClass td, .ExternalClass div {line-height: 100%;} /* Force Hotmail to display normal line spacing.  */
+                 #backgroundTable {margin:0; padding:0; width:100% !important; line-height: 100% !important;}
+                 img {outline:none; text-decoration:none;border:none; -ms-interpolation-mode: bicubic;}
+                 a img {border:none;}
+                 .image_fix {display:block;}
+                 p {margin: 0px 0px !important;}
+                 table td {border-collapse: collapse;}
+                 table { border-collapse:collapse; mso-table-lspace:0pt; mso-table-rspace:0pt; }
+                 a {color: #33b9ff;text-decoration: none;text-decoration:none!important;}
+                 /*STYLES*/
+                 table[class=full] { width: 100%; clear: both; }
+                 /*IPAD STYLES*/
+                 @media only screen and (max-width: 640px) {
+                 a[href^="tel"], a[href^="sms"] {
+                 text-decoration: none;
+                 color: #33b9ff; /* or whatever your want */
+                 pointer-events: none;
+                 cursor: default;
+                 }
+                 .mobile_link a[href^="tel"], .mobile_link a[href^="sms"] {
+                 text-decoration: default;
+                 color: #33b9ff !important;
+                 pointer-events: auto;
+                 cursor: default;
+                 }
+              </style>
+           </head>
+           <body>
+
+        <!-- Start of header -->
+        <table width="100%" bgcolor="#999999" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="header">
+           <tbody>
+              <tr>
+                 <td>
+                    <table width="600" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
+                       <tbody>
+                          <tr>
+                             <td width="100%">
+                                <table bgcolor="#f10008" width="600" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
+                                   <tbody>
+
+                                      <tr>
+                                         <td>
+                                            <!-- logo -->
+                                            <table width="200" bgcolor="#d60000" align="left" border="0" cellpadding="0" cellspacing="0" class="devicewidth">
+                                               <tbody>
+                                                  <tr>
+                                                     <td height="5" style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;">&nbsp;</td>
+                                                  </tr>
+                                                  <tr>
+                                                     <td width="81" height="60" align="center">
+                                                        <div class="imgpop">
+                                                           <a target="_blank" href="#" style="font-weight: 500; font-size: 35px; color: #fff; display: inline-block;">
+                                                           <img align="left" src="{{ url('_dashboard') }}{{ asset('bundles/deesonwarden/assets/img/email/dashboard/logo.png') }}" alt="" border="0" width="61" height="40" style="display:block; border:none; outline:none; text-decoration:none;">
+                                                           <span style="padding-top: 12px; display: inline-block;">
+                                                              Warden
+                                                           </span>
+                                                           </a>
+                                                        </div>
+                                                     </td>
+                                                  </tr>
+                                                  <tr>
+                                                     <td height="5" style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;">&nbsp;</td>
+                                                  </tr>
+                                               </tbody>
+                                            </table>
+                                            <!-- end of logo -->
+
+                                            <!-- start of menu -->
+                                            <table width="220" border="0" align="right" valign="middle" cellpadding="0" cellspacing="0" border="0" class="devicewidth">
+                                               <tbody>
+                                                  <tr>
+                                                     <td height="5" style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;">&nbsp;</td>
+                                                  </tr>
+                                                  <tr>
+                                                     <td height="60" align="center" valign="middle" style="font-family: Helvetica, arial, sans-serif; font-size: 13px;color: #282828; text-align: right;" st-content="menu">
+                                                        <a href="{{ url('_dashboard') }}" style="color: #fff;text-decoration: none; font-size: 14px;">View Dashboard</a>                                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                     </td>
+                                                  </tr>
+                                                  <tr>
+                                                     <td height="5" style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;">&nbsp;</td>
+                                                  </tr>
+                                               </tbody>
+                                            </table>
+                                            <!-- end of menu -->
+                                         </td>
+                                      </tr>
+
+                                   </tbody>
+                                </table>
+                             </td>
+                          </tr>
+                       </tbody>
+                    </table>
+                 </td>
+              </tr>
+           </tbody>
+        </table>
+        <!-- End of Header -->
+
+
+        <!-- article -->
+        <table width="100%" bgcolor="#999999" cellpadding="0" cellspacing="0" border="0" id="backgroundTable">
+           <tbody>
+              <tr>
+                 <td>
+                    <table width="600" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
+                       <tbody>
+                          <tr>
+                             <td width="100%">
+                                <table bgcolor="#ffffff" width="600" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
+                                   <tbody>
+
+                                      <tr>
+                                         <td>
+                                            <table width="600" align="center" border="0" cellpadding="0" cellspacing="0" class="devicewidthinner">
+                                               <tbody>
+                                                  <tr>
+                                                     <td>
+
+                                                        <table width="320" align="left" border="0" cellpadding="0" cellspacing="0" class="devicewidthinner">
+                                                           <tbody>
+                                                              <!-- title -->
+                                                              <tr>
+                                                                 <td>
+
+                                                                    <table width="320" align="center" border="0" cellpadding="0" cellspacing="0" class="devicewidthinner">
+                                                                       <tbody>
+                                                                          <!-- title -->
+                                                                          <!-- Spacing -->
+                                                                          <tr>
+                                                                             <td width="100%" height="40"></td>
+                                                                          </tr>
+                                                                          <!-- Spacing -->
+                                                                          <tr>
+                                                                             <td style="font-family: Helvetica, arial, sans-serif; font-size: 16px; color: #262626; text-align:left; line-height: 24px; padding-left: 20px;">
+                                                                                The following sites require attention:
+                                                                             </td>
+                                                                          </tr>
+                                                                          <!-- end of title -->
+                                                                       </tbody>
+                                                                    </table>
+                                                                 </td>
+                                                              </tr>
+
+                                                           </tbody>
+                                                        </table>
+                                                        <!-- end of right column -->
+                                                     </td>
+                                                  </tr>
+                                               </tbody>
+                                            </table>
+                                         </td>
+                                      </tr>
+                                      <!-- Spacing -->
+                                      <tr>
+                                         <td height="20"></td>
+                                      </tr>
+                                      <!-- Spacing -->
+
+                                   </tbody>
+                                </table>
+                             </td>
+                          </tr>
+                       </tbody>
+                    </table>
+                 </td>
+              </tr>
+           </tbody>
+        </table>
+        <!-- end of article -->
+
+
+        <table width="100%" bgcolor="#999999" cellpadding="0" cellspacing="0" border="0" align="center" id="backgroundTable">
+           <tbody>
+              <tr>
+                 <td>
+                    <table width="600" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
+                       <tbody>
+                        <tr>
+                            <td>
+                                <table bgcolor="#ffffff" width="600" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
+                                   <tbody>
+                                      <tr>
+                                         <td>
+                                            <table bgcolor="#ffffff" width="600" cellpadding="0" cellspacing="0" border="0" align="left" class="devicewidth">
+                                              <tbody>
+                                                <tr>
+                                                    <td width="20" height="30"></td>
+                                                    <th width="360" align="left">Site</th>
+                                                    <th width="100">Core Version</th>
+                                                    <th width="100">Latest Version</th>
+                                                    <td width="20"></td>
+                                                </tr>
+                                                {% for site in sites %}
+                                                <!-- bottom-border -->
+                                                <tr>
+                                                   <td width="100%" colspan="5" bgcolor="#f10008" height="1" style="font-size: 1px; line-height: 1px;">&nbsp;</td>
+                                                </tr>
+                                                <!-- /bottom-border -->
+                                                <tr>
+                                                    <td width="20" height="30"></td>
+                                                    <td width="360" style="font-family: Helvetica, arial, sans-serif; font-size: 12px; color: #262626;"><a href="{{ path('sites_show', {'id': site.getId() }) }}">{{ site.getName() }}</a> [{{ site.getUrl() }}]</td>
+                                                    <td width="100" align="right" style="font-family: Helvetica, arial, sans-serif; font-size: 12px; color: #262626; padding-right: 10px;">{{ site.getCoreVersion() }}</td>
+                                                    <td width="100" align="right" style="font-family: Helvetica, arial, sans-serif; font-size: 12px; color: #262626; padding-right: 10px;">{{ site.getLatestCoreVersion() }}</td>
+                                                    <td width="20"></td>
+                                                </tr>
+                                                {% endfor %}
+                                              </tbody>
+                                          </table>
+                                      </td>
+                                    </tr>
+                                    <!-- Spacing -->
+                                    <tr>
+                                       <td width="100%" height="20"></td>
+                                    </tr>
+                                    <!-- Spacing -->
+                                  </tbody>
+                              </table>
+                          </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                 </td>
+             </tr>
+         </tbody>
+        </table>
+
+        <!-- footer -->
+        <table width="100%" bgcolor="#999999" cellpadding="0" cellspacing="0" border="0" id="backgroundTable">
+           <tbody>
+              <tr>
+                 <td>
+                    <table width="600" bgcolor="#f10008" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
+                       <tbody>
+                          <tr>
+                             <td width="100%">
+                                <table  width="560" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
+                                   <tbody>
+                                      <tr>
+                                         <td height="50"> </td>
+                                      </tr>
+                                   </tbody>
+                                </table>
+                             </td>
+                          </tr>
+                       </tbody>
+                    </table>
+                 </td>
+              </tr>
+           </tbody>
+        </table>
+        <!-- end of footer -->
+
+        </body>
+        </html>
+    {% endautoescape %}
+{% endblock %}

@@ -81,7 +81,13 @@ class WardenDrupalSiteService {
    */
   public function processUpdate(SiteDocument $site, $data) {
     $moduleData = json_decode(json_encode($data->contrib), TRUE);
+    if (!is_array($moduleData)) {
+      $moduleData = array();
+    }
     $jsLibraryData = json_decode(json_encode($data->js_library), TRUE);
+    if (!is_array($jsLibraryData)) {
+      $jsLibraryData = array();
+    }
     $this->drupalModuleManager->addModules($moduleData);
     $site->setName($data->site_name);
     $site->setCoreVersion($data->core->drupal->version);

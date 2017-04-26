@@ -25,7 +25,7 @@ or just run the following command:
 Warden also has a dependency on [Mongodb][3], so this will need to also be
 installed and PHP configured to use it.
 
-###Mongodb Driver
+### Mongodb Driver
 
 Warden uses Doctrine's MongoDB ODM bundle to interface with MongoDB. Under the 
 bonnet Doctrine's MongoDB ODM depends upon the MongoDB PHP driver. 
@@ -40,7 +40,7 @@ versions and PHP language versions.
 
 https://docs.mongodb.com/ecosystem/drivers/php/
 
-####Using the legacy Mongodb driver
+#### Using the legacy Mongodb driver
 
 If you are using an older version of Mongodb which limits you to the legacy mongodb 
 driver, Warden is shipped with a legacy composer file to help get started.
@@ -84,6 +84,18 @@ Installation parameters when using Mongodb with authentication are:
 If you are not using Mongodb with authentication enabled, then you can leave the 
 username and password settings as 'null', otherwise these should be the username
 and password needed to be able to connect the Mongodb database.
+  
+Installation parameters when using Swiftmailer for sending emails are:
+
+  * mailer_transport               - the transport method to use to deliver emails (defaults to smtp)
+  * mailer_host                    - The host to connect to when using smtp as the transport (defaults to 127.0.0.1)
+  * mailer_port                    - The port when using smtp as the transport (defaults to 25)
+  * mailer_user                    - The username when using smtp as the transport (defaults to null)
+  * mailer_password                - The password when using smtp as the transport (defaults to null)
+  * email_sender_address           - The email address that any emails will be sent from (defaults to blank)
+  * email_dashboard_alert_address  - The email address to send the dashboard alerts to (defaults to blank)
+  
+Further reading on mailer configuration can be found on the [Symfony documentation][5]
 
 How it Works
 ------------
@@ -159,3 +171,4 @@ Where `[ENV]` is the environment that you are running on - @dev/ @test/ @prod
 [2]:  http://getcomposer.org/
 [3]:  http://docs.mongodb.org/manual/
 [4]:  https://github.com/teamdeeson/warden/issues/60
+[5]:  https://symfony.com/doc/2.8/reference/configuration/swiftmailer.html

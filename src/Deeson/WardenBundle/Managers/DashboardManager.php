@@ -5,8 +5,27 @@ namespace Deeson\WardenBundle\Managers;
 use Deeson\WardenBundle\Document\DashboardDocument;
 use Deeson\WardenBundle\Document\SiteDocument;
 use Deeson\WardenBundle\Event\DashboardUpdateEvent;
+use Deeson\WardenBundle\Services\MailService;
+use Monolog\Logger;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class DashboardManager extends BaseManager {
+
+  /**
+   * @var MailService
+   */
+  protected $mailer;
+
+  /**
+   * @var ContainerInterface
+   */
+  protected $container;
+
+  public function __construct($doctrine, Logger $logger, MailService $mailer, ContainerInterface $container) {
+    parent::__construct($doctrine, $logger);
+    $this->mailer = $mailer;
+    $this->container = $container;
+  }
 
   /**
    * @return string
@@ -29,7 +48,7 @@ class DashboardManager extends BaseManager {
   /**
    * Event: warden.dashboard.update
    *
-   * Fires when the dashboard needs might need to be updated.
+   * Fires when the dashboard might need to be updated.
    *
    * A check is done on the site to see if it should appear on the dashboard.
    *
@@ -58,7 +77,7 @@ class DashboardManager extends BaseManager {
   /**
    * Adds the site to the dashboard, if needed.
    *
-   * @param \Deeson\WardenBundle\Document\SiteDocument $site
+   * @param SiteDocument $site
    *
    * @return bool
    *   True if the site has been added otherwise false.
@@ -104,4 +123,33 @@ class DashboardManager extends BaseManager {
     return true;
   }
 
+  /**
+   * Sends an email based upon the sites that listed on the dashboard.
+   */
+  public function sendUpdateEmail() {
+    $this->logger->addInfo('Send email with list of sites on the dashboard');
+
+    $to = $this->container->getParameter('warden.email.dashboard.alert_address');
+    $from = $this->container->getParameter('warden.email.sender_address');
+    $fromName = 'Warden';
+
+    if (empty($to)) {
+      $this->logger->addError('There is no value for "email_dashboard_alert_address" so the dashboard alert email can not be sent');
+      return;
+    }
+
+    $dashboardSites = $this->getAllDocuments();
+
+    $params = array(
+      'sites' => $dashboardSites,
+    );
+
+    $sent = $this->mailer->sendEmail('dashboard', $params, $to, $from, $fromName);
+    if ($sent) {
+      $this->logger->addInfo('Email send to ' . $to . ' from ' . $from . ' with list of sites on the dashboard');
+    }
+    else {
+      $this->logger->addError('Email failed to send to ' . $to . ' from ' . $from . ' with list of sites on the dashboard: ' . $this->mailer->getErrors());
+    }
+  }
 }
