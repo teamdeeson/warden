@@ -84,7 +84,7 @@ class WardenDrupalSiteService {
     if (!is_array($moduleData)) {
       $moduleData = array();
     }
-    $jsLibraryData = json_decode(json_encode($data->js_library), TRUE);
+    $jsLibraryData = (isset($data->js_library)) ? json_decode(json_encode($data->js_library), TRUE) : NULL;
     if (!is_array($jsLibraryData)) {
       $jsLibraryData = array();
     }
