@@ -242,6 +242,7 @@ class SitesController extends Controller {
       $event = new SiteUpdateEvent($site, $wardenDataObject);
       $dispatcher->dispatch(WardenEvents::WARDEN_SITE_UPDATE, $event);
 
+      $site->setLastSuccessfulRequest();
       $siteManager->updateDocument();
 
       return new Response('OK', 200, array('Content-Type: text/plain'));
