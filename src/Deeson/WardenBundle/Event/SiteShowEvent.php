@@ -7,8 +7,6 @@
 
 namespace Deeson\WardenBundle\Event;
 
-use Symfony\Component\EventDispatcher\Event;
-
 class SiteShowEvent extends SiteEvent {
 
   /**
@@ -19,21 +17,12 @@ class SiteShowEvent extends SiteEvent {
   /**
    * @var array
    */
+  protected $tabTemplates = array();
+
+  /**
+   * @var array
+   */
   protected $params = array();
-
-  /**
-   * @return array
-   */
-  public function getTemplates() {
-    return $this->templates;
-  }
-
-  /**
-   * @return array
-   */
-  public function getParams() {
-    return $this->params;
-  }
 
   /**
    * Add a template to the tabs.
@@ -45,6 +34,33 @@ class SiteShowEvent extends SiteEvent {
   }
 
   /**
+   * @return array
+   */
+  public function getTemplates() {
+    return $this->templates;
+  }
+
+  /**
+   * Add a template to show in tabs.
+   *
+   * @param string $name
+   *   The name which will group the templates together and label the tab.
+   *
+   * @param string $template
+   *   The template name to render
+   */
+  public function addTabTemplate($name, $template) {
+    $this->tabTemplates[$name][] = $template;
+  }
+
+  /**
+   * @return array
+   */
+  public function getTabTemplates() {
+    return $this->tabTemplates;
+  }
+
+  /**
    * Add a parameter which will be available in the template.
    *
    * @param string $key
@@ -52,5 +68,12 @@ class SiteShowEvent extends SiteEvent {
    */
   public function addParam($key, $value) {
     $this->params[$key] = $value;
+  }
+
+  /**
+   * @return array
+   */
+  public function getParams() {
+    return $this->params;
   }
 }

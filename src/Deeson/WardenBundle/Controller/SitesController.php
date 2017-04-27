@@ -60,6 +60,7 @@ class SitesController extends Controller {
     $params = array(
       'site' => $site,
       'templates' => $event->getTemplates(),
+      'tabTemplates' => $event->getTabTemplates(),
     );
 
     foreach ($event->getParams() as $key => $value) {

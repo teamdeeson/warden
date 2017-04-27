@@ -166,18 +166,18 @@ class WardenDrupalSiteService {
     // Check if there are any Drupal modules that require updates.
     $modulesRequiringUpdates = $site->getModulesRequiringUpdates();
     if (!empty($modulesRequiringUpdates)) {
-      $event->addTemplate('DeesonWardenBundle:Drupal:moduleUpdates.html.twig');
+      $event->addTabTemplate('modules', 'DeesonWardenBundle:Drupal:moduleUpdates.html.twig');
       $event->addParam('modulesRequiringUpdates', $modulesRequiringUpdates);
     }
 
     // List the Drupal modules that used on the site.
-    $event->addTemplate('DeesonWardenBundle:Drupal:modules.html.twig');
+    $event->addTabTemplate('modules', 'DeesonWardenBundle:Drupal:modules.html.twig');
     $event->addParam('modules', $site->getModules());
 
     // List the Javascript libraries that are used on the site.
     $jsLibraries = $site->getJsLibraries();
     if (!empty($jsLibraries)) {
-      $event->addTemplate('DeesonWardenBundle:Drupal:javascript.html.twig');
+      $event->addTabTemplate('javascript', 'DeesonWardenBundle:Drupal:javascript.html.twig');
       $event->addParam('jsLibraries', $jsLibraries);
     }
 

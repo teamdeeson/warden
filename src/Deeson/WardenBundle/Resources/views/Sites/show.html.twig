@@ -53,4 +53,27 @@
         </div>
     {% endfor %}
 
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="nav-tabs-custom">
+                <ul class="nav nav-tabs">
+                    {% for name, tabTemplate in tabTemplates %}
+                        {% if loop.length > 1 %}
+                            <li class="{{ loop.first ? 'active' : '' }}"><a href="#tab_{{ loop.index }}" data-toggle="tab">{{ name|capitalize }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+                <div class="tab-content">
+                    {% for tabs in tabTemplates %}
+                        <div class="tab-pane {{ loop.first ? 'active' : '' }}" id="tab_{{ loop.index }}">
+                            {% for template in tabs %}
+                                {% include template %}
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
 {% endblock %}
