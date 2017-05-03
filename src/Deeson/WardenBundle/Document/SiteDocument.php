@@ -203,8 +203,8 @@ class SiteDocument extends BaseDocument {
 
   /**
    * Get the site modules.
-   *
    * @todo move this into the DrupalSiteService
+   *
    * @return mixed
    */
   public function getModules() {
@@ -259,8 +259,8 @@ class SiteDocument extends BaseDocument {
 
   /**
    * Get the site JS libraries.
-   *
    * @todo move this into the DrupalSiteService
+   *
    * @return mixed
    */
   public function getJsLibraries() {
@@ -269,6 +269,7 @@ class SiteDocument extends BaseDocument {
 
   /**
    * Set the current Javascript libraries for the site.
+   * @todo move this into the DrupalSiteService
    *
    * @param array $jsLibraryData
    *   List of Javascript library data to add to the site.
@@ -277,10 +278,10 @@ class SiteDocument extends BaseDocument {
    *   information.
    */
   public function setJsLibraries($jsLibraryData, $update = FALSE) {
-    $curentJsLibrary = ($update) ? $this->getJsLibraries() : array();
-    if (!empty($curentJsLibrary)) {
+    $currentJsLibrary = ($update) ? $this->getJsLibraries() : array();
+    if (!empty($currentJsLibrary)) {
       $currentVersions = array();
-      foreach ($curentJsLibrary as $value) {
+      foreach ($currentJsLibrary as $value) {
         $currentVersions[$value['name']] = $value;
       }
     }
@@ -289,7 +290,7 @@ class SiteDocument extends BaseDocument {
     foreach ($jsLibraryData as $name => $version) {
       $jsLibraryList[$name] = array(
         'name' => $name,
-        'version' => $version['version'],
+        'version' => $version,
       );
     }
     ksort($jsLibraryList);
@@ -298,6 +299,7 @@ class SiteDocument extends BaseDocument {
 
   /**
    * Gets a modules latest version for the site.
+   * @todo move this into the DrupalSiteService
    *
    * @param $module
    *
@@ -309,6 +311,7 @@ class SiteDocument extends BaseDocument {
 
   /**
    * Returns if the provided module has a security release.
+   * @todo move this into the DrupalSiteService
    *
    * @param $module
    *
@@ -320,8 +323,8 @@ class SiteDocument extends BaseDocument {
 
   /**
    * Sets the latest versions of each of the modules for the site.
-   *
    * @todo move this into the DrupalSiteService
+   *
    * @param $moduleLatestVersions
    */
   public function setModulesLatestVersion($moduleLatestVersions) {
@@ -355,7 +358,8 @@ class SiteDocument extends BaseDocument {
   }
 
   /**
-   * Updates a specific module on a site with version and/or security info,
+   * Updates a specific module on a site with version and/or security info.
+   * @todo move this into the DrupalSiteService
    *
    * @param string $moduleName
    *   The module project name.
@@ -383,6 +387,7 @@ class SiteDocument extends BaseDocument {
    * Updates the modules list for the provided site.
    *
    * This updates the list of modules that this site has with the module documents.
+   * @todo move this into the DrupalSiteService
    *
    * @param ModuleManager $moduleManager
    *
@@ -436,6 +441,7 @@ class SiteDocument extends BaseDocument {
   /**
    * Get a list of site modules that require updating.
    * @todo move this into the DrupalSiteService
+   *
    * @return array
    */
   public function getModulesRequiringUpdates() {
