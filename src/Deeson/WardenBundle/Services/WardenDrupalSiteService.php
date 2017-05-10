@@ -84,16 +84,16 @@ class WardenDrupalSiteService {
     if (!is_array($moduleData)) {
       $moduleData = array();
     }
-    $jsLibraryData = array();
-    if (isset($data->js_library)) {
-      $jsLibrary = json_decode(json_encode($data->js_library), TRUE);
-      $jsLibraryData = (is_array($jsLibrary)) ? $jsLibrary : NULL;
+    $libraryData = array();
+    if (isset($data->library)) {
+      $library = json_decode(json_encode($data->library), TRUE);
+      $libraryData = (is_array($library)) ? $library : NULL;
     }
     $this->drupalModuleManager->addModules($moduleData);
     $site->setName($data->site_name);
     $site->setCoreVersion($data->core->drupal->version);
     $site->setModules($moduleData, TRUE);
-    $site->setJsLibraries($jsLibraryData, TRUE);
+    $site->setLibraries($libraryData);
 
     try {
       $site->updateModules($this->drupalModuleManager);
@@ -175,11 +175,12 @@ class WardenDrupalSiteService {
     $event->addTabTemplate('modules', 'DeesonWardenBundle:Drupal:modules.html.twig');
     $event->addParam('modules', $site->getModules());
 
-    // List the Javascript libraries that are used on the site.
-    $jsLibraries = $site->getJsLibraries();
-    if (!empty($jsLibraries)) {
-      $event->addTabTemplate('javascript', 'DeesonWardenBundle:Drupal:javascript.html.twig');
-      $event->addParam('jsLibraries', $jsLibraries);
+    // List the third party libraries that are used on the site.
+    $libraries = $site->getLibraries();
+    if (!empty($libraries)) {
+      foreach ($libraries as $type => $data) {
+        $event->addTabTemplate($type, 'DeesonWardenBundle:Drupal:libraries.html.twig', $data);
+      }
     }
 
     $this->logger->addInfo('This is the end of a Drupal show site event: ' . $site->getUrl());

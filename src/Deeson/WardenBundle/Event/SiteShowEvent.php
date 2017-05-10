@@ -45,12 +45,16 @@ class SiteShowEvent extends SiteEvent {
    *
    * @param string $name
    *   The name which will group the templates together and label the tab.
-   *
    * @param string $template
    *   The template name to render
+   * @param array $params
+   *   An array of data to use specifically for this template.
    */
-  public function addTabTemplate($name, $template) {
-    $this->tabTemplates[$name][] = $template;
+  public function addTabTemplate($name, $template, $params = array()) {
+    $this->tabTemplates[$name][] = array(
+      'name' => $template,
+      'params' => $params,
+    );
   }
 
   /**

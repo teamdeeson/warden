@@ -64,10 +64,10 @@
                     {% endfor %}
                 </ul>
                 <div class="tab-content">
-                    {% for tabs in tabTemplates %}
+                    {% for name, tabs in tabTemplates %}
                         <div class="tab-pane {{ loop.first ? 'active' : '' }}" id="tab_{{ loop.index }}">
                             {% for template in tabs %}
-                                {% include template %}
+                                {% include template.name with {'name' : name, 'data' : template.params} %}
                             {% endfor %}
                         </div>
                     {% endfor %}

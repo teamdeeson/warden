@@ -49,9 +49,9 @@ class SiteDocument extends BaseDocument {
   protected $modules;
 
   /**
-   * @Mongodb\Collection
+   * @Mongodb\Hash
    */
-  protected $jsLibraries;
+  protected $libraries;
 
   /**
    * @Mongodb\Field(type="string")
@@ -258,43 +258,32 @@ class SiteDocument extends BaseDocument {
   }
 
   /**
-   * Get the site JS libraries.
+   * Get the site third party libraries.
    * @todo move this into the DrupalSiteService
    *
    * @return mixed
    */
-  public function getJsLibraries() {
-    return (!empty($this->jsLibraries)) ? $this->jsLibraries : array();
+  public function getLibraries() {
+    return (!empty($this->libraries)) ? $this->libraries : array();
   }
 
   /**
-   * Set the current Javascript libraries for the site.
+   * Set the current third party libraries for the site.
    * @todo move this into the DrupalSiteService
    *
-   * @param array $jsLibraryData
-   *   List of Javascript library data to add to the site.
-   * @param bool $update
-   *   If true, update the site Javascript library versions while using the existing version
-   *   information.
+   * @param array $libraryData
+   *   List of third party library data to add to the site.
    */
-  public function setJsLibraries($jsLibraryData, $update = FALSE) {
-    $currentJsLibrary = ($update) ? $this->getJsLibraries() : array();
-    if (!empty($currentJsLibrary)) {
-      $currentVersions = array();
-      foreach ($currentJsLibrary as $value) {
-        $currentVersions[$value['name']] = $value;
+  public function setLibraries($libraryData) {
+    $libraryList = array();
+    foreach ($libraryData as $type => $typeData) {
+      foreach ($typeData as $name => $version) {
+        $libraryList[$type][$name] = $version;
       }
+      ksort($libraryList[$type]);
     }
-
-    $jsLibraryList = array();
-    foreach ($jsLibraryData as $name => $version) {
-      $jsLibraryList[$name] = array(
-        'name' => $name,
-        'version' => $version,
-      );
-    }
-    ksort($jsLibraryList);
-    $this->jsLibraries = $jsLibraryList;
+    ksort($libraryList);
+    $this->libraries = $libraryList;
   }
 
   /**

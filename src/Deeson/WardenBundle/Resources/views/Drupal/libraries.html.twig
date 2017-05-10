@@ -1,6 +1,6 @@
 <div class="box">
     <div class="box-header">
-        <h3 class="box-title">Installed Javascript Libraries</h3>
+        <h3 class="box-title">Installed {{ name|capitalize }} Libraries</h3>
     </div>
     <!-- /.box-header -->
     <div class="box-body table-responsive no-padding">
@@ -12,10 +12,10 @@
             </tr>
             </thead>
             <tbody>
-            {% for library in jsLibraries %}
+            {% for name, version in data %}
                 <tr>
-                    <td>{{ library.name }}</td>
-                    <td>{{ library.version }}</td>
+                    <td>{{ name }}</td>
+                    <td>{{ version }}</td>
                 </tr>
             {% endfor %}
             </tbody>
