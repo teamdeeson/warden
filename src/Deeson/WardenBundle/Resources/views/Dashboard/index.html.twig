@@ -38,7 +38,7 @@
                         <tbody>
                         {% for site in sites %}
                             <tr class="{% if site.getHasCriticalIssue() %}alert alert-danger{% else %}alert alert-warning{% endif %}">
-                                <td><a href="{{ path('sites_show', {'id': site.getSiteId() }) }}">{{ site.getName() }}</a> [{{ site.getUrl() }}] [{% if site.getHasCriticalIssue() %}Y{% else %}N{% endif %}]</td>
+                                <td><a href="{{ path('sites_show', {'id': site.getSiteId() }) }}">{{ site.getName() }}</a> [{{ site.getUrl() }}]</td>
                                 <td>{{ site.getCoreVersion() }}</td>
                                 <td style="cursor: pointer;" {% if site.getHasCriticalIssue() %}onclick="document.location = '{{ path('sites_show', {'id': site.getSiteId() }) }}';" class="error"{% endif %}>{% if site.getHasCriticalIssue() %}<span class="fa fa-warning"></span>&nbsp;View {% endif %}</td>
                             </tr>
