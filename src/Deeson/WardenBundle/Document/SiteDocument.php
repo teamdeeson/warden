@@ -437,10 +437,9 @@ class SiteDocument extends BaseDocument {
     $siteModuleList = $this->getModules();
     $modulesList = array();
     foreach ($siteModuleList as $module) {
-      if (isset($module['latestVersion']) && $module['latestVersion'] == $module['version']) {
+      if (isset($module['latestVersion']) && ModuleDocument::isLatestVersion($module)) {
         continue;
       }
-
       if (is_null($module['version'])) {
         continue;
       }

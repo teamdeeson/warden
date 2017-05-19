@@ -339,4 +339,33 @@ class ModuleDocument extends BaseDocument {
     );
   }
 
+  /**
+   * Decides whether the current version is the same as the latest version.
+   *
+   * This has base upon the standard module array as stored against each site.
+   * This includes the following keys: name, version, latestVersion, isSecurity.
+   *
+   * Module version number are in the following formats:
+   *  7.x-1.3
+   *  7.x-2.0-(alpha|beta|rc-0...|?)
+   *  7.x-2.0+8-dev (dev release)
+   *
+   * For comparing the version number we don't need to worry about the
+   * alpha/beta/dev release data.
+   *
+   * @param array $moduleData
+   *   The array of module data.
+   *
+   * @return bool
+   *   Returns true if the version numbers match, otherwise false.
+   */
+  public static function isLatestVersion($moduleData) {
+    preg_match('/([0-9]+.x-[0-9]+.[0-9\.x]+)/', $moduleData['version'], $versionMatches);
+    preg_match('/([0-9]+.x-[0-9]+.[0-9\.x]+)/', $moduleData['latestVersion'], $latestVersionMatches);
+    if (!isset($versionMatches[1]) || !isset($latestVersionMatches[1])) {
+      return FALSE;
+    }
+    return $versionMatches[1] == $latestVersionMatches[1];
+  }
+
 }

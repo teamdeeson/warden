@@ -2,6 +2,7 @@
 
 namespace Deeson\WardenBundle\Managers;
 
+use Deeson\WardenBundle\Document\ModuleDocument;
 use Deeson\WardenBundle\Document\SiteDocument;
 
 class SiteManager extends BaseManager {
@@ -110,7 +111,7 @@ class SiteManager extends BaseManager {
     foreach ($cursor as $result) {
       $modules = array();
       foreach ($result->getModules() as $module) {
-        if (!isset($module['latestVersion']) || $module['version'] == $module['latestVersion']) {
+        if (!isset($module['latestVersion']) || ModuleDocument::isLatestVersion($module)) {
           continue;
         }
         $modules[] = $module;

@@ -3,6 +3,7 @@
 namespace Deeson\WardenBundle\Managers;
 
 use Deeson\WardenBundle\Document\DashboardDocument;
+use Deeson\WardenBundle\Document\ModuleDocument;
 use Deeson\WardenBundle\Document\SiteDocument;
 use Deeson\WardenBundle\Event\DashboardUpdateEvent;
 use Deeson\WardenBundle\Services\MailService;
@@ -89,7 +90,7 @@ class DashboardManager extends BaseManager {
       if (!isset($siteModule['latestVersion'])) {
         continue;
       }
-      if ($siteModule['version'] == $siteModule['latestVersion']) {
+      if (ModuleDocument::isLatestVersion($siteModule)) {
         continue;
       }
       if (is_null($siteModule['version'])) {
