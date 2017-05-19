@@ -302,12 +302,26 @@ class SiteDocument extends BaseDocument {
    * Returns if the provided module has a security release.
    * @todo move this into the DrupalSiteService
    *
-   * @param $module
+   * @param array $module
    *
    * @return boolean
    */
   public function getModuleIsSecurity($module) {
+    if ($this->getModuleIsDevRelease($module)) {
+      return FALSE;
+    }
     return (!isset($module['isSecurity'])) ? FALSE : $module['isSecurity'];
+  }
+
+  /**
+   * Determines if the module version is a dev release or not.
+   *
+   * @param array $module
+   *
+   * @return bool
+   */
+  public function getModuleIsDevRelease($module) {
+    return ModuleDocument::isDevRelease($module['version']);
   }
 
   /**

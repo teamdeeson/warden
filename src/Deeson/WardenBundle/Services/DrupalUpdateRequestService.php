@@ -482,7 +482,7 @@ class DrupalUpdateRequestService {
         }
 
         // Check for site module being a dev version - then skip.
-        if ($this->moduleIsDevRelease($siteModuleVersionInfo)) {
+        if (ModuleDocument::isDevRelease($module['version'])) {
           break;
         }
 
@@ -499,15 +499,6 @@ class DrupalUpdateRequestService {
     }
 
     return $hasSecurityRelease;
-  }
-
-  /**
-   * @param $moduleVersionInfo
-   *
-   * @return bool
-   */
-  protected function moduleIsDevRelease($moduleVersionInfo) {
-    return isset($moduleVersionInfo['extra']) && strstr($moduleVersionInfo['extra'], 'dev') !== FALSE;
   }
 
 }
