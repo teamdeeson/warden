@@ -32,7 +32,7 @@ class DrupalUpdateRequestService {
   protected $moduleName;
 
   /**
-   * @var string
+   * @var array
    */
   protected $moduleVersions;
 
@@ -343,88 +343,7 @@ class DrupalUpdateRequestService {
         continue;
       }
 
-      /** @var SiteDocument $site */
-      foreach ($sites as $site) {
-        $this->logger->addInfo('Updating site: ' . $site->getId() . ' - ' . $site->getUrl());
-
-        if ($site->getCoreReleaseVersion() != $version) {
-          continue;
-        }
-
-        if (isset($this->moduleLatestVersion[$version])) {
-          $site->setModulesLatestVersion($this->moduleLatestVersion[$version]);
-        }
-
-        // Check for if the core version is out of date and requires a security update.
-        $siteCurrentVersion = $site->getCoreVersion();
-        $hasCriticalIssue = FALSE;
-        $needsSecurityUpdate = FALSE;
-        foreach ($coreVersions as $coreVersion) {
-          if ($coreVersion['version'] == $siteCurrentVersion) {
-            break;
-          }
-
-          if ($coreVersion['isSecurity']) {
-            $needsSecurityUpdate = TRUE;
-            $hasCriticalIssue = TRUE;
-          }
-        }
-
-        // Check all the site modules to see if any of them are out of date and need a security update.
-        foreach ($site->getModules() as $siteModule) {
-          if (!isset($siteModule['latestVersion'])) {
-            continue;
-          }
-          if ($siteModule['version'] == $siteModule['latestVersion']) {
-            continue;
-          }
-          if (is_null($siteModule['version'])) {
-            continue;
-          }
-
-          // Check to see if this site's modules require a security update.
-          $siteModuleVersionInfo = ModuleDocument::getVersionInfo($siteModule['version']);
-          $moduleVersionInfo = $this->drupalAllModuleVersions[$version][$siteModule['name']];
-
-          $versionType = NULL;
-          if (isset($moduleVersionInfo[ModuleDocument::MODULE_VERSION_TYPE_OTHER])) {
-            $drupalModuleOtherVersionInfo = ModuleDocument::getVersionInfo($moduleVersionInfo[ModuleDocument::MODULE_VERSION_TYPE_OTHER][0]['version']);
-            $versionType = $drupalModuleOtherVersionInfo['minor'] == $siteModuleVersionInfo['minor'] ? ModuleDocument::MODULE_VERSION_TYPE_OTHER : NULL;
-          }
-          if (isset($moduleVersionInfo[ModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED]) && is_null($versionType)) {
-            $drupalModuleRecommendedVersionInfo = ModuleDocument::getVersionInfo($moduleVersionInfo[ModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED][0]['version']);
-            $versionType = $drupalModuleRecommendedVersionInfo['minor'] >= $siteModuleVersionInfo['minor'] ? ModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED : NULL;
-          }
-
-          if (!is_null($versionType)) {
-            foreach ($moduleVersionInfo[$versionType] as $drupalModule) {
-              if ($drupalModule['version'] == $siteModule['version']) {
-                break;
-              }
-
-              // Check for site module being a dev version - then skip.
-              if (isset($siteModuleVersionInfo['extra']) && strstr($siteModuleVersionInfo['extra'], 'dev') !== FALSE) {
-                break;
-              }
-
-              if ($drupalModule['isSecurity']) {
-                unset($drupalModule['version']);
-                $site->updateModule($siteModule['name'], $drupalModule);
-                $siteModule['isSecurity'] = TRUE;
-              }
-            }
-          }
-
-          if ($siteModule['isSecurity']) {
-            $hasCriticalIssue = TRUE;
-          }
-        }
-
-        $site->setLatestCoreVersion($coreVersions[0]['version'], $needsSecurityUpdate);
-        $site->setIsNew(FALSE);
-        $site->setHasCriticalIssue($hasCriticalIssue);
-        $this->siteManager->updateDocument();
-      }
+      $this->updateSites($sites, $version, $coreVersions);
     }
   }
 
@@ -443,6 +362,152 @@ class DrupalUpdateRequestService {
 
     $this->moduleVersions = $this->getModuleVersions();
     $this->projectStatus = $this->getProjectStatus();
+  }
+
+  /**
+   * @param $sites
+   * @param $version
+   * @param $coreVersions
+   */
+  protected function updateSites($sites, $version, $coreVersions) {
+    /** @var SiteDocument $site */
+    foreach ($sites as $site) {
+      $this->logger->addInfo('Updating site: ' . $site->getId() . ' - ' . $site->getUrl());
+
+      if ($site->getCoreReleaseVersion() != $version) {
+        continue;
+      }
+
+      if (isset($this->moduleLatestVersion[$version])) {
+        $site->setModulesLatestVersion($this->moduleLatestVersion[$version]);
+      }
+
+      // Check for if the core version is out of date and requires a security update.
+      $needsSecurityUpdate = $this->hasSecurityUpdate($coreVersions, $site->getCoreVersion());
+      // Set the critical issue flag to be the same as the core flag as a base value.
+      $siteHasSecurityIssues = $this->updateSiteModules($version, $site);
+      $hasCriticalIssue = (!$needsSecurityUpdate && $siteHasSecurityIssues) ? TRUE : $needsSecurityUpdate;
+
+      $site->setLatestCoreVersion($coreVersions[0]['version'], $needsSecurityUpdate);
+      $site->setIsNew(FALSE);
+      $site->setHasCriticalIssue($hasCriticalIssue);
+      $this->siteManager->updateDocument();
+    }
+  }
+
+  /**
+   * @param $version
+   * @param $site
+   *
+   * @return bool
+   */
+  protected function updateSiteModules($version, SiteDocument $site) {
+    // Check all the site modules to see if any of them are out of date and need a security update.
+    $siteHasSecurityIssues = FALSE;
+    foreach ($site->getModules() as $siteModule) {
+      if (!isset($siteModule['latestVersion'])) {
+        continue;
+      }
+      if (ModuleDocument::isLatestVersion($siteModule)) {
+        continue;
+      }
+      if (is_null($siteModule['version'])) {
+        continue;
+      }
+
+      // Check to see if this site's modules require a security update.
+      $hasSecurityIssue = $this->moduleHasSecurityUpdate($siteModule, $version, $site);
+      if ($hasSecurityIssue) {
+        $siteHasSecurityIssues = TRUE;
+      }
+    }
+
+    return $siteHasSecurityIssues;
+  }
+
+  /**
+   * Determines if there is a security release for the core versions.
+   *
+   * @param array $versions
+   *   The array of core versions that are supported.
+   * @param string $currentVersion
+   *   The current core version.
+   *
+   * @return bool
+   *   TRUE if there is a security release, otherwise false.
+   */
+  protected function hasSecurityUpdate($versions, $currentVersion) {
+    $hasSecurityRelease = FALSE;
+    foreach ($versions as $version) {
+      if ($version['version'] == $currentVersion) {
+        break;
+      }
+
+      if ($version['isSecurity']) {
+        $hasSecurityRelease = TRUE;
+      }
+    }
+    return $hasSecurityRelease;
+  }
+
+  /**
+   * Determines if there is a security release for a module.
+   *
+   * @param $module
+   * @param $version
+   * @param SiteDocument $site
+   *   The SiteDocument object to be updated.
+   *
+   * @return bool
+   */
+  protected function moduleHasSecurityUpdate($module, $version, SiteDocument $site) {
+    $hasSecurityRelease = FALSE;
+    $siteModuleVersionInfo = ModuleDocument::getVersionInfo($module['version']);
+    $moduleVersionInfo = $this->drupalAllModuleVersions[$version][$module['name']];
+
+    $versionType = NULL;
+    if (isset($moduleVersionInfo[ModuleDocument::MODULE_VERSION_TYPE_OTHER])) {
+      $drupalModuleOtherVersionInfo = ModuleDocument::getVersionInfo($moduleVersionInfo[ModuleDocument::MODULE_VERSION_TYPE_OTHER][0]['version']);
+      $versionType = $drupalModuleOtherVersionInfo['minor'] == $siteModuleVersionInfo['minor'] ? ModuleDocument::MODULE_VERSION_TYPE_OTHER : NULL;
+    }
+    if (isset($moduleVersionInfo[ModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED]) && is_null($versionType)) {
+      $drupalModuleRecommendedVersionInfo = ModuleDocument::getVersionInfo($moduleVersionInfo[ModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED][0]['version']);
+      $versionType = $drupalModuleRecommendedVersionInfo['minor'] >= $siteModuleVersionInfo['minor'] ? ModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED : NULL;
+    }
+
+    if (!is_null($versionType)) {
+      foreach ($moduleVersionInfo[$versionType] as $drupalModule) {
+        if ($drupalModule['version'] == $module['version']) {
+          break;
+        }
+
+        // Check for site module being a dev version - then skip.
+        if ($this->moduleIsDevRelease($siteModuleVersionInfo)) {
+          break;
+        }
+
+        if ($drupalModule['isSecurity']) {
+          unset($drupalModule['version']);
+          $site->updateModule($module['name'], $drupalModule);
+          $module['isSecurity'] = TRUE;
+        }
+      }
+    }
+
+    if ($module['isSecurity']) {
+      $hasSecurityRelease = TRUE;
+    }
+
+    return $hasSecurityRelease;
+  }
+
+  /**
+   * @param $moduleVersionInfo
+   *
+   * @return bool
+   */
+  protected function moduleIsDevRelease($moduleVersionInfo) {
+    return isset($moduleVersionInfo['extra']) && strstr($moduleVersionInfo['extra'], 'dev') !== FALSE;
   }
 
 }
