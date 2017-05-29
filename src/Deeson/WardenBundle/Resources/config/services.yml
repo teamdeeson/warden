@@ -32,7 +32,7 @@ services:
 
     warden.site_connection:
         class: Deeson\WardenBundle\Services\SiteConnectionService
-        arguments: ['@buzz.browser', '@warden.ssl_encryption', '@monolog.logger']
+        arguments: ['@buzz.browser', '@warden.site_manager', '@warden.ssl_encryption', '@monolog.logger']
 
     warden.drupal.module:
         class: Deeson\WardenBundle\Managers\ModuleManager
