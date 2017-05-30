@@ -84,16 +84,16 @@ class DashboardManager extends BaseManager {
    *   True if the site has been added otherwise false.
    */
   public function addSiteToDashboard(SiteDocument $site) {
-    $hasCriticalIssue = $site->hasCriticalIssues();
+    $hasCriticalIssue = $site->getHasCriticalIssue();
     $modulesNeedUpdate = array();
     foreach ($site->getModules() as $siteModule) {
       if (!isset($siteModule['latestVersion'])) {
         continue;
       }
-      if (ModuleDocument::isLatestVersion($siteModule)) {
+      if (is_null($siteModule['version'])) {
         continue;
       }
-      if (is_null($siteModule['version'])) {
+      if (ModuleDocument::isLatestVersion($siteModule)) {
         continue;
       }
 
@@ -106,7 +106,7 @@ class DashboardManager extends BaseManager {
 
     // Don't add the site to the dashboard if there are no critical issues.
     if (!$hasCriticalIssue) {
-      return false;
+      return FALSE;
     }
 
     /** @var DashboardDocument $dashboard */
@@ -121,7 +121,7 @@ class DashboardManager extends BaseManager {
 
     $this->saveDocument($dashboard);
 
-    return true;
+    return TRUE;
   }
 
   /**

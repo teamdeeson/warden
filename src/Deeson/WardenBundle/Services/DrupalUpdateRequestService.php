@@ -111,7 +111,7 @@ class DrupalUpdateRequestService {
   }
 
   /**
-   * @return string
+   * @return array
    */
   public function getModuleVersions() {
     return $this->moduleVersions;
@@ -265,7 +265,7 @@ class DrupalUpdateRequestService {
     $this->majorVersions = $this->siteManager->getAllMajorVersionReleases();
 
     $this->updateContribModules();
-    $this->updateCore($updateNewSitesOnly);
+    $this->updateSitesModules($updateNewSitesOnly);
 
     $this->logger->addInfo('*** FINISHED Drupal Update Request Service ***');
   }
@@ -318,7 +318,7 @@ class DrupalUpdateRequestService {
    *
    * @param $updateNewSitesOnly
    */
-  protected function updateCore($updateNewSitesOnly) {
+  protected function updateSitesModules($updateNewSitesOnly) {
     foreach ($this->majorVersions as $version) {
       // Update the core after the modules to update the versions of the modules
       // for a site.
@@ -365,9 +365,12 @@ class DrupalUpdateRequestService {
   }
 
   /**
-   * @param $sites
-   * @param $version
-   * @param $coreVersions
+   * Update the module information for each site.
+   *
+   * @param array $sites
+   *   Array of SiteDocument objects.
+   * @param string $version
+   * @param array $coreVersions
    */
   protected function updateSites($sites, $version, $coreVersions) {
     /** @var SiteDocument $site */
@@ -383,10 +386,8 @@ class DrupalUpdateRequestService {
       }
 
       // Check for if the core version is out of date and requires a security update.
-      $needsSecurityUpdate = $this->hasSecurityUpdate($coreVersions, $site->getCoreVersion());
-      // Set the critical issue flag to be the same as the core flag as a base value.
-      $siteHasSecurityIssues = $this->updateSiteModules($version, $site);
-      $hasCriticalIssue = (!$needsSecurityUpdate && $siteHasSecurityIssues) ? TRUE : $needsSecurityUpdate;
+      $needsSecurityUpdate = $this->siteHasSecurityUpdate($coreVersions, $site->getCoreVersion());
+      $hasCriticalIssue = $this->hasCriticalIssues($site, $version, $needsSecurityUpdate);
 
       $site->setLatestCoreVersion($coreVersions[0]['version'], $needsSecurityUpdate);
       $site->setIsNew(FALSE);
@@ -396,8 +397,26 @@ class DrupalUpdateRequestService {
   }
 
   /**
+   * Checks if the site has any critical issues
+   *
    * @param $version
-   * @param $site
+   * @param SiteDocument $site
+   * @param $needsSecurityUpdate
+   *
+   * @return bool
+   */
+  protected function hasCriticalIssues($site, $version, $needsSecurityUpdate) {
+    // Set the critical issue flag to be the same as the core flag as a base value.
+    $siteHasSecurityIssues = $this->updateSiteModules($version, $site);
+    $hasCriticalIssue = (!$needsSecurityUpdate && $siteHasSecurityIssues) ? TRUE : $needsSecurityUpdate;
+    return $hasCriticalIssue;
+  }
+
+  /**
+   * Updates the module data for each site.
+   *
+   * @param string $version
+   * @param SiteDocument $site
    *
    * @return bool
    */
@@ -408,10 +427,10 @@ class DrupalUpdateRequestService {
       if (!isset($siteModule['latestVersion'])) {
         continue;
       }
-      if (ModuleDocument::isLatestVersion($siteModule)) {
+      if (is_null($siteModule['version'])) {
         continue;
       }
-      if (is_null($siteModule['version'])) {
+      if (ModuleDocument::isLatestVersion($siteModule)) {
         continue;
       }
 
@@ -436,7 +455,7 @@ class DrupalUpdateRequestService {
    * @return bool
    *   TRUE if there is a security release, otherwise false.
    */
-  protected function hasSecurityUpdate($versions, $currentVersion) {
+  protected function siteHasSecurityUpdate($versions, $currentVersion) {
     $hasSecurityRelease = FALSE;
     foreach ($versions as $version) {
       if ($version['version'] == $currentVersion) {
@@ -453,14 +472,21 @@ class DrupalUpdateRequestService {
   /**
    * Determines if there is a security release for a module.
    *
-   * @param $module
-   * @param $version
+   * @param array $module
+   * @param string $version
    * @param SiteDocument $site
    *   The SiteDocument object to be updated.
    *
    * @return bool
    */
   protected function moduleHasSecurityUpdate($module, $version, SiteDocument $site) {
+    // If a site module is a dev version, then force it to have no security update.
+    if (ModuleDocument::isDevRelease($module['version'])) {
+      $drupalModule['isSecurity'] = FALSE;
+      $site->updateModule($module['name'], $drupalModule);
+      return FALSE;
+    }
+
     $hasSecurityRelease = FALSE;
     $siteModuleVersionInfo = ModuleDocument::getVersionInfo($module['version']);
     $moduleVersionInfo = $this->drupalAllModuleVersions[$version][$module['name']];
@@ -481,21 +507,12 @@ class DrupalUpdateRequestService {
           break;
         }
 
-        // Check for site module being a dev version - then skip.
-        if (ModuleDocument::isDevRelease($module['version'])) {
-          break;
-        }
-
         if ($drupalModule['isSecurity']) {
           unset($drupalModule['version']);
           $site->updateModule($module['name'], $drupalModule);
-          $module['isSecurity'] = TRUE;
+          $hasSecurityRelease = TRUE;
         }
       }
-    }
-
-    if ($module['isSecurity']) {
-      $hasSecurityRelease = TRUE;
     }
 
     return $hasSecurityRelease;
