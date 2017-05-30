@@ -135,16 +135,6 @@ class SiteDocument extends BaseDocument {
   }
 
   /**
-   * @return boolean
-   */
-  public function hasCriticalIssues() {
-    if ($this->getIsSecurityCoreVersion()) {
-      return $this->getCoreVersion() != $this->getLatestCoreVersion();
-    }
-    return FALSE;
-  }
-
-  /**
    * @return mixed
    */
   public function getCoreVersion() {
@@ -451,10 +441,13 @@ class SiteDocument extends BaseDocument {
     $siteModuleList = $this->getModules();
     $modulesList = array();
     foreach ($siteModuleList as $module) {
-      if (isset($module['latestVersion']) && ModuleDocument::isLatestVersion($module)) {
+      if (!isset($module['latestVersion'])) {
         continue;
       }
       if (is_null($module['version'])) {
+        continue;
+      }
+      if (ModuleDocument::isLatestVersion($module)) {
         continue;
       }
 

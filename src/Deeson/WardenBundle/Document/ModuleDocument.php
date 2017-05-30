@@ -301,7 +301,8 @@ class ModuleDocument extends BaseDocument {
    * @return string
    */
   public static function getMajorVersion($version) {
-    return substr($version, 0, 1);
+    $info = self::getVersionInfo($version);
+    return $info['major'];
   }
 
   /**
@@ -373,16 +374,18 @@ class ModuleDocument extends BaseDocument {
    *   Returns true if the version numbers match, otherwise false.
    */
   public static function versionsEqual($moduleData) {
-    if (!isset($module['latestVersion'])) {
+    if (!isset($moduleData['latestVersion'])) {
       return FALSE;
     }
 
-    preg_match('/([0-9]+.x-[0-9]+.[0-9\.x]+)/', $moduleData['version'], $versionMatches);
-    preg_match('/([0-9]+.x-[0-9]+.[0-9\.x]+)/', $moduleData['latestVersion'], $latestVersionMatches);
-    if (!isset($versionMatches[1]) || !isset($latestVersionMatches[1])) {
+    $versionInfo = self::getVersionInfo($moduleData['version']);
+    $versionNumber = sprintf('%d.x-%d.%d', $versionInfo['major'], $versionInfo['minor'], $versionInfo['other']);
+    $latestVersionInfo = self::getVersionInfo($moduleData['latestVersion']);
+    $latestVersionNumber = sprintf('%d.x-%d.%d', $latestVersionInfo['major'], $latestVersionInfo['minor'], $latestVersionInfo['other']);
+    if ($versionNumber === '0.x-0.0' || $latestVersionNumber === '0.x-0.0') {
       return FALSE;
     }
-    return $versionMatches[1] == $latestVersionMatches[1];
+    return $versionNumber == $latestVersionNumber;
   }
 
   /**
