@@ -1,0 +1,7 @@
+warden_third_party_libraries_list:
+    path:    /third-party-libraries
+    defaults: { _controller: DeesonWardenThirdPartyLibraryBundle:ThirdPartyLibraries:index }
+
+warden_third_party_libraries_show:
+    path:    /third-party-libraries/{libraryName}
+    defaults: { _controller: DeesonWardenThirdPartyLibraryBundle:ThirdPartyLibraries:show }

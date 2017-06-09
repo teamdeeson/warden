@@ -1,0 +1,53 @@
+{% extends 'DeesonWardenBundle::layout.html.twig' %}
+
+{% block title %}Third Party Libraries{% endblock %}
+
+{% block page_title 'Third Party Libraries' %}
+
+{% block content %}
+
+    {% if libraryList %}
+
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="nav-tabs-custom">
+                    <ul class="nav nav-tabs">
+                        {% for name, libraries in libraryList %}
+                            {% if loop.length > 1 %}
+                                <li class="{{ loop.first ? 'active' : '' }}"><a href="#tab_{{ loop.index }}" data-toggle="tab">{{ name|capitalize }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                    <div class="tab-content">
+                        {% for name, libraries in libraryList %}
+                            <div class="tab-pane {{ loop.first ? 'active' : '' }}" id="tab_{{ loop.index }}">
+                                <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th width="60%">Library</th>
+                                        <th>Number of sites (Site usage)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {% for library in libraries %}
+                                <tr>
+                                    <td><a href="{{ path('warden_third_party_libraries_show', {'libraryName': library.getUrlSafeName() }) }}">{{ library.getName() }}</a></td>
+                                    <td>{{ library.getSiteCount() }} ({{ library.getUsagePercentage() }}%)</td>
+                                </tr>
+                                {% endfor %}
+                                </tbody>
+                                </table>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    {% else %}
+
+    <p>There are currently no third party libraries registered.</p>
+
+    {% endif %}
+
+{% endblock %}

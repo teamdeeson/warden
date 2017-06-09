@@ -115,19 +115,16 @@
                     <!-- sidebar menu: : style can be found in sidebar.less -->
                     <ul class="sidebar-menu">
                         <li {% if app.request.get('_route') == '_dashboard' %} class="active"{% endif %}>
-                            <a href="/" class="active">
-                                <i class="icon-deesonicons-21"></i> &nbsp;<span>Dashboard</span>
-                            </a>
+                            <a href="/" class="active"><i class="icon-deesonicons-21"></i> &nbsp;<span>Dashboard</span></a>
                         </li>
                         <li {% if app.request.get('_route') starts with 'sites_' %} class="active"{% endif %}>
-                            <a href="{{ path('sites_list') }}">
-                                <i class="fa fa-globe"></i> &nbsp;<span>Sites</span>
-                            </a>
+                            <a href="{{ path('sites_list') }}"><i class="fa fa-globe"></i> &nbsp;<span>Sites</span></a>
                         </li>
                         <li {% if app.request.get('_route') starts with 'modules_' %} class="active"{% endif %}>
-                            <a href="{{ path('modules_list') }}">
-                                <i class="fa fa-th"></i> &nbsp;<span>Modules</span>
-                            </a>
+                            <a href="{{ path('modules_list') }}"><i class="fa fa-th"></i> &nbsp;<span>Modules</span></a>
+                        </li>
+                        <li {% if app.request.get('_route') starts with 'third_party_libraries_' %} class="active"{% endif %}>
+                            <a href="{{ path('warden_third_party_libraries_list') }}"><i class="fa fa-th-list"></i> &nbsp;<span>Third Party Libraries</span></a>
                         </li>
                     </ul>
                     <div class="marketing col-xs-12 bottom-absolute">

@@ -1,0 +1,46 @@
+{% extends 'DeesonWardenBundle::layout.html.twig' %}
+
+{% block title %}View library: {{ library.getName() }}{% endblock %}
+
+{% block page_title %}View library: {{ library.getName() }}{% endblock %}
+
+{% block content %}
+
+    <div class="box">
+        <br/>
+        <div class="clearfix">
+            <div class="col-md-12">
+                <h2 style="margin-top: 0;">Name: {{ library.getName() }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <div class="box-header">
+                    <h3 class="box-title">Sites using this library</h3>
+                </div><!-- /.box-header -->
+                <div class="box-body table-responsive no-padding">
+                    <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th width="60%">Site</th>
+                            <th>Version</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for site in library.getSites() %}
+                    <tr>
+                        <td><a href="{{ path('sites_show', {'id': site['id'] }) }}">{{ site['name'] }}</a></td>
+                        <td>{{ site['version'] }}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

@@ -39,3 +39,4 @@ OUTPUT=""
 
 php app/console deeson:warden:warden-cron --env=${ENV:1} ${NEWONLY}
 php app/console deeson:warden:build-dashboard
+php app/console deeson:warden-third-party-library:build-libraries

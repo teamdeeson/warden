@@ -48,4 +48,4 @@ public_key:
 
 sites_update:
     path:    /site-update
-    defaults: { _controller: DeesonWardenBundle:Sites:update   }
+    defaults: { _controller: DeesonWardenBundle:Sites:update }

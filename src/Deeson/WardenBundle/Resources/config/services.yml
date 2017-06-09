@@ -5,6 +5,14 @@ services:
         tags:
             - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }
 
+    user_provider:
+        class: Deeson\WardenBundle\Services\UserProviderService
+        arguments: [%kernel.root_dir%]
+
+    warden_setup:
+        class: Deeson\WardenBundle\Services\WardenSetupService
+        arguments: [%kernel.root_dir%]
+
     # cURL client for Buzz
     buzz.client.file_get_contents:
         class:  Buzz\Client\FileGetContents
@@ -61,11 +69,3 @@ services:
         arguments: ['@doctrine_mongodb', '@monolog.logger', '@warden.mail_manager', '@service_container']
         tags:
             - { name: kernel.event_listener, event: warden.dashboard.update, method: onWardenDashboardUpdate }
-
-    user_provider:
-        class: Deeson\WardenBundle\Services\UserProviderService
-        arguments: [%kernel.root_dir%]
-
-    warden_setup:
-        class: Deeson\WardenBundle\Services\WardenSetupService
-        arguments: [%kernel.root_dir%]
