@@ -47,23 +47,16 @@ class SiteConnectionService {
   protected $logger;
 
   /**
-   * @var SiteManager
-   */
-  protected $siteManager;
-
-  /**
    * Constructor
    *
    * @param Browser $buzz
-   * @param SiteManager $siteManager
    * @param SSLEncryptionService $sslEncryptionService
    * @param Logger $logger
    */
-  public function __construct(Browser $buzz, SiteManager $siteManager, SSLEncryptionService $sslEncryptionService, Logger $logger) {
+  public function __construct(Browser $buzz, SSLEncryptionService $sslEncryptionService, Logger $logger) {
     $this->buzz = $buzz;
     $this->sslEncryptionService = $sslEncryptionService;
     $this->logger = $logger;
-    $this->siteManager = $siteManager;
   }
 
   /**
@@ -137,8 +130,6 @@ class SiteConnectionService {
         throw new WardenRequestException("Unable to request data from {$url}. Check log for details.");
       }
 
-      $site->setLastSuccessfulRequest();
-      $this->siteManager->updateDocument();
     }
     catch (ClientException $clientException) {
       throw new WardenRequestException($clientException->getMessage());
