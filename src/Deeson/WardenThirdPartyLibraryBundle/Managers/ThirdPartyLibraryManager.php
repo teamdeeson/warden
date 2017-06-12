@@ -3,6 +3,8 @@
 namespace Deeson\WardenThirdPartyLibraryBundle\Managers;
 
 use Deeson\WardenBundle\Document\SiteDocument;
+use Deeson\WardenBundle\Event\SiteShowEvent;
+use Deeson\WardenBundle\Event\SiteUpdateEvent;
 use Deeson\WardenBundle\Managers\BaseManager;
 use Deeson\WardenBundle\Managers\SiteManager;
 use Deeson\WardenThirdPartyLibraryBundle\Document\ThirdPartyLibraryDocument;
@@ -46,6 +48,41 @@ class ThirdPartyLibraryManager extends BaseManager {
   public function onWardenCron() {
     print __METHOD__ . "\n";
     $this->buildList();
+  }
+
+  /**
+   * Event: warden.site.show
+   *
+   * @param SiteShowEvent $event
+   */
+  public function onWardenSiteShow(SiteShowEvent $event) {
+    $site = $event->getSite();
+
+    // List the third party libraries that are used on the site.
+    $libraries = $site->getLibraries();
+    if (!empty($libraries)) {
+      foreach ($libraries as $type => $data) {
+        $event->addTabTemplate($type, 'DeesonWardenThirdPartyLibraryBundle:Sites:libraries.html.twig', $data);
+      }
+    }
+  }
+
+  /**
+   * Event: warden.site.update
+   *
+   * Update the site document with details about libraries.
+   *
+   * @param SiteUpdateEvent $event
+   */
+  public function onWardenSiteUpdate(SiteUpdateEvent $event) {
+    $data = $event->getData();
+    $site = $event->getSite();
+    $libraryData = array();
+    if (isset($data->library)) {
+      $library = json_decode(json_encode($data->library), TRUE);
+      $libraryData = (is_array($library)) ? $library : NULL;
+    }
+    $site->setLibraries($libraryData);
   }
 
   /**

@@ -51,7 +51,7 @@ services:
         arguments: ['@warden.drupal.module', '@warden.site_connection', '@monolog.logger', '@event_dispatcher']
         tags:
             - { name: kernel.event_listener, event: warden.site.update, method: onWardenSiteUpdate }
-            - { name: kernel.event_listener, event: warden.site.refresh, method: onRefreshSiteRequest }
+            - { name: kernel.event_listener, event: warden.site.refresh, method: onWardenSiteRefresh }
             - { name: kernel.event_listener, event: warden.site.show, method: onWardenSiteShow }
 
     warden.site_manager:

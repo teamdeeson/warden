@@ -84,16 +84,10 @@ class WardenDrupalSiteService {
     if (!is_array($moduleData)) {
       $moduleData = array();
     }
-    $libraryData = array();
-    if (isset($data->library)) {
-      $library = json_decode(json_encode($data->library), TRUE);
-      $libraryData = (is_array($library)) ? $library : NULL;
-    }
     $this->drupalModuleManager->addModules($moduleData);
     $site->setName($data->site_name);
     $site->setCoreVersion($data->core->drupal->version);
     $site->setModules($moduleData, TRUE);
-    $site->setLibraries($libraryData);
 
     try {
       $site->updateModules($this->drupalModuleManager);
@@ -114,7 +108,7 @@ class WardenDrupalSiteService {
    * @param SiteEvent $event
    *   Event detailing the site requesting a refresh.
    */
-  public function onRefreshSiteRequest(SiteEvent $event) {
+  public function onWardenSiteRefresh(SiteEvent $event) {
     $site = $event->getSite();
     if (!$this->isDrupalSite($site)) {
       return;
@@ -174,14 +168,6 @@ class WardenDrupalSiteService {
     // List the Drupal modules that used on the site.
     $event->addTabTemplate('modules', 'DeesonWardenBundle:Drupal:modules.html.twig');
     $event->addParam('modules', $site->getModules());
-
-    // List the third party libraries that are used on the site.
-    $libraries = $site->getLibraries();
-    if (!empty($libraries)) {
-      foreach ($libraries as $type => $data) {
-        $event->addTabTemplate($type, 'DeesonWardenBundle:Drupal:libraries.html.twig', $data);
-      }
-    }
 
     $this->logger->addInfo('This is the end of a Drupal show site event: ' . $site->getUrl());
   }
