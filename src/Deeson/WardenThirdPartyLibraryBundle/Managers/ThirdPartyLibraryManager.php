@@ -46,7 +46,6 @@ class ThirdPartyLibraryManager extends BaseManager {
    * Fired when cron is run to update the third party libraries list.
    */
   public function onWardenCron() {
-    print __METHOD__ . "\n";
     $this->buildList();
   }
 
@@ -93,7 +92,7 @@ class ThirdPartyLibraryManager extends BaseManager {
 
     foreach ($sites as $site) {
       /** @var SiteDocument $site */
-      $this->addSiteToLibrary($site);
+      $this->addSiteLibraries($site);
     }
   }
 
@@ -122,12 +121,15 @@ class ThirdPartyLibraryManager extends BaseManager {
   }
 
   /**
+   * Adds the site library details to the third party libraries list.
+   *
    * @param SiteDocument $site
    */
-  protected function addSiteToLibrary(SiteDocument $site) {
+  protected function addSiteLibraries(SiteDocument $site) {
     $libraries = $site->getLibraries();
     $this->logger->addInfo("Checking libraries for: " . $site->getName());
     if (empty($libraries)) {
+      $this->logger->addInfo("There are no libraries available for: " . $site->getName());
       return;
     }
 

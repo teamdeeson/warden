@@ -3,6 +3,7 @@
 namespace Deeson\WardenBundle\Services;
 
 use Deeson\WardenBundle\Document\SiteDocument;
+use Deeson\WardenBundle\Event\CronEvent;
 use Deeson\WardenBundle\Event\DashboardUpdateEvent;
 use Deeson\WardenBundle\Event\SiteEvent;
 use Deeson\WardenBundle\Event\SiteShowEvent;
@@ -97,6 +98,30 @@ class WardenDrupalSiteService {
     }
     catch (DocumentNotFoundException $e) {
       $this->logger->addWarning($e->getMessage());
+    }
+  }
+
+  /**
+   * Event: warden.cron
+   *
+   * Updates all the sites with their latest data into Warden.
+   *
+   * @param CronEvent $event
+   */
+  public function onWardenCron(CronEvent $event) {
+    $sites = $event->getSites();
+    foreach ($sites as $site) {
+      /** @var SiteDocument $site */
+      print 'Updating site: ' . $site->getId() . ' - ' . $site->getUrl() . "\n";
+      $this->logger->addInfo('Updating site: ' . $site->getId() . ' - ' . $site->getUrl());
+      try {
+        $event = new SiteEvent($site);
+        $this->dispatcher->dispatch(WardenEvents::WARDEN_SITE_REFRESH, $event);
+      }
+      catch (\Exception $e) {
+        print 'General Error - Unable to retrieve data from the site: ' . $e->getMessage() . "\n";
+        $this->logger->addError('General Error - Unable to retrieve data from the site: ' . $e->getMessage());
+      }
     }
   }
 

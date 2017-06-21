@@ -3,11 +3,14 @@
 namespace Deeson\WardenBundle\Command;
 
 use Deeson\WardenBundle\Document\SiteDocument;
+use Deeson\WardenBundle\Event\DashboardUpdateEvent;
+use Deeson\WardenBundle\Event\WardenEvents;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Deeson\WardenBundle\Managers\SiteManager;
 use Deeson\WardenBundle\Managers\DashboardManager;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class BuildDashboardCommand extends ContainerAwareCommand {
 
@@ -20,6 +23,9 @@ class BuildDashboardCommand extends ContainerAwareCommand {
     /** @var SiteManager $siteManager */
     $siteManager = $this->getContainer()->get('warden.site_manager');
 
+    /** @var EventDispatcher $dispatcher */
+    $dispatcher = $this->getContainer()->get('event_dispatcher');
+
     /** @var DashboardManager $dashboardManager */
     $dashboardManager = $this->getContainer()->get('warden.dashboard_manager');
 
@@ -30,12 +36,10 @@ class BuildDashboardCommand extends ContainerAwareCommand {
     $sites = $siteManager->getDocumentsBy(array('isNew' => FALSE));
     foreach ($sites as $site) {
       /** @var SiteDocument $site */
-
       $output->writeln('Checking site: ' . $site->getId() . ' - ' . $site->getUrl());
 
-      if ($dashboardManager->addSiteToDashboard($site)) {
-        $output->writeln('Adding site to dashboard: ' . $site->getId() . ' - ' . $site->getUrl());
-      }
+      $event = new DashboardUpdateEvent($site);
+      $dispatcher->dispatch(WardenEvents::WARDEN_DASHBOARD_UPDATE, $event);
     }
   }
 

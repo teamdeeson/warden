@@ -5,3 +5,4 @@ services:
         tags:
             - { name: kernel.event_listener, event: warden.site.show, method: onWardenSiteShow }
             - { name: kernel.event_listener, event: warden.site.update, method: onWardenSiteUpdate }
+            - { name: kernel.event_listener, event: warden.cron, method: onWardenCron, priority: -10 }

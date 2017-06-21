@@ -21,12 +21,6 @@ final class WardenEvents {
   const WARDEN_SITE_UPDATE = 'warden.site.update';
 
   /**
-   * The warden.site-load event is thrown when Warden loads a site from the
-   * database.
-   */
-  const WARDEN_SITE_LOAD = 'warden.site.load';
-
-  /**
    * The warden.site.show event is thrown when Warden is trying to render the
    * details of a site.
    */

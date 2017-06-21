@@ -173,9 +173,8 @@ class SitesController extends Controller {
     /** @var EventDispatcher $dispatcher */
     $dispatcher = $this->get('event_dispatcher');
 
-    $event = new SiteEvent($site);
-
     try {
+      $event = new SiteEvent($site);
       $dispatcher->dispatch(WardenEvents::WARDEN_SITE_REFRESH, $event);
     }
     catch (\Exception $e) {

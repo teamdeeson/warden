@@ -1,20 +1,19 @@
 #! /bin/bash
 
-ENV="@dev"
+env="@dev"
 if [[ -n "$1" ]]; then
-  ENV=$1
+  env=$1
 fi
 
-RUNASAPACHE="No"
+runaswebserver="No"
 if [[ -n "$2" ]]; then
-  RUNASAPACHE="Yes"
+  runaswebserver="Yes"
 fi
 
-if [[ "${RUNASAPACHE}" == "Yes" ]]; then
-  # To run as apache user.
-  sudo su - apache -c "php $PWD/app/console --env=${ENV:1} cache:clear --no-debug"
-  sudo su - apache -c "php $PWD/app/console --env=${ENV:1} assets:install web"
+if [[ "${runaswebserver}" == "Yes" ]]; then
+  # To run as web server user.
+  sudo su - www-data -s /bin/bash -c "cd $PWD; php app/console --env=${env:1} cache:clear --no-debug; php app/console --env=${env:1} assets:install web"
 else
-  php app/console --env=${ENV:1} cache:clear --no-debug
-  php app/console --env=${ENV:1} assets:install web
+  php app/console --env=${env:1} cache:clear --no-debug
+  php app/console --env=${env:1} assets:install web
 fi

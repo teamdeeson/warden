@@ -265,7 +265,7 @@ class DrupalUpdateRequestService {
     $this->majorVersions = $this->siteManager->getAllMajorVersionReleases();
 
     $this->updateContribModules();
-    $this->updateSitesModules($updateNewSitesOnly);
+    $this->updateCoreAndSitesModules($updateNewSitesOnly);
 
     $this->logger->addInfo('*** FINISHED Drupal Update Request Service ***');
   }
@@ -318,7 +318,7 @@ class DrupalUpdateRequestService {
    *
    * @param $updateNewSitesOnly
    */
-  protected function updateSitesModules($updateNewSitesOnly) {
+  protected function updateCoreAndSitesModules($updateNewSitesOnly) {
     foreach ($this->majorVersions as $version) {
       // Update the core after the modules to update the versions of the modules
       // for a site.
@@ -343,7 +343,7 @@ class DrupalUpdateRequestService {
         continue;
       }
 
-      $this->updateSites($sites, $version, $coreVersions);
+      $this->updateSitesByVersion($sites, $version, $coreVersions);
     }
   }
 
@@ -365,14 +365,14 @@ class DrupalUpdateRequestService {
   }
 
   /**
-   * Update the module information for each site.
+   * Update the module information for each site for a particular version.
    *
    * @param array $sites
    *   Array of SiteDocument objects.
    * @param string $version
    * @param array $coreVersions
    */
-  protected function updateSites($sites, $version, $coreVersions) {
+  protected function updateSitesByVersion($sites, $version, $coreVersions) {
     /** @var SiteDocument $site */
     foreach ($sites as $site) {
       $this->logger->addInfo('Updating site: ' . $site->getId() . ' - ' . $site->getUrl());
@@ -386,30 +386,17 @@ class DrupalUpdateRequestService {
       }
 
       // Check for if the core version is out of date and requires a security update.
-      $needsSecurityUpdate = $this->siteHasSecurityUpdate($coreVersions, $site->getCoreVersion());
-      $hasCriticalIssue = $this->hasCriticalIssues($site, $version, $needsSecurityUpdate);
+      $coreNeedsSecurityUpdate = $this->siteHasCoreSecurityUpdate($coreVersions, $site->getCoreVersion());
+      $hasCriticalIssue = $this->updateSiteModules($version, $site);
+      if ($coreNeedsSecurityUpdate) {
+        $hasCriticalIssue = TRUE;
+      }
 
-      $site->setLatestCoreVersion($coreVersions[0]['version'], $needsSecurityUpdate);
+      $site->setLatestCoreVersion($coreVersions[0]['version'], $coreNeedsSecurityUpdate);
       $site->setIsNew(FALSE);
       $site->setHasCriticalIssue($hasCriticalIssue);
       $this->siteManager->updateDocument();
     }
-  }
-
-  /**
-   * Checks if the site has any critical issues
-   *
-   * @param $version
-   * @param SiteDocument $site
-   * @param $needsSecurityUpdate
-   *
-   * @return bool
-   */
-  protected function hasCriticalIssues($site, $version, $needsSecurityUpdate) {
-    // Set the critical issue flag to be the same as the core flag as a base value.
-    $siteHasSecurityIssues = $this->updateSiteModules($version, $site);
-    $hasCriticalIssue = (!$needsSecurityUpdate && $siteHasSecurityIssues) ? TRUE : $needsSecurityUpdate;
-    return $hasCriticalIssue;
   }
 
   /**
@@ -455,7 +442,7 @@ class DrupalUpdateRequestService {
    * @return bool
    *   TRUE if there is a security release, otherwise false.
    */
-  protected function siteHasSecurityUpdate($versions, $currentVersion) {
+  protected function siteHasCoreSecurityUpdate($versions, $currentVersion) {
     $hasSecurityRelease = FALSE;
     foreach ($versions as $version) {
       if ($version['version'] == $currentVersion) {
