@@ -57,7 +57,7 @@ Installation
 Once the dependencies have been installed you will need to follow these steps
 to get your application started:
 
-  * Run `composer update` to install the Symfony application fully
+  * Run `composer install` to install the Symfony application fully
   * Run `./scripts/clear-cache.sh [ENV]` to clear the cache and rebuild the assets 
   for specific environment
 
