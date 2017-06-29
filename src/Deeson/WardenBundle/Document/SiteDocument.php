@@ -268,7 +268,10 @@ class SiteDocument extends BaseDocument {
     $libraryList = array();
     foreach ($libraryData as $type => $typeData) {
       foreach ($typeData as $name => $version) {
-        $libraryList[$type][$name] = $version;
+        $libraryList[$type][] = array(
+          'name' => $name,
+          'version' => $version,
+        );
       }
       ksort($libraryList[$type]);
     }
