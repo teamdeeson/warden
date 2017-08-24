@@ -80,7 +80,7 @@ class ThirdPartyLibraryManager extends BaseManager {
     $data = $event->getData();
     $site = $event->getSite();
     $libraryData = array();
-    if (isset($data->library)) {
+    if (isset($data->library) && is_array($data->library)) {
       $library = json_decode(json_encode($data->library), TRUE);
       $libraryData = (is_array($library)) ? $library : NULL;
     }
