@@ -17,7 +17,7 @@ class ModulesController extends Controller {
    */
   public function IndexAction() {
     /** @var ModuleManager $manager */
-    $moduleManager = $this->get('warden.drupal.module');
+    $moduleManager = $this->get('warden.drupal.module_manager');
 
     /** @var SiteManager $siteManager */
     $siteManager = $this->get('warden.site_manager');
@@ -57,7 +57,7 @@ class ModulesController extends Controller {
    */
   public function ShowAction($projectName) {
     /** @var ModuleManager $manager */
-    $manager = $this->get('warden.drupal.module');
+    $manager = $this->get('warden.drupal.module_manager');
     $module = $manager->getDocumentBy(array('projectName' => $projectName));
 
     /** @var SiteManager $manager */

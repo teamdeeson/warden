@@ -375,7 +375,7 @@ class DrupalUpdateRequestService {
   protected function updateSitesByVersion($sites, $version, $coreVersions) {
     /** @var SiteDocument $site */
     foreach ($sites as $site) {
-      $this->logger->addInfo('Updating site: ' . $site->getId() . ' - ' . $site->getUrl());
+      $this->logger->addInfo('Updating site: ' . $site->getId() . ' for version ' . $version . ' - ' . $site->getUrl());
 
       if ($site->getCoreReleaseVersion() != $version) {
         continue;
@@ -476,6 +476,10 @@ class DrupalUpdateRequestService {
 
     $hasSecurityRelease = FALSE;
     $siteModuleVersionInfo = ModuleDocument::getVersionInfo($module['version']);
+    if (!isset($this->drupalAllModuleVersions[$version][$module['name']])) {
+      print "Error: No module version found for {$module['name']} in version: $version\n";
+      return FALSE;
+    }
     $moduleVersionInfo = $this->drupalAllModuleVersions[$version][$module['name']];
 
     $versionType = NULL;
