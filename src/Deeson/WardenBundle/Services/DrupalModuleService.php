@@ -75,13 +75,7 @@ class DrupalModuleService {
     foreach ($sites as $site) {
       /** @var SiteDocument $site */
       print 'Updating site: ' . $site->getId() . ' - ' . $site->getUrl() . "\n";
-
-      try {
-        $site->updateModules($this->drupalModuleManager);
-      }
-      catch (DocumentNotFoundException $e) {
-        print $e->getMessage() . "\n";
-      }
+      $site->updateModules($this->drupalModuleManager);
     }
   }
 

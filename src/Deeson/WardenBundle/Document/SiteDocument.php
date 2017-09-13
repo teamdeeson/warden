@@ -394,7 +394,7 @@ class SiteDocument extends BaseDocument {
       /** @var ModuleDocument $module */
       $module = $moduleManager->findByProjectName($siteModule['name']);
       if (empty($module)) {
-        throw new DocumentNotFoundException('Error getting module [' . $siteModule['name'] . ']');
+        print "Error getting module [{$siteModule['name']}]\n";
         continue;
       }
       $moduleSites = $module->getSites();
