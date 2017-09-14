@@ -42,28 +42,34 @@ services:
         class: Deeson\WardenBundle\Services\SiteConnectionService
         arguments: ['@buzz.browser', '@warden.ssl_encryption', '@monolog.logger']
 
-    warden.drupal.module:
+    warden.drupal.module_manager:
         class: Deeson\WardenBundle\Managers\ModuleManager
         arguments: ['@doctrine_mongodb', '@monolog.logger']
 
+    warden.site_manager:
+        class: Deeson\WardenBundle\Managers\SiteManager
+        arguments: ['@doctrine_mongodb', '@monolog.logger']
+
     warden.drupal.site:
-        class: Deeson\WardenBundle\Services\WardenDrupalSiteService
-        arguments: ['@warden.drupal.module', '@warden.site_connection', '@monolog.logger', '@event_dispatcher']
+        class: Deeson\WardenBundle\Services\DrupalSiteService
+        arguments: ['@warden.drupal.module_manager', '@warden.site_connection', '@monolog.logger', '@event_dispatcher']
         tags:
             - { name: kernel.event_listener, event: warden.site.update, method: onWardenSiteUpdate }
             - { name: kernel.event_listener, event: warden.site.refresh, method: onWardenSiteRefresh }
             - { name: kernel.event_listener, event: warden.site.show, method: onWardenSiteShow }
             - { name: kernel.event_listener, event: warden.cron, method: onWardenCron, priority: 100 }
 
-    warden.site_manager:
-        class: Deeson\WardenBundle\Managers\SiteManager
-        arguments: ['@doctrine_mongodb', '@monolog.logger']
+    warden.drupal.module_service:
+        class: Deeson\WardenBundle\Services\DrupalModuleService
+        arguments: ['@warden.drupal.module_manager', '@warden.site_manager', '@monolog.logger']
+        tags:
+            - { name: kernel.event_listener, event: warden.cron, method: onWardenCron, priority: 30 }
 
     warden.drupal.module_version:
         class: Deeson\WardenBundle\Services\DrupalUpdateRequestService
-        arguments: ['@buzz.browser', '@warden.site_manager', '@warden.drupal.module', '@monolog.logger']
+        arguments: ['@buzz.browser', '@warden.site_manager', '@warden.drupal.module_manager', '@monolog.logger']
         tags:
-            - { name: kernel.event_listener, event: warden.cron, method: onWardenCron, priority: 50 }
+            - { name: kernel.event_listener, event: warden.cron, method: onWardenCron, priority: 60 }
 
     warden.dashboard_manager:
         class: Deeson\WardenBundle\Managers\DashboardManager

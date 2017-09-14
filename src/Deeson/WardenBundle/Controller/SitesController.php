@@ -259,7 +259,7 @@ class SitesController extends Controller {
    */
   protected function updateModules(SiteDocument $site) {
     /** @var ModuleManager $moduleManager */
-    $moduleManager = $this->get('warden.drupal.module');
+    $moduleManager = $this->get('warden.drupal.module_manager');
 
     foreach ($site->getModules() as $siteModule) {
       /** @var ModuleDocument $module */

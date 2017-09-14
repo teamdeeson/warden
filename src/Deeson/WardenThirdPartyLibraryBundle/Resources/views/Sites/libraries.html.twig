@@ -12,10 +12,10 @@
             </tr>
             </thead>
             <tbody>
-            {% for name, version in data %}
+            {% for item in data %}
                 <tr>
-                    <td>{{ name }}</td>
-                    <td>{{ version }}</td>
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.version }}</td>
                 </tr>
             {% endfor %}
             </tbody>

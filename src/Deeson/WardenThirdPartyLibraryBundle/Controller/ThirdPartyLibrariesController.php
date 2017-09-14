@@ -52,8 +52,6 @@ class ThirdPartyLibrariesController extends Controller {
    *
    * @param string $libraryName
    *   The library name to view
-   * @param string $id
-   *   The id of library to view
    *
    * @return \Symfony\Component\HttpFoundation\Response
    */

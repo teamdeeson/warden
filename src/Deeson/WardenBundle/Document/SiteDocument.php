@@ -268,7 +268,10 @@ class SiteDocument extends BaseDocument {
     $libraryList = array();
     foreach ($libraryData as $type => $typeData) {
       foreach ($typeData as $name => $version) {
-        $libraryList[$type][$name] = $version;
+        $libraryList[$type][] = array(
+          'name' => $name,
+          'version' => $version,
+        );
       }
       ksort($libraryList[$type]);
     }
@@ -391,7 +394,7 @@ class SiteDocument extends BaseDocument {
       /** @var ModuleDocument $module */
       $module = $moduleManager->findByProjectName($siteModule['name']);
       if (empty($module)) {
-        throw new DocumentNotFoundException('Error getting module [' . $siteModule['name'] . ']');
+        print "Error getting module [{$siteModule['name']}]\n";
         continue;
       }
       $moduleSites = $module->getSites();

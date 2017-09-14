@@ -9,12 +9,11 @@ use Deeson\WardenBundle\Event\SiteEvent;
 use Deeson\WardenBundle\Event\SiteShowEvent;
 use Deeson\WardenBundle\Event\SiteUpdateEvent;
 use Deeson\WardenBundle\Event\WardenEvents;
-use Deeson\WardenBundle\Exception\DocumentNotFoundException;
 use Deeson\WardenBundle\Managers\ModuleManager;
 use Symfony\Bridge\Monolog\Logger;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-class WardenDrupalSiteService {
+class DrupalSiteService {
 
   /**
    * @var ModuleManager
@@ -90,15 +89,8 @@ class WardenDrupalSiteService {
     $site->setCoreVersion($data->core->drupal->version);
     $site->setModules($moduleData, TRUE);
 
-    try {
-      $site->updateModules($this->drupalModuleManager);
-
-      $event = new DashboardUpdateEvent($site);
-      $this->dispatcher->dispatch(WardenEvents::WARDEN_DASHBOARD_UPDATE, $event);
-    }
-    catch (DocumentNotFoundException $e) {
-      $this->logger->addWarning($e->getMessage());
-    }
+    $event = new DashboardUpdateEvent($site);
+    $this->dispatcher->dispatch(WardenEvents::WARDEN_DASHBOARD_UPDATE, $event);
   }
 
   /**

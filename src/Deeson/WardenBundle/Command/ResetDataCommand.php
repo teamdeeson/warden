@@ -20,7 +20,7 @@ class ResetDataCommand extends ContainerAwareCommand {
     /** @var SiteManager $siteManager */
     $siteManager = $this->getContainer()->get('warden.site_manager');
     /** @var ModuleManager $moduleManager */
-    $moduleManager = $this->getContainer()->get('warden.drupal.module');
+    $moduleManager = $this->getContainer()->get('warden.drupal.module_manager');
 
     $sites = $siteManager->getAllDocuments();
     foreach ($sites as $site) {

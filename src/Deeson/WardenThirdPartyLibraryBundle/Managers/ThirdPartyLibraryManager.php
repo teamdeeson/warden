@@ -61,6 +61,9 @@ class ThirdPartyLibraryManager extends BaseManager {
     $libraries = $site->getLibraries();
     if (!empty($libraries)) {
       foreach ($libraries as $type => $data) {
+        if ($this->isDataInOldFormat($data)) {
+          break;
+        }
         $event->addTabTemplate($type, 'DeesonWardenThirdPartyLibraryBundle:Sites:libraries.html.twig', $data);
       }
     }
@@ -77,7 +80,7 @@ class ThirdPartyLibraryManager extends BaseManager {
     $data = $event->getData();
     $site = $event->getSite();
     $libraryData = array();
-    if (isset($data->library)) {
+    if (isset($data->library) && is_array($data->library)) {
       $library = json_decode(json_encode($data->library), TRUE);
       $libraryData = (is_array($library)) ? $library : NULL;
     }
@@ -135,18 +138,34 @@ class ThirdPartyLibraryManager extends BaseManager {
 
     $this->logger->addInfo("Updated libraries for: " . $site->getName());
     foreach ($libraries as $type => $list) {
-      foreach ($list as $name => $version) {
+      if ($this->isDataInOldFormat($list)) {
+        break;
+      }
+      foreach ($list as $item) {
         /** @var ThirdPartyLibraryDocument $thirdPartyLibrary */
-        $thirdPartyLibrary = $this->getLibrary($name, $type);
+        $thirdPartyLibrary = $this->getLibrary($item['name'], $type);
         if (empty($thirdPartyLibrary)) {
           $thirdPartyLibrary = $this->makeNewItem();
-          $thirdPartyLibrary->setName($name);
+          $thirdPartyLibrary->setName($item['name']);
           $thirdPartyLibrary->setType($type);
         }
 
-        $thirdPartyLibrary->addSite($site->getId(), $site->getName(), $version);
+        $thirdPartyLibrary->addSite($site->getId(), $site->getName(), $item['version']);
         $this->saveDocument($thirdPartyLibrary);
       }
     }
+  }
+
+  /**
+   * Add check for old format of data.
+   *
+   * @param array $data
+   *
+   * @return bool
+   *
+   * @deprecated as of version 1.2.0
+   */
+  protected function isDataInOldFormat($data) {
+    return (!isset($data[0]['name']));
   }
 }
