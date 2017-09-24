@@ -156,13 +156,15 @@ class ModuleDocument extends BaseDocument {
    * Add new site to the list of sites for this module.
    *
    * @param $siteId
+   * @param $siteName
    * @param $url
    * @param $version
    */
-  public function addSite($siteId, $url, $version) {
+  public function addSite($siteId, $siteName, $url, $version) {
     $moduleSites = $this->getSites();
     $moduleSites[] = array(
       'id' => $siteId,
+      'name' => $siteName,
       'url' => $url,
       'version' => $version,
     );
