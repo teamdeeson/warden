@@ -13,25 +13,11 @@ services:
         class: Deeson\WardenBundle\Services\WardenSetupService
         arguments: [%kernel.root_dir%]
 
-    # cURL client for Buzz
-    buzz.client.file_get_contents:
-        class:  Buzz\Client\FileGetContents
-        public: false
-        calls:
-          - [setVerifyPeer, [false]]
-    buzz.client.curl:
-        class:  Buzz\Client\Curl
-        public: false
-        calls:
-          - [setVerifyPeer, [false]]
-
-    # Buzz browser
-    buzz.browser:
-        class:     Buzz\Browser
-        arguments: ['@buzz.client.curl']
+    warden.http_client:
+        class: Deeson\WardenBundle\Client\BuzzRequestHandler
 
     warden.mail_manager:
-        class:     Deeson\WardenBundle\Services\MailService
+        class: Deeson\WardenBundle\Services\MailService
         arguments: ['@mailer', '@twig']
 
     warden.ssl_encryption:
@@ -40,7 +26,7 @@ services:
 
     warden.site_connection:
         class: Deeson\WardenBundle\Services\SiteConnectionService
-        arguments: ['@buzz.browser', '@warden.ssl_encryption', '@monolog.logger']
+        arguments: ['@warden.http_client', '@warden.ssl_encryption', '@monolog.logger']
 
     warden.drupal.module_manager:
         class: Deeson\WardenBundle\Managers\ModuleManager
@@ -67,7 +53,7 @@ services:
 
     warden.drupal.module_version:
         class: Deeson\WardenBundle\Services\DrupalUpdateRequestService
-        arguments: ['@buzz.browser', '@warden.site_manager', '@warden.drupal.module_manager', '@monolog.logger']
+        arguments: ['@warden.http_client', '@warden.site_manager', '@warden.drupal.module_manager', '@monolog.logger']
         tags:
             - { name: kernel.event_listener, event: warden.cron, method: onWardenCron, priority: 60 }
 
