@@ -68,7 +68,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                    {% for site in module.getSites() %}
+                    {% for site in sitesUsingModule %}
                     <tr>
                         <td><a href="{{ path('sites_show', {'id': site.id }) }}">{{ site.name }}</a> [{{ site.url }}]</td>
                         <td>{{ site.version }} ({% if module.compareVersion(site.version) %}N{% else %}Y{% endif %})</td>
@@ -98,7 +98,7 @@
                     <tbody>
                     {% for site in sitesNotUsingModule %}
                     <tr>
-                        <td><a href="{{ path('sites_show', {'id': site.id }) }}">{{ site.url }}</a></td>
+                        <td><a href="{{ path('sites_show', {'id': site.id }) }}">{{ site.name }}</a> [{{ site.url }}]</td>
                     </tr>
                     {% endfor %}
                     </tbody>

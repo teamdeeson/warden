@@ -75,12 +75,19 @@ class ModulesController extends Controller {
         }
       }
       if (!$usingModule) {
-        $sitesNotUsingModule[] = $site;
+        $sitesNotUsingModule[$site->getName()] = $site;
       }
     }
 
+    $sitesUsingModule = array();
+    foreach ($module->getSites() as $moduleSite) {
+      $sitesUsingModule[$moduleSite['name']] = $moduleSite;
+    }
+    ksort($sitesUsingModule);
+
     $params = array(
       'module' => $module,
+      'sitesUsingModule' => $sitesUsingModule,
       'sitesNotUsingModule' => $sitesNotUsingModule,
     );
 
