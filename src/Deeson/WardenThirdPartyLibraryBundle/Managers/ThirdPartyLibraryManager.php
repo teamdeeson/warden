@@ -80,7 +80,7 @@ class ThirdPartyLibraryManager extends BaseManager {
     $data = $event->getData();
     $site = $event->getSite();
     $libraryData = array();
-    if (isset($data->library) && is_array($data->library)) {
+    if (isset($data->library) && is_object($data->library)) {
       $library = json_decode(json_encode($data->library), TRUE);
       $libraryData = (is_array($library)) ? $library : NULL;
     }
@@ -163,7 +163,7 @@ class ThirdPartyLibraryManager extends BaseManager {
    *
    * @return bool
    *
-   * @deprecated as of version 1.2.0
+   * @deprecated as of version 2.0
    */
   protected function isDataInOldFormat($data) {
     return (!isset($data[0]['name']));
