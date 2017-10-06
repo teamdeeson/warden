@@ -91,6 +91,7 @@ class ThirdPartyLibraryManager extends BaseManager {
    * Build the list of third party library details from the sites.
    */
   public function buildList() {
+    $this->deleteAll();
     $sites = $this->siteManager->getAllDocuments();
 
     foreach ($sites as $site) {
@@ -150,7 +151,7 @@ class ThirdPartyLibraryManager extends BaseManager {
           $thirdPartyLibrary->setType($type);
         }
 
-        $thirdPartyLibrary->addSite($site->getId(), $site->getName(), $item['version']);
+        $thirdPartyLibrary->addSite($site, $item['version']);
         $this->saveDocument($thirdPartyLibrary);
       }
     }

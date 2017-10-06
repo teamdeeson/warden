@@ -58,10 +58,18 @@ class ThirdPartyLibrariesController extends Controller {
   public function ShowAction($libraryName) {
     /** @var ThirdPartyLibraryManager $thirdPartyLibraryManager */
     $manager = $this->get('warden.third_party_library.library');
+    /** @var ThirdPartyLibraryDocument $library */
     $library = $manager->getDocumentBy(array('urlSafeName' => $libraryName));
+
+    $sites = array();
+    foreach ($library->getSites() as $site) {
+      $sites[$site['name']] = $site;
+    }
+    ksort($sites);
 
     $params = array(
       'library' => $library,
+      'sites' => $sites,
     );
 
     return $this->render('DeesonWardenThirdPartyLibraryBundle:ThirdPartyLibraries:show.html.twig', $params);

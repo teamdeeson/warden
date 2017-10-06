@@ -3,6 +3,7 @@
 namespace Deeson\WardenThirdPartyLibraryBundle\Document;
 
 use Deeson\WardenBundle\Document\BaseDocument;
+use Deeson\WardenBundle\Document\SiteDocument;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 
 /**
@@ -28,7 +29,6 @@ class ThirdPartyLibraryDocument extends BaseDocument {
   protected $type;
 
   /**
-   * @var string
    * @MongoDB\Collection
    */
   protected $sites;
@@ -89,15 +89,14 @@ class ThirdPartyLibraryDocument extends BaseDocument {
   }
 
   /**
-   * @param $siteId
-   * @param $siteName
+   * @param SiteDocument $site
    * @param $version
    */
-  public function addSite($siteId, $siteName, $version) {
+  public function addSite(SiteDocument $site, $version) {
     $librarySites = $this->getSites();
     $siteAlreadyRegistered = FALSE;
     foreach ($librarySites as $librarySite) {
-      if ($librarySite['name'] === $siteName) {
+      if ($librarySite['name'] === $site->getName()) {
         $siteAlreadyRegistered = TRUE;
         break;
       }
@@ -105,8 +104,9 @@ class ThirdPartyLibraryDocument extends BaseDocument {
 
     if (!$siteAlreadyRegistered) {
       $librarySites[] = array(
-        'id' => $siteId,
-        'name' => $siteName,
+        'id' => $site->getId(),
+        'name' => $site->getName(),
+        'url' => $site->getUrl(),
         'version' => $version,
       );
     }

@@ -17,7 +17,6 @@ class BuildThirdPartyLibrariesCommand extends ContainerAwareCommand {
   protected function execute(InputInterface $input, OutputInterface $output) {
     /** @var ThirdPartyLibraryManager $thirdPartyLibraryManager */
     $thirdPartyLibraryManager = $this->getContainer()->get('warden.third_party_library.library');
-    $thirdPartyLibraryManager->deleteAll();
     $thirdPartyLibraryManager->buildList();
   }
 
