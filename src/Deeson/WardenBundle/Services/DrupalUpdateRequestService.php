@@ -2,9 +2,9 @@
 
 namespace Deeson\WardenBundle\Services;
 
-use Buzz\Browser;
+use Deeson\WardenBundle\Client\RequestHandlerException;
+use Deeson\WardenBundle\Client\RequestHandlerInterface;
 use Deeson\WardenBundle\Document\ModuleDocument;
-use Buzz\Exception\ClientException;
 use Deeson\WardenBundle\Document\SiteDocument;
 use Deeson\WardenBundle\Managers\ModuleManager;
 use Deeson\WardenBundle\Managers\SiteManager;
@@ -52,9 +52,9 @@ class DrupalUpdateRequestService {
   protected $logger;
 
   /**
-   * @var Browser
+   * @var RequestHandlerInterface
    */
-  protected $buzz;
+  protected $client;
 
   /**
    * @var SiteManager
@@ -77,14 +77,14 @@ class DrupalUpdateRequestService {
   protected $majorVersions = array();
 
   /**
-   * @param Browser $buzz
+   * @param RequestHandlerInterface $client
    * @param SiteManager $siteManager
    * @param ModuleManager $drupalModuleManager
    * @param Logger $logger
    */
-  public function __construct(Browser $buzz, SiteManager $siteManager, ModuleManager $drupalModuleManager, Logger $logger) {
+  public function __construct(RequestHandlerInterface $client, SiteManager $siteManager, ModuleManager $drupalModuleManager, Logger $logger) {
     $this->drupalModuleManager = $drupalModuleManager;
-    $this->buzz = $buzz;
+    $this->client = $client;
     $this->logger = $logger;
     $this->siteManager = $siteManager;
   }
@@ -128,32 +128,26 @@ class DrupalUpdateRequestService {
    * {@InheritDoc}
    */
   public function processRequest() {
-    $this->buzz->getClient()->setTimeout(30);
+    $this->client->setTimeout(30);
 
     try {
       //$startTime = $this->getMicrotimeFloat();
 
-      // Don't verify SSL certificate.
-      $this->buzz->getClient()->setVerifyPeer(FALSE);
-
       $url = $this->getRequestUrl();
 
-      $request = $this->buzz->get($url);
+      /** @var \Symfony\Component\BrowserKit\Response $response */
+      $response = $this->client->get($url);
       // @todo check request header, if not 200 throw exception.
-      /*$headers = $request->getHeaders();
-      if (trim($headers[0]) !== 'HTTP/1.0 200 OK') {
-        print 'invalid response'."\n";
-        print_r($headers);
-        //return;
+      /*if ($response->getStatus() >= 200 && $response->getStatus() < 300) {
       }*/
-      $requestData = $request->getContent();
+      $requestData = $response->getContent();
 
       //$endTime = $this->getMicrotimeFloat();
       //$this->requestTime = $endTime - $startTime;
 
       $this->processRequestData($requestData);
     }
-    catch (ClientException $e) {
+    catch (RequestHandlerException $e) {
       throw new \Exception($e->getMessage());
     }
   }

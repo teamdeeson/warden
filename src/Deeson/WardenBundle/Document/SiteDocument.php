@@ -414,7 +414,7 @@ class SiteDocument extends BaseDocument {
         $module->updateSite($this->getId(), $siteModule['version']);
       }
       else {
-        $module->addSite($this->getId(), $this->getUrl(), $siteModule['version']);
+        $module->addSite($this->getId(), $this->getName(), $this->getUrl(), $siteModule['version']);
       }
       $moduleManager->updateDocument();
     }
