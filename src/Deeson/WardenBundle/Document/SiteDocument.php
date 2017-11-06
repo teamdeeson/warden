@@ -541,4 +541,20 @@ class SiteDocument extends BaseDocument {
     $this->lastSuccessfulRequest = date('d/m/Y H:i:s');
   }
 
+  /**
+   * Checks if the site has been updated within the last 24 hours.
+   *
+   * @return bool
+   *   True if the site not been updated recently.
+   */
+  public function hasNotUpdatedRecently() {
+    if (empty($this->lastSuccessfulRequest)) {
+      return false;
+    }
+
+    $timestamp = \DateTime::createFromFormat('d/m/Y H:i:s', $this->lastSuccessfulRequest)->getTimestamp();
+    $diff = time() - $timestamp;
+    return $diff > (60 * 60 * 24);
+  }
+
 }
