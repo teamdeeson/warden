@@ -74,7 +74,7 @@ class DrupalModuleService {
     $sites = $this->siteManager->getAllDocuments();
     foreach ($sites as $site) {
       /** @var SiteDocument $site */
-      print 'Updating site: ' . $site->getId() . ' - ' . $site->getUrl() . "\n";
+      print 'Updating site modules: ' . $site->getId() . ' - ' . $site->getUrl() . "\n";
       $site->updateModules($this->drupalModuleManager);
     }
   }
