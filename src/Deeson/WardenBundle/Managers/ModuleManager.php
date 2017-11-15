@@ -102,4 +102,24 @@ class ModuleManager extends BaseManager {
       }
     }
   }
+
+  /**
+   * Returns a list of modules that have no sites assigned to them.
+   *
+   * @return array
+   * @throws \Doctrine\ODM\MongoDB\MongoDBException
+   */
+  public function getUnusedModules() {
+    /** @var \Doctrine\ODM\MongoDB\Query\Builder $qb */
+    $qb = $this->createQueryBuilder();
+    $qb->where('this.sites.length < 1');
+
+    $cursor = $qb->getQuery()->execute();
+
+    $results = array();
+    foreach ($cursor as $result) {
+      $results[] = $result;
+    }
+    return $results;
+  }
 }
