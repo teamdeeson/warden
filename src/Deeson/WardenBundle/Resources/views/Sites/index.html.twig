@@ -25,9 +25,9 @@
                     <tbody>
                     {% for site in sites %}
                         <tr class="{% if site.getHasCriticalIssue() %}alert alert-danger{% endif %}">
-                            <td><a href="{{ path('sites_show', {'id': site.getId() }) }}">{{ site.getName() }}</a> [{{ site.getUrl() }}] {% if site.getIsNew() %}(Pending){% endif %}</td>
+                            <td><a href="{{ path('sites_show', {'id': site.getId() }) }}">{{ site.getName() }}</a> [{{ site.getUrl() }}] {% if site.getIsNew() %}(Pending){% endif %}{% if site.hasNotUpdatedRecently() %}&nbsp;<span title="Last successful update was: {{ site.getLastSuccessfulRequest() }}"><span class="fa fa-warning"></span>&nbsp;Out of date</span>{% endif %}</td>
                             <td>{{ site.getCoreVersion() }}</td>
-                            <td>{{ site.getLatestCoreVersion() }}{% if site.hasNotUpdatedRecently() %}&nbsp;<span title="Last successful update was: {{ site.getLastSuccessfulRequest() }}"><span class="fa fa-warning"></span>&nbsp;Out of date</span>{% endif %}</td>
+                            <td>{{ site.getLatestCoreVersion() }}</td>
                         </tr>
                     {% endfor %}
                     </tbody>
