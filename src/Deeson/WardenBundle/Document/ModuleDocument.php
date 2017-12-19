@@ -331,7 +331,7 @@ class ModuleDocument extends BaseDocument {
 
     // Standard version number regex doesn't match, probably Drupal release.
     if (count($matches) < 1) {
-      preg_match('/([0-9]).([0-9]+)([a-z0-9\-+]+)?/', $version, $matches);
+      preg_match('/([0-9]).([0-9]+).([0-9]+)([a-z0-9\-+]+)?/', $version, $matches);
     }
 
     return array(
@@ -391,6 +391,8 @@ class ModuleDocument extends BaseDocument {
   }
 
   /**
+   * Checks if the version is a dev release.
+   *
    * @param string $version
    *   The version number to check.
    *
@@ -399,6 +401,59 @@ class ModuleDocument extends BaseDocument {
   public static function isDevRelease($version) {
     $moduleVersionInfo = self::getVersionInfo($version);
     return isset($moduleVersionInfo['extra']) && strstr($moduleVersionInfo['extra'], 'dev') !== FALSE;
+  }
+
+  /**
+   * Checks to see if the current version of a module is still supported.
+   *
+   * @param array $moduleVersions
+   *   An array with the relevant module versions (recommended/ other).
+   * @param array $module
+   *   An array detailing the module version information.
+   *
+   * @return bool
+   *   If the module version is unsupported
+   */
+  public static function isVersionUnsupported($moduleVersions, $module) {
+    $versionType = ModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED;
+    if (!isset($moduleVersions[ModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED])) {
+      if (!isset($moduleVersions[ModuleDocument::MODULE_VERSION_TYPE_OTHER])) {
+        return TRUE;
+      }
+      $versionType = ModuleDocument::MODULE_VERSION_TYPE_OTHER;
+    }
+
+    return self::validateVersionsAreUnsupported($moduleVersions, $module, $versionType);
+  }
+
+  /**
+   * Validates if the current version of a module is still supported.
+   *
+   * @param array $moduleVersions
+   *   An array with the relevant module versions (recommended/ other).
+   * @param array $module
+   *   An array detailing the module version information.
+   * @param string $versionType
+   *   The version type - either recommended or other | defaults to recommended.
+   *
+   * @return bool
+   *   If the module version is unsupported.
+   */
+  protected static function validateVersionsAreUnsupported($moduleVersions, $module, $versionType) {
+    $recommendedVersionInfo = ModuleDocument::getVersionInfo($moduleVersions[$versionType]['version']);
+    $moduleVersionInfo = ModuleDocument::getVersionInfo($module['version']);
+
+    if ($recommendedVersionInfo['minor'] == $moduleVersionInfo['minor']) {
+      return FALSE;
+    }
+
+    $unsupported = ($recommendedVersionInfo['minor'] > $moduleVersionInfo['minor']);
+
+    if ($unsupported && $versionType === ModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED && isset($moduleVersions[ModuleDocument::MODULE_VERSION_TYPE_OTHER])) {
+      return self::validateVersionsAreUnsupported($moduleVersions, $module, ModuleDocument::MODULE_VERSION_TYPE_OTHER);
+    }
+
+    return $unsupported;
   }
 
 }

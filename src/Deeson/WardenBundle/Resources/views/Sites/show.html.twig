@@ -23,18 +23,24 @@
                     <ul class="dropdown-menu" role="menu">
                         <li><a href="{{ path('sites_edit', {'id': site.getId() }) }}">Edit Site</a></li>
                         {% if site.isNew() %}{% else %}
-                            <li><a href="{{ path('sites_update_refresh', {'id': site.getId() }) }}">Refresh Site
-                                    Data</a></li>
-                            <li class="divider"></li>{% endif %}
+                            <li><a href="{{ path('sites_update_refresh', {'id': site.getId() }) }}">Refresh Site Data</a></li>
+                            <li class="divider"></li>
+                        {% endif %}
                         <li><a href="{{ path('sites_delete', {'id': site.getId() }) }}">Delete Site</a></li>
                     </ul>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-12">
                 <p><a href="{{ site.getUrl() }}" target="_blank">{{ site.getUrl() }}</a></p>
                 <p>Last successful request: {{ site.getLastSuccessfulRequest() }}</p>
             </div>
-            <div class="box-body col-md-8">
+            <div class="box-body col-md-12">
+                {% if site.hasNotUpdatedRecently() %}
+                    <div class="alert alert-danger">
+                        <i class="fa fa-warning"></i>
+                        <b>Error:</b> The last update date was over a day ago, please review the logs to understand why this is.
+                    </div>
+                {% endif %}
                 {% if site.isNew() %}
                     <div class="alert alert-info alert-dismissable">
                         <i class="fa fa-info"></i>

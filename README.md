@@ -25,6 +25,8 @@ or just run the following command:
 Warden also has a dependency on [Mongodb][3], so this will need to also be
 installed and PHP configured to use it.
 
+To configure your web server to run Warden, please refer to the Symfony [documentation][6]
+
 ### Mongodb Driver
 
 Warden uses Doctrine's MongoDB ODM bundle to interface with MongoDB. Under the 
@@ -172,3 +174,4 @@ Where `[ENV]` is the environment that you are running on - @dev/ @test/ @prod
 [3]:  http://docs.mongodb.org/manual/
 [4]:  https://github.com/teamdeeson/warden/issues/60
 [5]:  https://symfony.com/doc/2.8/reference/configuration/swiftmailer.html
+[6]:  https://symfony.com/doc/2.8/setup/web_server_configuration.html

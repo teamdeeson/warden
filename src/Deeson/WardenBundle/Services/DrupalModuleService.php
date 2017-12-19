@@ -52,13 +52,13 @@ class DrupalModuleService {
   public function rebuildAllModuleSites() {
     $this->removeAllModuleSites();
     $this->updateAllModuleSites();
-    // @todo clear out modules that have no sites associated to them.
+    $this->removeUnusedModules();
   }
 
   /**
    * Removes all the sites referenced by all of the modules.
    */
-  private function removeAllModuleSites() {
+  protected function removeAllModuleSites() {
     $modules = $this->drupalModuleManager->getAllDocuments();
     foreach ($modules as $module) {
       /** @var ModuleDocument $module */
@@ -74,8 +74,25 @@ class DrupalModuleService {
     $sites = $this->siteManager->getAllDocuments();
     foreach ($sites as $site) {
       /** @var SiteDocument $site */
-      print 'Updating site: ' . $site->getId() . ' - ' . $site->getUrl() . "\n";
+      print 'Updating site modules: ' . $site->getId() . ' - ' . $site->getUrl() . "\n";
       $site->updateModules($this->drupalModuleManager);
+    }
+  }
+
+  /**
+   * Removes modules that have no sites associated to them.
+   */
+  protected function removeUnusedModules() {
+    $modules = $this->drupalModuleManager->getUnusedModules();
+    if (empty($modules)) {
+      return;
+    }
+
+    foreach ($modules as $module) {
+      /** @var ModuleDocument $module */
+      $this->logger->addInfo('Remove module "' . $module->getName() . '" as it has no sites associated to it.');
+      print "Remove module \"" . $module->getName() . "\" as it has no sites associated to it.\n";
+      $this->drupalModuleManager->deleteDocument($module->getId());
     }
   }
 

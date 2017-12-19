@@ -79,7 +79,7 @@ class ModuleManager extends BaseManager {
    *
    * @param array $moduleData
    */
-  public function addModules(array $moduleData) {
+  public function addModules(array &$moduleData) {
     foreach ($moduleData as $name => $version) {
       $majorVersion = ModuleDocument::getMajorVersion($version['version']);
 
@@ -100,6 +100,28 @@ class ModuleManager extends BaseManager {
         $module->setLatestVersion($majorVersion);
         $this->saveDocument($module);
       }
+
+      $moduleData[$name]['latestVersion'] = $module->getLatestVersion();
     }
+  }
+
+  /**
+   * Returns a list of modules that have no sites assigned to them.
+   *
+   * @return array
+   * @throws \Doctrine\ODM\MongoDB\MongoDBException
+   */
+  public function getUnusedModules() {
+    /** @var \Doctrine\ODM\MongoDB\Query\Builder $qb */
+    $qb = $this->createQueryBuilder();
+    $qb->where('this.sites.length < 1');
+
+    $cursor = $qb->getQuery()->execute();
+
+    $results = array();
+    foreach ($cursor as $result) {
+      $results[] = $result;
+    }
+    return $results;
   }
 }

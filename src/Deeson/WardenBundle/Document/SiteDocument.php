@@ -241,6 +241,10 @@ class SiteDocument extends BaseDocument {
         }
       }
 
+      $drupalVersion = ModuleDocument::getMajorVersion($module['version']);
+      $moduleVersions = $version['latestVersion'][$drupalVersion];
+
+      $module['isUnsupported'] = ModuleDocument::isVersionUnsupported($moduleVersions, $module);
       $moduleList[$name] = $module;
     }
     ksort($moduleList);
@@ -307,6 +311,18 @@ class SiteDocument extends BaseDocument {
   }
 
   /**
+   * Returns if the provided module is an unsupported release.
+   * @todo move this into the DrupalSiteService
+   *
+   * @param array $module
+   *
+   * @return boolean
+   */
+  public function isModuleSupported($module) {
+    return (!isset($module['isUnsupported'])) ? FALSE : $module['isUnsupported'];
+  }
+
+  /**
    * Determines if the module version is a dev release or not.
    *
    * @param array $module
@@ -339,16 +355,19 @@ class SiteDocument extends BaseDocument {
         }
       }
 
+      $siteModuleList[$key]['isUnsupported'] = ModuleDocument::isVersionUnsupported($moduleVersions, $module);
+
       if (!isset($moduleVersions[$versionType])) {
         print "ERROR : module (" . $module['name'] .") version is not valid: " . print_r(array($versionType, $moduleVersions), TRUE);
-        continue;
       }
-      /*$siteModuleList[$key] += array(
-        'latestVersion' => $moduleVersions[$versionType]['version'],
-        'isSecurity' => $moduleVersions[$versionType]['isSecurity'],
-      );*/
-      $siteModuleList[$key]['latestVersion'] = $moduleVersions[$versionType]['version'];
-      $siteModuleList[$key]['isSecurity'] = $moduleVersions[$versionType]['isSecurity'];
+      else {
+        /*$siteModuleList[$key] += array(
+          'latestVersion' => $moduleVersions[$versionType]['version'],
+          'isSecurity' => $moduleVersions[$versionType]['isSecurity'],
+        );*/
+        $siteModuleList[$key]['latestVersion'] = $moduleVersions[$versionType]['version'];
+        $siteModuleList[$key]['isSecurity'] = $moduleVersions[$versionType]['isSecurity'];
+      }
     }
     $this->modules = $siteModuleList;
   }
@@ -394,7 +413,7 @@ class SiteDocument extends BaseDocument {
       /** @var ModuleDocument $module */
       $module = $moduleManager->findByProjectName($siteModule['name']);
       if (empty($module)) {
-        print "Error getting module [{$siteModule['name']}]\n";
+        print "[updateModules] Error : Unable to find module [{$siteModule['name']}]\n";
         continue;
       }
       $moduleSites = $module->getSites();
@@ -539,6 +558,22 @@ class SiteDocument extends BaseDocument {
    */
   public function setLastSuccessfulRequest() {
     $this->lastSuccessfulRequest = date('d/m/Y H:i:s');
+  }
+
+  /**
+   * Checks if the site has been updated within the last 24 hours.
+   *
+   * @return bool
+   *   True if the site not been updated recently.
+   */
+  public function hasNotUpdatedRecently() {
+    if (empty($this->lastSuccessfulRequest)) {
+      return false;
+    }
+
+    $timestamp = \DateTime::createFromFormat('d/m/Y H:i:s', $this->lastSuccessfulRequest)->getTimestamp();
+    $diff = time() - $timestamp;
+    return $diff > (60 * 60 * 24);
   }
 
 }

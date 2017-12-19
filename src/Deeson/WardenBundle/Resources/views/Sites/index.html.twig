@@ -19,20 +19,15 @@
                         <tr>
                             <th width="60%">Site</th>
                             <th>Core Version</th>
-                            <th>Latest Core Version (Out of Date) [Security Update] [critical]</th>
+                            <th>Latest Core Version</th>
                         </tr>
                     </thead>
                     <tbody>
                     {% for site in sites %}
                         <tr class="{% if site.getHasCriticalIssue() %}alert alert-danger{% endif %}">
-                            <td><a href="{{ path('sites_show', {'id': site.getId() }) }}">{{ site.getName() }}</a> [{{ site.getUrl() }}] {% if site.getIsNew() %}(Pending){% endif %}</td>
+                            <td><a href="{{ path('sites_show', {'id': site.getId() }) }}">{{ site.getName() }}</a> [{{ site.getUrl() }}] {% if site.getIsNew() %}(Pending){% endif %}{% if site.hasNotUpdatedRecently() %}&nbsp;<span title="Last successful update was: {{ site.getLastSuccessfulRequest() }}"><span class="fa fa-warning"></span>&nbsp;Out of date</span>{% endif %}</td>
                             <td>{{ site.getCoreVersion() }}</td>
-                            <td>
-                                {{ site.getLatestCoreVersion() }}
-                                ({% if site.hasOlderCoreVersion() %}N{% else %}Y{% endif %})
-                                [{% if site.getIsSecurityCoreVersion() %}Y{% else %}N{% endif %}]
-                                [{% if site.getHasCriticalIssue() %}Y{% else %}N{% endif %}]
-                            </td>
+                            <td>{{ site.getLatestCoreVersion() }}</td>
                         </tr>
                     {% endfor %}
                     </tbody>

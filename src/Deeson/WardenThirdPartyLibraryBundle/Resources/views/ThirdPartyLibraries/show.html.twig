@@ -30,9 +30,9 @@
                         </tr>
                     </thead>
                     <tbody>
-                    {% for site in library.getSites() %}
+                    {% for site in sites %}
                     <tr>
-                        <td><a href="{{ path('sites_show', {'id': site['id'] }) }}">{{ site['name'] }}</a></td>
+                        <td><a href="{{ path('sites_show', {'id': site['id'] }) }}">{{ site['name'] }}</a> [{{ site['url'] }}]</td>
                         <td>{{ site['version'] }}</td>
                     </tr>
                     {% endfor %}
