@@ -19,6 +19,7 @@
                         <a href="{{ path('modules_show', {'projectName': module.name }) }}">
                             {{ module.name }}
                         </a>
+                        {% if site.isModuleSupported(module) %}<span class="fa fa-warning"></span>&nbsp;Obsolete/ Unsupported{% endif %}
                         {% else %}
                             {{ module.name }}
                         {% endif %}

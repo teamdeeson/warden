@@ -29,6 +29,12 @@ class ModuleDocumentTest extends \PHPUnit_Framework_TestCase {
     $this->assertEquals('3', $a['other'], '3 is the other version of 7.x-1.3');
     $this->assertNull($a['extra'], 'There is no extra version of 7.x-1.3');
 
+    $a = ModuleDocument::getVersionInfo('7.x-1.13');
+    $this->assertEquals('7', $a['major'], '7 is the major version of 7.x-1.13');
+    $this->assertEquals('1', $a['minor'], '1 is the minor version of 7.x-1.13');
+    $this->assertEquals('13', $a['other'], '13 is the other version of 7.x-1.13');
+    $this->assertNull($a['extra'], 'There is no extra version of 7.x-1.13');
+
     $a = ModuleDocument::getVersionInfo('7.x-2.0-alpha1');
     $this->assertEquals('7', $a['major'], '7 is the major version of 7.x-2.0-alpha1');
     $this->assertEquals('2', $a['minor'], '2 is the minor version of 7.x-2.0-alpha1');
@@ -75,8 +81,14 @@ class ModuleDocumentTest extends \PHPUnit_Framework_TestCase {
     $a = ModuleDocument::getVersionInfo('8.3.0-alpha1');
     $this->assertEquals('8', $a['major'], '8 is the major version of 8.3.0-alpha1');
     $this->assertEquals('3', $a['minor'], '3 is the minor version of 8.3.0-alpha1');
-    $this->assertEquals('1', $a['other'], '1 is the other version of 8.3.0-alpha1');
+    $this->assertEquals('0', $a['other'], '1 is the other version of 8.3.0-alpha1');
     $this->assertEquals('-alpha1', $a['extra'], '-alpha1 is the other version of 8.3.0-alpha1');
+
+    $a = ModuleDocument::getVersionInfo('8.3.0-alpha15');
+    $this->assertEquals('8', $a['major'], '8 is the major version of 8.3.0-alpha15');
+    $this->assertEquals('3', $a['minor'], '3 is the minor version of 8.3.0-alpha15');
+    $this->assertEquals('0', $a['other'], '15 is the other version of 8.3.0-alpha15');
+    $this->assertEquals('-alpha15', $a['extra'], '-alpha1 is the other version of 8.3.0-alpha15');
   }
 
   /**
@@ -140,4 +152,163 @@ class ModuleDocumentTest extends \PHPUnit_Framework_TestCase {
     $this->assertEquals(TRUE, ModuleDocument::isDevRelease('7.x-1.0+5-dev'), '7.x-1.0+5-dev is a dev release');
   }
 
+  /**
+   * @test
+   * Tests if a module version is still supported or not.
+   */
+  public function testIsVersionUnsupported() {
+    /**** No module version data. ****/
+    $moduleVersions = array();
+    $module = array(
+      'name' => 'test_module',
+      'version' => '7.x-1.1',
+    );
+    $this->assertEquals(TRUE, ModuleDocument::isVersionUnsupported($moduleVersions, $module), '1: Version "7.x-1.1" is not supported due to no module data');
+
+    /**** Recommended only module version data. ****/
+    $moduleVersions = array(
+      ModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED => array(
+        'version' => '7.x-1.2',
+      ),
+    );
+
+    $module = array(
+      'name' => 'test_module',
+      'version' => '7.x-1.1',
+    );
+    $this->assertEquals(FALSE, ModuleDocument::isVersionUnsupported($moduleVersions, $module), '2: Version "7.x-1.1" is supported for recommended version');
+
+    $moduleVersions = array(
+      ModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED => array(
+        'version' => '7.x-3.2',
+      ),
+    );
+
+    $module = array(
+      'name' => 'test_module',
+      'version' => '7.x-1.1',
+    );
+    $this->assertEquals(TRUE, ModuleDocument::isVersionUnsupported($moduleVersions, $module), '2: Version "7.x-1.1" is not supported for recommended version');
+
+    $module = array(
+      'name' => 'test_module',
+      'version' => '7.x-2.1',
+    );
+    $this->assertEquals(TRUE, ModuleDocument::isVersionUnsupported($moduleVersions, $module), '2: Version "7.x-2.1" is not supported for recommended version');
+
+    $module = array(
+      'name' => 'test_module',
+      'version' => '7.x-3.1',
+    );
+    $this->assertEquals(FALSE, ModuleDocument::isVersionUnsupported($moduleVersions, $module), '2: Version "7.x-2.1" is supported for recommended version');
+
+    /**** Other only module version data. ****/
+    $moduleVersions = array(
+      ModuleDocument::MODULE_VERSION_TYPE_OTHER => array(
+        'version' => '7.x-1.19',
+      )
+    );
+    $module = array(
+      'name' => 'test_module',
+      'version' => '7.x-1.1',
+    );
+    $this->assertEquals(FALSE, ModuleDocument::isVersionUnsupported($moduleVersions, $module), '3: Version "7.x-1.1" is  supported for other version');
+
+    $moduleVersions = array(
+      ModuleDocument::MODULE_VERSION_TYPE_OTHER => array(
+        'version' => '7.x-3.19',
+      )
+    );
+    $module = array(
+      'name' => 'test_module',
+      'version' => '7.x-1.1',
+    );
+    $this->assertEquals(TRUE, ModuleDocument::isVersionUnsupported($moduleVersions, $module), '3: Version "7.x-1.1" is not supported for other version');
+
+    $module = array(
+      'name' => 'test_module',
+      'version' => '7.x-2.1',
+    );
+    $this->assertEquals(TRUE, ModuleDocument::isVersionUnsupported($moduleVersions, $module), '3: Version "7.x-2.1" is not supported for other version');
+
+    $module = array(
+      'name' => 'test_module',
+      'version' => '7.x-3.1',
+    );
+    $this->assertEquals(FALSE, ModuleDocument::isVersionUnsupported($moduleVersions, $module), '3: Version "7.x-3.1" is supported for other version');
+
+    /**** Recommended and other module version data. ****/
+    $moduleVersions = array(
+      ModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED => array(
+        'version' => '7.x-1.8',
+      ),
+      ModuleDocument::MODULE_VERSION_TYPE_OTHER => array(
+        'version' => '7.x-2.0-beta2',
+      )
+    );
+
+    $module = array(
+      'name' => 'test_module',
+      'version' => '7.x-1.7',
+    );
+    $this->assertEquals(FALSE, ModuleDocument::isVersionUnsupported($moduleVersions, $module), '4.1: Version "7.x-1.1" is supported for recommended or other version');
+
+    $module = array(
+      'name' => 'test_module',
+      'version' => '7.x-2.0-beta1',
+    );
+    $this->assertEquals(FALSE, ModuleDocument::isVersionUnsupported($moduleVersions, $module), '4.1: Version "7.x-2.0-beta1" is supported for recommended or other version');
+
+    $moduleVersions = array(
+      ModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED => array(
+        'version' => '7.x-3.2',
+      ),
+      ModuleDocument::MODULE_VERSION_TYPE_OTHER => array(
+        'version' => '7.x-2.6',
+      )
+    );
+    $module = array(
+      'name' => 'test_module',
+      'version' => '7.x-1.1',
+    );
+    $this->assertEquals(TRUE, ModuleDocument::isVersionUnsupported($moduleVersions, $module), '4.2: Version "7.x-1.1" is not supported for recommended or other version');
+
+    $module = array(
+      'name' => 'test_module',
+      'version' => '7.x-2.1',
+    );
+    $this->assertEquals(FALSE, ModuleDocument::isVersionUnsupported($moduleVersions, $module), '4.2: Version "7.x-2.1" is supported for recommended or other version');
+
+    $module = array(
+      'name' => 'test_module',
+      'version' => '7.x-3.1',
+    );
+    $this->assertEquals(FALSE, ModuleDocument::isVersionUnsupported($moduleVersions, $module), '4.2: Version "7.x-3.1" is supported for recommended or other version');
+
+    $moduleVersions = array(
+      ModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED => array(
+        'version' => '7.x-2.2',
+      ),
+      ModuleDocument::MODULE_VERSION_TYPE_OTHER => array(
+        'version' => '7.x-3.1',
+      )
+    );
+    $module = array(
+      'name' => 'test_module',
+      'version' => '7.x-1.1',
+    );
+    $this->assertEquals(TRUE, ModuleDocument::isVersionUnsupported($moduleVersions, $module), '4.3: Version "7.x-1.1" is not supported for recommended or other version');
+
+    $module = array(
+      'name' => 'test_module',
+      'version' => '7.x-2.1',
+    );
+    $this->assertEquals(FALSE, ModuleDocument::isVersionUnsupported($moduleVersions, $module), '4.3: Version "7.x-2.1" is supported for recommended or other version');
+
+    $module = array(
+      'name' => 'test_module',
+      'version' => '7.x-3.1',
+    );
+    $this->assertEquals(FALSE, ModuleDocument::isVersionUnsupported($moduleVersions, $module), '4.3: Version "7.x-3.1" is supported for recommended or other version');
+  }
 }
