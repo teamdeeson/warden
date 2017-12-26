@@ -331,7 +331,7 @@ class ModuleDocument extends BaseDocument {
 
     // Standard version number regex doesn't match, probably Drupal release.
     if (count($matches) < 1) {
-      preg_match('/([0-9]).([0-9]+).([0-9]+)([a-z0-9\-+]+)?/', $version, $matches);
+      preg_match('/([0-9]).([0-9]+)[.]?([0-9]+)?([a-z0-9\-+]+)?/', $version, $matches);
     }
 
     return array(
