@@ -22,7 +22,14 @@ class ModuleDocumentTest extends \PHPUnit_Framework_TestCase {
    * Tests the right version info is returned for different version number formats.
    */
   public function testGetVersionInfo() {
-    // Drupal 7 version numbering.
+    // Drupal 7 module version numbering.
+    $a = ModuleDocument::getVersionInfo('7.56');
+    $this->assertEquals('7', $a['major'], '7 is the major version of 7.56');
+    $this->assertEquals('56', $a['minor'], '56 is the minor version of 7.56');
+    $this->assertNull($a['other'], 'There is no other version of 7.56');
+    $this->assertNull($a['extra'], 'There is no extra version of 7.56');
+
+    // Drupal 7 module version numbering.
     $a = ModuleDocument::getVersionInfo('7.x-1.3');
     $this->assertEquals('7', $a['major'], '7 is the major version of 7.x-1.3');
     $this->assertEquals('1', $a['minor'], '1 is the minor version of 7.x-1.3');
@@ -78,6 +85,19 @@ class ModuleDocumentTest extends \PHPUnit_Framework_TestCase {
     $this->assertEquals('1', $a['other'], '1 is the other version of 8.3.1');
     $this->assertNull($a['extra'], 'blank is the other version of 8.3.1');
 
+    $a = ModuleDocument::getVersionInfo('8.3.15');
+    $this->assertEquals('8', $a['major'], '8 is the major version of 8.3.15');
+    $this->assertEquals('3', $a['minor'], '3 is the minor version of 8.3.15');
+    $this->assertEquals('15', $a['other'], '1 is the other version of 8.3.15');
+    $this->assertNull($a['extra'], 'blank is the other version of 8.3.15');
+
+    $a = ModuleDocument::getVersionInfo('8.13.15');
+    $this->assertEquals('8', $a['major'], '8 is the major version of 8.13.15');
+    $this->assertEquals('13', $a['minor'], '3 is the minor version of 8.13.15');
+    $this->assertEquals('15', $a['other'], '1 is the other version of 8.13.15');
+    $this->assertNull($a['extra'], 'blank is the other version of 8.13.15');
+
+    // Drupal 8 module version numbering.
     $a = ModuleDocument::getVersionInfo('8.3.0-alpha1');
     $this->assertEquals('8', $a['major'], '8 is the major version of 8.3.0-alpha1');
     $this->assertEquals('3', $a['minor'], '3 is the minor version of 8.3.0-alpha1');
