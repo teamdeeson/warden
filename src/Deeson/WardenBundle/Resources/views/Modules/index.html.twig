@@ -14,11 +14,11 @@
 
                     </div><!-- /.box-header -->
                     <div class="box-body table-responsive no-padding">
-                        <table class="table table-hover">
+                        <table id="moduleList" class="table table-hover dataTable">
                         <thead>
                             <tr>
-                                <th width="60%">Module</th>
-                                <th>Number of sites (Site usage)</th>
+                                <th class="sorting" width="60%">Module</th>
+                                <th class="sorting_desc">Number of sites (Site usage)</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -31,6 +31,19 @@
                         </tbody>
                         </table>
                     </div>
+                    <script type="text/javascript">
+                        $(function() {
+                            $('#moduleList').dataTable({
+                                "aaSorting" : [[1, 'desc']],
+                                "bPaginate": false,
+                                "bLengthChange": false,
+                                "bFilter": false,
+                                "bSort": true,
+                                "bInfo": false,
+                                "bAutoWidth": false
+                            });
+                        });
+                    </script>
                 </div>
             </div>
         </div>
