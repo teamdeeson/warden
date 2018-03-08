@@ -95,7 +95,13 @@ Installation parameters when using Swiftmailer for sending emails are:
   * `email_sender_address`           - The email address that any emails will be sent from (defaults to blank)
   * `email_dashboard_alert_address`  - The email address to send the dashboard alerts to (defaults to blank)
   
-If you do not want to send any email alerts, the leave these blank.
+If you do not want to send any email alerts, then leave these blank.
+
+Installation parameters for using Slack notifications:
+
+  * `warden.dashboard.slack.hook_url` - The hook URL within Slack to which Warden can send notifications to.
+  
+If you do not want to send any Slack notifications, then leave this blank.
 
 After these, you will also be asked for to set up the login credentials to access the 
 Warden application. Once set up you can log in using these credentials.

@@ -20,3 +20,4 @@ parameters:
     # Warden settings
     warden.email.sender_address:          ''
     warden.email.dashboard.alert_address: ''
+    warden.dashboard.slack.hook_url:      ''

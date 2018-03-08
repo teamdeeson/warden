@@ -7,6 +7,13 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Deeson\WardenBundle\Managers\DashboardManager;
 
+/**
+ * Class DashboardEmailAlertCommand
+ *
+ * @deprecated Use deeson:warden:dashboard-send-notification command
+ *
+ * @package Deeson\WardenBundle\Command
+ */
 class DashboardEmailAlertCommand extends ContainerAwareCommand {
 
   protected function configure() {
@@ -17,7 +24,9 @@ class DashboardEmailAlertCommand extends ContainerAwareCommand {
   protected function execute(InputInterface $input, OutputInterface $output) {
     /** @var DashboardManager $dashboardManager */
     $dashboardManager = $this->getContainer()->get('warden.dashboard_manager');
-    $dashboardManager->sendUpdateEmail();
+    $dashboardManager->sendEmailNotification();
+
+    $output->writeln('**** Warning: This command has been deprecated now, please use the updated command "deeson:warden:dashboard-send-notification --type=email".');
   }
 
 }
