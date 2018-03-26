@@ -15,7 +15,6 @@ class AppKernel extends Kernel
             new Symfony\Bundle\AsseticBundle\AsseticBundle(),
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
             new Deeson\WardenBundle\DeesonWardenBundle(),
-            new Sensio\Bundle\BuzzBundle\SensioBuzzBundle(),
             new Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle(),
             new Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle(),
             new Deeson\WardenThirdPartyLibraryBundle\DeesonWardenThirdPartyLibraryBundle(),
