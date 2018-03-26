@@ -205,7 +205,7 @@ class DashboardManager extends BaseManager {
     }
 
     // @todo set the text for this via a variable/settings document?
-    $message = "@channel Here is the full list of sites from Warden that need security updates applied:\n\n";
+    $message = "<!channel> Here is the full list of sites from Warden that need security updates applied:\n\n";
 
     $dashboardSites = $this->getAllDocuments();
     /** @var DashboardDocument $dashboardSite */
