@@ -34,6 +34,10 @@ sites_update_refresh:
     path:    /sites/{id}/refresh
     defaults: { _controller: DeesonWardenBundle:Sites:refresh }
 
+sites_logs:
+    path:    /sites/{id}/logs
+    defaults: { _controller: DeesonWardenBundle:Sites:logs }
+
 modules_list:
     path:    /modules
     defaults: { _controller: DeesonWardenBundle:Modules:index }
