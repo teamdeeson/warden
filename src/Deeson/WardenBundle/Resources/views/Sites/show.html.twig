@@ -11,7 +11,8 @@
 
         <div class="clearfix">
             <div class="col-md-10">
-                <h2 style="margin-top: 0;">Name: {{ site.getName() }} {% if site.getIsNew() %}(Pending){% endif %}[{% if site.getHasCriticalIssue() %}Y{% else %}N{% endif %}]</h2>
+                <h2 style="margin-top: 0;">Name: {{ site.getName() }} {% if site.getIsNew() %}(Pending){% endif %}</h2>
+                <!--[{% if site.getHasCriticalIssue() %}Y{% else %}N{% endif %}]-->
             </div>
             <div class="col-md-2">
                 <div class="btn-group">
