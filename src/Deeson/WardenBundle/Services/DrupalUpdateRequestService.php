@@ -2,8 +2,8 @@
 
 namespace Deeson\WardenBundle\Services;
 
-use Deeson\WardenBundle\Client\RequestHandlerException;
-use Deeson\WardenBundle\Client\RequestHandlerInterface;
+use Deeson\WardenBundle\Client\HttpRequestHandlerException;
+use Deeson\WardenBundle\Client\HttpRequestHandlerInterface;
 use Deeson\WardenBundle\Document\ModuleDocument;
 use Deeson\WardenBundle\Document\SiteDocument;
 use Deeson\WardenBundle\Managers\ModuleManager;
@@ -52,7 +52,7 @@ class DrupalUpdateRequestService {
   protected $logger;
 
   /**
-   * @var RequestHandlerInterface
+   * @var HttpRequestHandlerInterface
    */
   protected $client;
 
@@ -77,12 +77,12 @@ class DrupalUpdateRequestService {
   protected $majorVersions = array();
 
   /**
-   * @param RequestHandlerInterface $client
+   * @param HttpRequestHandlerInterface $client
    * @param SiteManager $siteManager
    * @param ModuleManager $drupalModuleManager
    * @param Logger $logger
    */
-  public function __construct(RequestHandlerInterface $client, SiteManager $siteManager, ModuleManager $drupalModuleManager, Logger $logger) {
+  public function __construct(HttpRequestHandlerInterface $client, SiteManager $siteManager, ModuleManager $drupalModuleManager, Logger $logger) {
     $this->drupalModuleManager = $drupalModuleManager;
     $this->client = $client;
     $this->logger = $logger;
@@ -147,7 +147,7 @@ class DrupalUpdateRequestService {
 
       $this->processRequestData($requestData);
     }
-    catch (RequestHandlerException $e) {
+    catch (HttpRequestHandlerException $e) {
       throw new \Exception($e->getMessage());
     }
   }

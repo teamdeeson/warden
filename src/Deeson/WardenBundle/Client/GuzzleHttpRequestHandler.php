@@ -6,7 +6,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Symfony\Component\HttpFoundation\Response;
 
-class GuzzleRequestHandler implements RequestHandlerInterface {
+class GuzzleHttpRequestHandler implements HttpRequestHandlerInterface {
 
   /**
    * @var Client
@@ -19,14 +19,14 @@ class GuzzleRequestHandler implements RequestHandlerInterface {
   protected $headers = [];
 
   /**
-   * @var iny
+   * @var int
    */
   protected $timeout = 0;
 
   /**
    * @var bool
    */
-  protected $verifyPeer = false;
+  protected $verifyPeer = true;
 
 
   public function __construct() {
@@ -63,7 +63,7 @@ class GuzzleRequestHandler implements RequestHandlerInterface {
       $response = $this->client->request('GET', $url, $this->getRequestOptions());
       return new Response($response->getBody(), $response->getStatusCode(), $response->getHeaders());
     } catch (RequestException $e) {
-      throw new RequestHandlerException($e);
+      throw new HttpRequestHandlerException($e->getMessage());
     }
   }
 
@@ -74,9 +74,12 @@ class GuzzleRequestHandler implements RequestHandlerInterface {
     try {
       /** @var \Psr\Http\Message\ResponseInterface $response */
       $response = $this->client->request('POST', $url, $this->getRequestOptions() + ['body' => $content]);
+      //print __METHOD__;
+      //printf('<pre>%s</pre>', print_r($response, true));
       return new Response($response->getBody(), $response->getStatusCode(), $response->getHeaders());
     } catch (RequestException $e) {
-      throw new RequestHandlerException($e);
+      printf('<pre>%s</pre>', print_r($this->getRequestOptions(), true));
+      throw new HttpRequestHandlerException($e->getMessage());
     }
   }
 

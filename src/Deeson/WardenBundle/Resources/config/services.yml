@@ -14,7 +14,7 @@ services:
         arguments: [%kernel.root_dir%]
 
     warden.http_client:
-        class: Deeson\WardenBundle\Client\GuzzleRequestHandler
+        class: Deeson\WardenBundle\Client\GuzzleHttpRequestHandler
 
     warden.mail_manager:
         class: Deeson\WardenBundle\Services\MailService
