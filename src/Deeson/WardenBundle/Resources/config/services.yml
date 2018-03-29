@@ -24,10 +24,6 @@ services:
         class: Deeson\WardenBundle\Services\SSLEncryptionService
         arguments: [%public_key_file%, %private_key_file%]
 
-    warden.site_connection:
-        class: Deeson\WardenBundle\Services\SiteConnectionService
-        arguments: ['@warden.http_client', '@warden.ssl_encryption', '@monolog.logger']
-
     warden.drupal.module_manager:
         class: Deeson\WardenBundle\Managers\ModuleManager
         arguments: ['@doctrine_mongodb', '@monolog.logger']
@@ -35,6 +31,14 @@ services:
     warden.site_manager:
         class: Deeson\WardenBundle\Managers\SiteManager
         arguments: ['@doctrine_mongodb', '@monolog.logger']
+
+    warden.site_request_log_manager:
+        class: Deeson\WardenBundle\Managers\SiteRequestLogManager
+        arguments: ['@doctrine_mongodb', '@monolog.logger']
+
+    warden.site_connection:
+        class: Deeson\WardenBundle\Services\SiteConnectionService
+        arguments: ['@warden.http_client', '@warden.ssl_encryption', '@monolog.logger', '@warden.site_request_log_manager']
 
     warden.drupal.site:
         class: Deeson\WardenBundle\Services\DrupalSiteService

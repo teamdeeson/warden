@@ -1,0 +1,45 @@
+{% extends 'DeesonWardenBundle::layout.html.twig' %}
+
+{% block title %}View site request logs: {{ site.getName() }}{% endblock %}
+
+{% block page_title %}View site request logs: {{ site.getName() }}{% endblock %}
+
+{% block content %}
+
+    {% if logs %}
+        <div class="row">
+          <div class="col-xs-12">
+              <div class="box">
+                  <div class="box-header">
+
+                  </div><!-- /.box-header -->
+                  <div class="box-body table-responsive no-padding">
+                      <table class="table table-hover">
+                      <thead>
+                          <tr>
+                              <th>Date Time</th>
+                              <th>Message</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                      {% for log in logs %}
+                          <tr class="{% if not log.status %}alert alert-danger{% endif %}">
+                              <td>{{ log.timestamp | date }}</td>
+                              <td>{{ log.message }}</td>
+                          </tr>
+                      {% endfor %}
+                      </tbody>
+                      </table>
+                  </div>
+              </div>
+          </div>
+        </div>
+
+    {% else %}
+        <p>There are currently no logs available.</p>
+    {% endif %}
+
+    <br />
+    <a href="{{ path('sites_show', {'id': site.getId() }) }}">Back</a>
+
+{% endblock %}
