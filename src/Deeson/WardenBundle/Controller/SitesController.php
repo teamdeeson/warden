@@ -9,6 +9,7 @@ use Deeson\WardenBundle\Event\SiteShowEvent;
 use Deeson\WardenBundle\Event\SiteUpdateEvent;
 use Deeson\WardenBundle\Event\WardenEvents;
 use Deeson\WardenBundle\Managers\ModuleManager;
+use Deeson\WardenBundle\Managers\SiteRequestLogManager;
 use Symfony\Bridge\Monolog\Logger;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -323,5 +324,29 @@ class SitesController extends Controller {
     );
 
     return $this->render('DeesonWardenBundle:Sites:edit.html.twig', $params);
+  }
+
+  /**
+   * Show the log detail of the specific site requests
+   *
+   * @param int $id
+   *   The id of the site to view
+   *
+   * @return \Symfony\Component\HttpFoundation\Response
+   */
+  public function LogsAction($id) {
+    /** @var SiteManager $manager */
+    $manager = $this->get('warden.site_manager');
+    /** @var SiteRequestLogManager $manager */
+    $siteRequestLogManager = $this->get('warden.site_request_log_manager');
+    /** @var SiteDocument $site */
+    $site = $manager->getDocumentById($id);
+
+    $params = array(
+      'site' => $site,
+      'logs' => $siteRequestLogManager->getRequestLogs($id),
+    );
+
+    return $this->render('DeesonWardenBundle:Sites:logs.html.twig', $params);
   }
 }

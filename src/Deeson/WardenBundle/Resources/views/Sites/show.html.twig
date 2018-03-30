@@ -11,7 +11,8 @@
 
         <div class="clearfix">
             <div class="col-md-10">
-                <h2 style="margin-top: 0;">Name: {{ site.getName() }} {% if site.getIsNew() %}(Pending){% endif %}[{% if site.getHasCriticalIssue() %}Y{% else %}N{% endif %}]</h2>
+                <h2 style="margin-top: 0;">Name: {{ site.getName() }} {% if site.getIsNew() %}(Pending){% endif %}</h2>
+                <!--[{% if site.getHasCriticalIssue() %}Y{% else %}N{% endif %}]-->
             </div>
             <div class="col-md-2">
                 <div class="btn-group">
@@ -22,6 +23,7 @@
                     </button>
                     <ul class="dropdown-menu" role="menu">
                         <li><a href="{{ path('sites_edit', {'id': site.getId() }) }}">Edit Site</a></li>
+                        <li><a href="{{ path('sites_logs', {'id': site.getId() }) }}">View Request logs</a></li>
                         {% if site.isNew() %}{% else %}
                             <li><a href="{{ path('sites_update_refresh', {'id': site.getId() }) }}">Refresh Site Data</a></li>
                             <li class="divider"></li>
@@ -32,7 +34,7 @@
             </div>
             <div class="col-md-12">
                 <p><a href="{{ site.getUrl() }}" target="_blank">{{ site.getUrl() }}</a></p>
-                <p>Last successful request: {{ site.getLastSuccessfulRequest() }}</p>
+                <p>Last successful request: {{ site.getLastSuccessfulRequest() }} [<a href="{{ path('sites_logs', {'id': site.getId() }) }}">View request logs</a>]</p>
             </div>
             <div class="box-body col-md-12">
                 {% if site.hasNotUpdatedRecently() %}

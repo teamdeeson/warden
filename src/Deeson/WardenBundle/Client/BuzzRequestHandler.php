@@ -54,7 +54,7 @@ class BuzzRequestHandler implements RequestHandlerInterface {
       $response = $this->client->get($url, $this->headers);
       return new Response($response->getContent(), $response->getStatusCode(), $response->getHeaders());
     } catch (ClientException $e) {
-      throw new RequestHandlerException($e);
+      throw new RequestHandlerException($e->getMessage());
     }
   }
 
@@ -67,7 +67,7 @@ class BuzzRequestHandler implements RequestHandlerInterface {
       $response = $this->client->post($url, $this->headers, $content);
       return new Response($response->getContent(), $response->getStatusCode(), $response->getHeaders());
     } catch (ClientException $e) {
-      throw new RequestHandlerException($e);
+      throw new RequestHandlerException($e->getMessage());
     }
   }
 }
