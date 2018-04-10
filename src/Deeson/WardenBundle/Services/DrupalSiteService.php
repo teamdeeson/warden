@@ -180,6 +180,18 @@ class DrupalSiteService {
     if (!empty($modulesRequiringUpdates)) {
       $event->addTabTemplate('modules', 'DeesonWardenBundle:Drupal:moduleUpdates.html.twig');
       $event->addParam('modulesRequiringUpdates', $modulesRequiringUpdates);
+
+      $securityCount = 0;
+      $updateCount = 0;
+      foreach ($modulesRequiringUpdates as $module) {
+        if ($site->getModuleIsSecurity($module)) {
+          $securityCount++;
+          continue;
+        }
+        $updateCount++;
+      }
+      $event->addParam('modulesRequiringSecurityUpdatesCount', $securityCount);
+      $event->addParam('modulesRequiringUpdatesCount', $updateCount);
     }
 
     // List the Drupal modules that used on the site.
