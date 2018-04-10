@@ -166,14 +166,14 @@ class DrupalSiteService {
 
     $this->logger->addInfo('This is the start of a Drupal show site event: ' . $site->getUrl());
 
-    // Check if Drupal core requires a security update.
-    if ($site->hasOlderCoreVersion() && $site->getIsSecurityCoreVersion()) {
-      $event->addTemplate('DeesonWardenBundle:Drupal:securityUpdateRequired.html.twig');
-    }
-
     $event->addTemplate('DeesonWardenBundle:Drupal:siteDetails.html.twig');
     $event->addParam('coreVersion', $site->getCoreVersion());
     $event->addParam('latestCoreVersion', $site->getLatestCoreVersion());
+
+    // Check if Drupal core requires a security update.
+    if ($site->hasOlderCoreVersion() && $site->getIsSecurityCoreVersion()) {
+      $event->addParam('coreNeedsSecurityUpdate', $site->getCoreVersion());
+    }
 
     // Check if there are any Drupal modules that require updates.
     $modulesRequiringUpdates = $site->getModulesRequiringUpdates();
