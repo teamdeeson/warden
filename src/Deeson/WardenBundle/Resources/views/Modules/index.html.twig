@@ -33,7 +33,22 @@
                     </div>
                     <script type="text/javascript">
                         $(function() {
+                            $.fn.dataTableExt.oSort['numeric-usage-asc'] = function(a, b) {
+                                a = parseInt(a);
+                                b = parseInt(b);
+                                return ((a < b) ? -1 : ((a > b) ?  1 : 0));
+                            };
+                            $.fn.dataTableExt.oSort['numeric-usage-desc'] = function(a, b) {
+                                a = parseInt(a);
+                                b = parseInt(b);
+                                return ((a < b) ? 1 : ((a > b) ?  -1 : 0));
+                            };
+
                             $('#moduleList').dataTable({
+                                "aoColumns": [
+                                  null,
+                                  { "sType": "numeric-usage" }
+                                ],
                                 "aaSorting" : [[1, 'desc']],
                                 "bPaginate": false,
                                 "bLengthChange": false,
