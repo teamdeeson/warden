@@ -1,0 +1,15 @@
+<div class="dataTables_paginate paging_simple_numbers" id="example2_paginate">
+  <ul class="pagination">
+    {% for pager in pagination %}
+      {% if pager['url'] is defined %}
+        <li class="paginate_button">
+          <a href="{{ pager['url'] }}">{{ pager['label']|raw }}</a>
+        </li>
+      {% elseif pager['active'] is defined %}
+        <li class="paginate_button active"><span>{{ pager['label'] }}</span></li>
+      {% elseif pager['skip'] is defined %}
+        <li><span>...</span></li>
+      {% endif %}
+    {% endfor %}
+  </ul>
+</div>

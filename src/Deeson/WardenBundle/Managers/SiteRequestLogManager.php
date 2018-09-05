@@ -2,6 +2,7 @@
 
 namespace Deeson\WardenBundle\Managers;
 
+use ArturDoruch\PaginatorBundle\Paginator;
 use Deeson\WardenBundle\Document\SiteDocument;
 use Deeson\WardenBundle\Document\SiteRequestLogDocument;
 use MongoDB\BSON\ObjectId;
@@ -20,8 +21,14 @@ class SiteRequestLogManager extends BaseManager {
    */
   protected $container;
 
-  public function __construct($doctrine, Logger $logger) {
+  /**
+   * @var Pagination $paginator
+   */
+  protected $paginator;
+
+  public function __construct($doctrine, Logger $logger, Paginator $paginator) {
     parent::__construct($doctrine, $logger);
+    $this->paginator = $paginator;
   }
 
   /**
@@ -67,13 +74,20 @@ class SiteRequestLogManager extends BaseManager {
   /**
    * Get the list of request log records.
    *
-   * @param $siteId
+   * @param string $siteId
+   * @param int $page
+   * @param int $limit
    *
    * @return array
    */
-  public function getRequestLogs($siteId) {
-    $siteRequestLogs = $this->getDocumentsBy(array('siteId' => new ObjectId($siteId)), array('timestamp' => 'desc'), 20);
-    return $siteRequestLogs;
+  public function getRequestLogs($siteId, $page = 1, $limit = 20) {
+    /** @var \Doctrine\ODM\MongoDB\Query\Builder $qb */
+    $qb = $this->createQueryBuilder();
+    $qb->select(array('id', 'timestamp', 'status', 'message'));
+    $qb->field('siteId')->equals(new ObjectId($siteId));
+    $qb->sort('timestamp', 'DESC');
+
+    return $this->paginator->paginate($qb, $page, $limit);
   }
 
   /**

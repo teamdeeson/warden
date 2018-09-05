@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "39bc5e8dbf76b9479ad1fcccf48b936a",
+    "content-hash": "f0d6e8e9dc8cbf30ade891004ba408a9",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -69,6 +69,51 @@
                 "mongodb"
             ],
             "time": "2017-05-13T19:34:12+00:00"
+        },
+        {
+            "name": "arturdoruch/paginator-bundle",
+            "version": "1.1.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/arturdoruch/PaginatorBundle.git",
+                "reference": "bd80e78260f6983a9bc46fbee0be5d65ba725376"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/arturdoruch/PaginatorBundle/zipball/bd80e78260f6983a9bc46fbee0be5d65ba725376",
+                "reference": "bd80e78260f6983a9bc46fbee0be5d65ba725376",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/orm": "^2.2.3",
+                "php": ">=5.3.3",
+                "symfony/framework-bundle": ">2.0",
+                "twig/extensions": "~1.0"
+            },
+            "type": "symfony-bundle",
+            "autoload": {
+                "psr-4": {
+                    "ArturDoruch\\PaginatorBundle\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Artur Doruch",
+                    "email": "arturdoruch@interia.pl"
+                }
+            ],
+            "description": "Simple paginator for Symfony2",
+            "keywords": [
+                "Symfony2",
+                "bundle",
+                "pagination",
+                "paginator"
+            ],
+            "time": "2018-05-14T00:16:35+00:00"
         },
         {
             "name": "doctrine/annotations",
@@ -3348,6 +3393,7 @@
                 "compression",
                 "minification"
             ],
+            "abandoned": "symfony/webpack-encore-pack",
             "time": "2016-11-22T11:42:57+00:00"
         },
         {

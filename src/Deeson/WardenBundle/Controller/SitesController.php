@@ -331,20 +331,24 @@ class SitesController extends Controller {
    *
    * @param int $id
    *   The id of the site to view
+   * @param Request $request
+   *   The Request object
    *
    * @return \Symfony\Component\HttpFoundation\Response
    */
-  public function LogsAction($id) {
+  public function LogsAction($id, Request $request) {
     /** @var SiteManager $manager */
     $manager = $this->get('warden.site_manager');
-    /** @var SiteRequestLogManager $manager */
+    /** @var SiteRequestLogManager $siteRequestLogManager */
     $siteRequestLogManager = $this->get('warden.site_request_log_manager');
     /** @var SiteDocument $site */
     $site = $manager->getDocumentById($id);
 
+    $page = $request->get('page');
+
     $params = array(
       'site' => $site,
-      'logs' => $siteRequestLogManager->getRequestLogs($id),
+      'logs' => $siteRequestLogManager->getRequestLogs($id, $page),
     );
 
     return $this->render('DeesonWardenBundle:Sites:logs.html.twig', $params);
