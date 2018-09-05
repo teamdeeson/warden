@@ -61,3 +61,8 @@ swiftmailer:
     port:      '%mailer_port%'
     username:  "%mailer_user%"
     password:  "%mailer_password%"
+
+artur_doruch_paginator:
+    limit: 10
+    prev_page_label: 'Previous'
+    next_page_label: 'Next'

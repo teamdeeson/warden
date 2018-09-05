@@ -166,20 +166,32 @@ class DrupalSiteService {
 
     $this->logger->addInfo('This is the start of a Drupal show site event: ' . $site->getUrl());
 
-    // Check if Drupal core requires a security update.
-    if ($site->hasOlderCoreVersion() && $site->getIsSecurityCoreVersion()) {
-      $event->addTemplate('DeesonWardenBundle:Drupal:securityUpdateRequired.html.twig');
-    }
-
     $event->addTemplate('DeesonWardenBundle:Drupal:siteDetails.html.twig');
     $event->addParam('coreVersion', $site->getCoreVersion());
     $event->addParam('latestCoreVersion', $site->getLatestCoreVersion());
+
+    // Check if Drupal core requires a security update.
+    if ($site->hasOlderCoreVersion() && $site->getIsSecurityCoreVersion()) {
+      $event->addParam('coreNeedsSecurityUpdate', $site->getCoreVersion());
+    }
 
     // Check if there are any Drupal modules that require updates.
     $modulesRequiringUpdates = $site->getModulesRequiringUpdates();
     if (!empty($modulesRequiringUpdates)) {
       $event->addTabTemplate('modules', 'DeesonWardenBundle:Drupal:moduleUpdates.html.twig');
       $event->addParam('modulesRequiringUpdates', $modulesRequiringUpdates);
+
+      $securityCount = 0;
+      $updateCount = 0;
+      foreach ($modulesRequiringUpdates as $module) {
+        if ($site->getModuleIsSecurity($module)) {
+          $securityCount++;
+          continue;
+        }
+        $updateCount++;
+      }
+      $event->addParam('modulesRequiringSecurityUpdatesCount', $securityCount);
+      $event->addParam('modulesRequiringUpdatesCount', $updateCount);
     }
 
     // List the Drupal modules that used on the site.

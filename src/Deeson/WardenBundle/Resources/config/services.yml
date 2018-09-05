@@ -34,7 +34,7 @@ services:
 
     warden.site_request_log_manager:
         class: Deeson\WardenBundle\Managers\SiteRequestLogManager
-        arguments: ['@doctrine_mongodb', '@monolog.logger']
+        arguments: ['@doctrine_mongodb', '@monolog.logger', '@arturdoruch_paginator']
 
     warden.site_connection:
         class: Deeson\WardenBundle\Services\SiteConnectionService

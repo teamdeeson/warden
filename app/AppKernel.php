@@ -18,6 +18,7 @@ class AppKernel extends Kernel
             new Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle(),
             new Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle(),
             new Deeson\WardenThirdPartyLibraryBundle\DeesonWardenThirdPartyLibraryBundle(),
+            new ArturDoruch\PaginatorBundle\ArturDoruchPaginatorBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test', 'local'))) {
