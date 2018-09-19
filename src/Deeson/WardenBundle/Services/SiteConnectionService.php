@@ -2,10 +2,9 @@
 
 namespace Deeson\WardenBundle\Services;
 
-use Deeson\WardenBundle\Client\RequestHandlerException;
-use Deeson\WardenBundle\Client\RequestHandlerInterface;
+use Deeson\WardenBundle\Client\HttpRequestHandlerException;
+use Deeson\WardenBundle\Client\HttpRequestHandlerInterface;
 use Deeson\WardenBundle\Document\SiteDocument;
-use Deeson\WardenBundle\Document\SiteRequestLogDocument;
 use Deeson\WardenBundle\Exception\WardenRequestException;
 use Deeson\WardenBundle\Managers\SiteRequestLogManager;
 use Symfony\Bridge\Monolog\Logger;
@@ -14,7 +13,7 @@ use Symfony\Bridge\Monolog\Logger;
 class SiteConnectionService {
 
   /**
-   * @var RequestHandlerInterface
+   * @var HttpRequestHandlerInterface
    */
   protected $client;
 
@@ -55,12 +54,12 @@ class SiteConnectionService {
   /**
    * Constructor
    *
-   * @param RequestHandlerInterface $client
+   * @param HttpRequestHandlerInterface $client
    * @param SSLEncryptionService $sslEncryptionService
    * @param Logger $logger
    * @param SiteRequestLogManager $siteRequestLogManager
    */
-  public function __construct(RequestHandlerInterface $client, SSLEncryptionService $sslEncryptionService, Logger $logger, SiteRequestLogManager $siteRequestLogManager) {
+  public function __construct(HttpRequestHandlerInterface $client, SSLEncryptionService $sslEncryptionService, Logger $logger, SiteRequestLogManager $siteRequestLogManager) {
     $this->client = $client;
     $this->sslEncryptionService = $sslEncryptionService;
     $this->logger = $logger;
@@ -122,7 +121,7 @@ class SiteConnectionService {
 
       $this->siteRequestLogManager->addSuccessfulLog($site, 'Successfully sent request to the site.', $response);
     }
-    catch (RequestHandlerException $clientException) {
+    catch (HttpRequestHandlerException $clientException) {
       $this->siteRequestLogManager->addFailedLog($site, $clientException->getMessage());
       throw new WardenRequestException($clientException->getMessage());
     }
