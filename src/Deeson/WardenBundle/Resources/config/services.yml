@@ -5,6 +5,9 @@ services:
         tags:
             - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }
 
+    assets.empty_version_strategy:
+        class: Deeson\WardenBundle\Asset\VersionStrategy\DateVersionStrategy
+
     user_provider:
         class: Deeson\WardenBundle\Services\UserProviderService
         arguments: [%kernel.root_dir%]
