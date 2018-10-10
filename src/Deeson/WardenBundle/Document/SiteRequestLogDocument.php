@@ -12,17 +12,17 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 class SiteRequestLogDocument extends BaseDocument {
 
   /**
-   * @Mongodb\ObjectId
+   * @Mongodb\Field(type="object_id")
    */
   protected $siteId;
 
   /**
-   * @Mongodb\Timestamp
+   * @Mongodb\Field(type="timestamp")
    */
   protected $timestamp;
 
   /**
-   * @Mongodb\Boolean
+   * @Mongodb\Field(type="boolean")
    */
   protected $status;
 

@@ -30,18 +30,17 @@ class ModuleDocument extends BaseDocument {
   protected $projectName;
 
   /**
-   * @Mongodb\Boolean
+   * @Mongodb\Field(type="boolean")
    */
   protected $isNew = TRUE;
 
   /**
-   * @Mongodb\Hash
+   * @Mongodb\Field(type="hash")
    */
   protected $latestVersion;
 
   /**
-   * @var string
-   * @MongoDB\Collection
+   * @Mongodb\Field(type="collection")
    */
   protected $sites;
 
@@ -268,7 +267,7 @@ class ModuleDocument extends BaseDocument {
   /**
    * Get the latest relevant version.
    *
-   * @param $version
+   * @param string $version
    * @param int $otherVersion
    * @param bool $compareFullVersions
    *
@@ -277,10 +276,7 @@ class ModuleDocument extends BaseDocument {
   public static function getRelevantLatestVersion($version, $otherVersion = 0, $compareFullVersions = FALSE) {
     if ($otherVersion > 0) {
       $versionMatches = self::getVersionInfo($version);
-      //printf('<pre>version: %s</pre>', print_r($versionMatches, true));
       $otherMatches = self::getVersionInfo($otherVersion);
-      //printf('<pre>other: %s</pre>', print_r($otherMatches, true));
-      //print "<br>$version, $otherVersion <br>";
 
       if ($otherMatches['major'] == $versionMatches['major'] && $otherMatches['minor'] == $versionMatches['minor']) {
         if ($compareFullVersions) {

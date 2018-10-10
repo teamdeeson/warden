@@ -17,7 +17,7 @@ class DashboardDocument extends BaseDocument {
   protected $name;
 
   /**
-   * @Mongodb\ObjectId
+   * @Mongodb\Field(type="object_id")
    */
   protected $siteId;
 
@@ -27,22 +27,22 @@ class DashboardDocument extends BaseDocument {
   protected $url;
 
   /**
-   * @Mongodb\Hash
+   * @Mongodb\Field(type="hash")
    */
   protected $coreVersion;
 
   /**
-   * @Mongodb\Collection
+   * @Mongodb\Field(type="collection")
    */
   protected $modules;
 
   /**
-   * @Mongodb\Boolean
+   * @Mongodb\Field(type="boolean")
    */
   protected $hasCriticalIssue;
 
   /**
-   * @Mongodb\Hash
+   * @Mongodb\Field(type="hash")
    */
   protected $additionalIssues;
 

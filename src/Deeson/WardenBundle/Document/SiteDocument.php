@@ -19,7 +19,7 @@ class SiteDocument extends BaseDocument {
   protected $name;
 
   /**
-   * @Mongodb\Boolean
+   * @Mongodb\Field(type="boolean")
    */
   protected $isNew = TRUE;
 
@@ -29,7 +29,7 @@ class SiteDocument extends BaseDocument {
   protected $url;
 
   /**
-   * @Mongodb\Hash
+   * @Mongodb\Field(type="hash")
    */
   protected $coreVersion;
 
@@ -44,12 +44,12 @@ class SiteDocument extends BaseDocument {
   protected $wardenEncryptToken;
 
   /**
-   * @Mongodb\Collection
+   * @Mongodb\Field(type="collection")
    */
   protected $modules;
 
   /**
-   * @Mongodb\Hash
+   * @Mongodb\Field(type="hash")
    */
   protected $libraries;
 
@@ -64,12 +64,12 @@ class SiteDocument extends BaseDocument {
   protected $authPass;
 
   /**
-   * @Mongodb\Boolean
+   * @Mongodb\Field(type="boolean")
    */
   protected $hasCriticalIssue;
 
   /**
-   * @Mongodb\Hash
+   * @Mongodb\Field(type="hash")
    */
   protected $additionalIssues;
 

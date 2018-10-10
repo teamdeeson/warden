@@ -196,7 +196,7 @@ A couple of things for you to be aware of with this application:
 
   1. User credentials: If you need to regenerate the user credentials run:
 
-      `php app/console deeson:warden:install --regenerate`
+      `php bin/console deeson:warden:install --regenerate`
 
   2. There is a custom CSS file generated in the following directory:
 

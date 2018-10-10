@@ -12,7 +12,7 @@ class BuzzRequestHandler implements RequestHandlerInterface {
   /**
    * @var Browser
    */
-  protected $client;
+  protected $buzzBrowser;
 
   /**
    * @var array
@@ -21,21 +21,22 @@ class BuzzRequestHandler implements RequestHandlerInterface {
 
   public function __construct() {
     $client = new Curl();
-    $this->client = new Browser($client);
+    $this->buzzBrowser = new Browser($client);
   }
 
   /**
    * {@inheritDoc}
    */
   public function setTimeout($timeout) {
-    $this->client->getClient()->setTimeout($timeout);
+    $this->buzzBrowser->getClient()->setTimeout($timeout);
   }
 
   /**
    * {@inheritDoc}
    */
-  public function setVerifyPeer($verifyPeer) {
-    $this->client->getClient()->setVerifyPeer($verifyPeer);
+  public function setVerifySslCert($verify) {
+    $this->buzzBrowser->getClient()->setVerifyPeer($verify);
+    $this->buzzBrowser->getClient()->setVerifyHost($verify);
   }
 
   /**
@@ -51,7 +52,7 @@ class BuzzRequestHandler implements RequestHandlerInterface {
   public function get($url) {
     try {
       /** @var \Buzz\Message\Response $response */
-      $response = $this->client->get($url, $this->headers);
+      $response = $this->buzzBrowser->get($url, $this->headers);
       return new Response($response->getContent(), $response->getStatusCode(), $response->getHeaders());
     } catch (ClientException $e) {
       throw new RequestHandlerException($e->getMessage());
@@ -64,7 +65,7 @@ class BuzzRequestHandler implements RequestHandlerInterface {
   public function post($url, $content = '') {
     try {
       /** @var \Buzz\Message\Response $response */
-      $response = $this->client->post($url, $this->headers, $content);
+      $response = $this->buzzBrowser->post($url, $this->headers, $content);
       return new Response($response->getContent(), $response->getStatusCode(), $response->getHeaders());
     } catch (ClientException $e) {
       throw new RequestHandlerException($e->getMessage());

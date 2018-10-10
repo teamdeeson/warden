@@ -1,6 +1,14 @@
-_secured:
-    resource: "@DeesonWardenBundle/Controller/SecuredController.php"
-    type:     annotation
+login:
+    path: /login
+    defaults: { _controller: DeesonWardenBundle:Security:login }
+
+security_login_check:
+    path: /login_check
+    defaults: { _controller: DeesonWardenBundle:Security:loginCheck }
+
+logout:
+    path: /logout
+    defaults: { _controller: DeesonWardenBundle:Security:logout }
 
 _unauthorised:
     path: /unauthorised

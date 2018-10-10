@@ -9,7 +9,7 @@
         {% endif %}
         </div>
 
-        <form action="{{ path("_security_check") }}" method="post" id="login">
+        <form action="{{ path("security_login_check") }}" method="post" id="login">
             <div class="body bg-gray">
                 <div class="form-group">
                     <input type="text" id="username" name="_username" class="form-control" placeholder="User ID"/>
@@ -17,14 +17,9 @@
                 <div class="form-group">
                     <input type="password" id="password" name="_password" class="form-control" placeholder="Password"/>
                 </div>
-                {#<div class="form-group">
-                    <input type="checkbox" name="remember_me"/> Remember me
-                </div>#}
             </div>
             <div class="footer">
                 <button type="submit" class="btn bg-red btn-block">Sign me in</button>
-                {#<p><a href="#">I forgot my password</a></p>
-                <a href="register.html" class="text-center">Register a new membership</a>#}
             </div>
         </form>
 

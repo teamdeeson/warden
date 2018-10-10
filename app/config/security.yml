@@ -10,8 +10,8 @@ security:
         ROLE_SUPER_ADMIN: [ROLE_USER, ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]
 
     providers:
-        user_file:
-            id: user_provider
+        webservice:
+            id: warden.user_provider
 
     firewalls:
         dev:
@@ -30,16 +30,19 @@ security:
             pattern:  ^/site-update
             security: false
         secured_area:
-            pattern:    ^/
+            pattern: ^/
+            guard:
+                authenticators:
+                    - warden.form_login_authenticator
             form_login:
-                check_path: _security_check
-                login_path: _login
+                check_path: security_login_check
+                login_path: login
             logout:
-                path:   _logout
-                target: _login
-            #anonymous: ~
+                path: /logout
+                target: /
+            logout_on_user_change: true
 
     access_denied_url: /unauthorised
 
     access_control:
-        - { path: ^/, roles: ROLE_USER, requires_channel: %protocol% }
+        - { path: ^/, roles: ROLE_USER, requires_channel: "%protocol%" }

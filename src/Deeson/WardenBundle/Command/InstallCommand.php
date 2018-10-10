@@ -8,7 +8,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 use Deeson\WardenBundle\Services\WardenSetupService;
-use Deeson\WardenBundle\Services\UserProviderService;
+use Deeson\WardenBundle\Security\WebserviceUserProvider;
 
 class InstallCommand extends ContainerAwareCommand {
 
@@ -22,8 +22,8 @@ class InstallCommand extends ContainerAwareCommand {
     /** @var WardenSetupService $wardenSetupService */
     $wardenSetupService = $this->getContainer()->get('warden_setup');
 
-    /** @var UserProviderService $userProviderService */
-    $userProviderService = $this->getContainer()->get('user_provider');
+    /** @var WebserviceUserProvider $userProviderService */
+    $userProviderService = $this->getContainer()->get('warden.user_provider');
 
     if ($userProviderService->isSetup() && !$input->getOption('regenerate')) {
       $output->writeln('Warden username and password is already setup - check the README file if you need to regenerate.');

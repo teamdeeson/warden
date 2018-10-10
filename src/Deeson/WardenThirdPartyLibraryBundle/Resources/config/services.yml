@@ -2,6 +2,7 @@ services:
     warden.third_party_library.library:
         class:     Deeson\WardenThirdPartyLibraryBundle\Managers\ThirdPartyLibraryManager
         arguments: ['@doctrine_mongodb', '@monolog.logger', '@warden.site_manager']
+        public: true
         tags:
             - { name: kernel.event_listener, event: warden.site.show, method: onWardenSiteShow }
             - { name: kernel.event_listener, event: warden.site.update, method: onWardenSiteUpdate }

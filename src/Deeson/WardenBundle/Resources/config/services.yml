@@ -1,20 +1,31 @@
 services:
+#    _defaults:
+#        autowire: true
+#        autoconfigure: true
+#        public: false
+
     kernel.listener.warden_exception_listener:
         class: Deeson\WardenBundle\Listener\ExceptionListener
-        arguments: [@templating, @kernel]
+        arguments: ['@templating', '@kernel']
         tags:
             - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }
 
-    assets.empty_version_strategy:
-        class: Deeson\WardenBundle\Asset\VersionStrategy\DateVersionStrategy
-
-    user_provider:
-        class: Deeson\WardenBundle\Services\UserProviderService
-        arguments: [%kernel.root_dir%]
-
     warden_setup:
         class: Deeson\WardenBundle\Services\WardenSetupService
-        arguments: [%kernel.root_dir%]
+        arguments: ['%kernel.root_dir%']
+
+    assets.date_version_strategy:
+      class: Deeson\WardenBundle\Asset\VersionStrategy\DateVersionStrategy
+      public: false
+
+    warden.user_provider:
+        class: Deeson\WardenBundle\Security\WebserviceUserProvider
+        arguments: ['%kernel.root_dir%']
+        public: true
+
+    warden.form_login_authenticator:
+        class: Deeson\WardenBundle\Security\FormLoginAuthenticator
+        arguments: ['@router', '@security.password_encoder']
 
     warden.http_client:
         class: Deeson\WardenBundle\Client\BuzzRequestHandler
@@ -25,23 +36,26 @@ services:
 
     warden.ssl_encryption:
         class: Deeson\WardenBundle\Services\SSLEncryptionService
-        arguments: [%public_key_file%, %private_key_file%]
+        arguments: ['%public_key_file%', '%private_key_file%']
 
     warden.drupal.module_manager:
         class: Deeson\WardenBundle\Managers\ModuleManager
         arguments: ['@doctrine_mongodb', '@monolog.logger']
+        public: true
 
     warden.site_manager:
         class: Deeson\WardenBundle\Managers\SiteManager
         arguments: ['@doctrine_mongodb', '@monolog.logger']
+        public: true
 
     warden.site_request_log_manager:
         class: Deeson\WardenBundle\Managers\SiteRequestLogManager
         arguments: ['@doctrine_mongodb', '@monolog.logger', '@arturdoruch_paginator']
+        public: true
 
     warden.site_connection:
         class: Deeson\WardenBundle\Services\SiteConnectionService
-        arguments: ['@warden.http_client', '@warden.ssl_encryption', '@monolog.logger', '@warden.site_request_log_manager']
+        arguments: ['@warden.http_client', '@warden.ssl_encryption', '@monolog.logger', '@warden.site_request_log_manager', '%kernel.environment%']
 
     warden.drupal.site:
         class: Deeson\WardenBundle\Services\DrupalSiteService
@@ -67,6 +81,7 @@ services:
     warden.dashboard_manager:
         class: Deeson\WardenBundle\Managers\DashboardManager
         arguments: ['@doctrine_mongodb', '@monolog.logger', '@warden.site_manager', '@warden.mail_manager', '@service_container']
+        public: true
         tags:
             - { name: kernel.event_listener, event: warden.dashboard.update, method: onWardenDashboardUpdate }
             - { name: kernel.event_listener, event: warden.cron, method: onWardenCron, priority: -100 }

@@ -29,7 +29,7 @@ class ThirdPartyLibraryDocument extends BaseDocument {
   protected $type;
 
   /**
-   * @MongoDB\Collection
+   * @Mongodb\Field(type="collection")
    */
   protected $sites;
 

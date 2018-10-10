@@ -10,6 +10,9 @@ use Deeson\WardenBundle\Event\SiteUpdateEvent;
 use Deeson\WardenBundle\Event\WardenEvents;
 use Deeson\WardenBundle\Managers\ModuleManager;
 use Deeson\WardenBundle\Managers\SiteRequestLogManager;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Bridge\Monolog\Logger;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -280,39 +283,39 @@ class SitesController extends Controller {
     $site = $manager->getDocumentById($id);
 
     $form = $this->createFormBuilder($site)
-            ->add('name', 'text', array(
+            ->add('name', TextType::class, array(
               'label' => 'Name: ',
               'attr' => array('size' => '40'),
             ))
-            ->add('url', 'text', array(
+            ->add('url', TextType::class, array(
               'label' => 'URL: ',
               'attr' => array('size' => '40'),
             ))
-            ->add('wardenToken', 'text', array(
+            ->add('wardenToken', TextType::class, array(
               'label' => 'Token: ',
               'attr' => array('size' => '80'),
             ))
-            ->add('authUser', 'text', array(
+            ->add('authUser', TextType::class, array(
               'label' => 'Auth User: ',
               'attr' => array('size' => '30'),
               'required' => false
             ))
-            ->add('authPass', 'text', array(
+            ->add('authPass', TextType::class, array(
               'label' => 'Auth Password: ',
               'attr' => array('size' => '30'),
               'required' => false
             ))
-            ->add('isNew', 'checkbox', array(
+            ->add('isNew', CheckboxType::class, array(
               'required' => false
             ))
-            ->add('save', 'submit', array(
+            ->add('save', SubmitType::class, array(
               'attr' => array('class' => 'btn btn-danger')
             ))
             ->getForm();
 
     $form->handleRequest($request);
 
-    if ($form->isValid()) {
+    if ($form->isSubmitted()) {
       $manager->updateDocument();
       $this->get('session')->getFlashBag()->add('notice', 'Site updated successfully');
       return $this->redirect($this->generateUrl('sites_show', array('id' => $id)));

@@ -19,6 +19,26 @@ class SiteConnectionService {
   protected $client;
 
   /**
+   * @var SSLEncryptionService
+   */
+  protected $sslEncryptionService;
+
+  /**
+   * @var Logger
+   */
+  protected $logger;
+
+  /**
+   * @var SiteRequestLogManager
+   */
+  protected $siteRequestLogManager;
+
+  /**
+   * @var string
+   */
+  protected $environment;
+
+  /**
    * The connection timeout in seconds.
    *
    * @var int
@@ -38,33 +58,20 @@ class SiteConnectionService {
   protected $requestTime = 0;
 
   /**
-   * @var SSLEncryptionService
-   */
-  protected $sslEncryptionService;
-
-  /**
-   * @var Logger
-   */
-  protected $logger;
-
-  /**
-   * @var SiteRequestLogManager
-   */
-  protected $siteRequestLogManager;
-
-  /**
    * Constructor
    *
    * @param RequestHandlerInterface $client
    * @param SSLEncryptionService $sslEncryptionService
    * @param Logger $logger
    * @param SiteRequestLogManager $siteRequestLogManager
+   * @param string $environment
    */
-  public function __construct(RequestHandlerInterface $client, SSLEncryptionService $sslEncryptionService, Logger $logger, SiteRequestLogManager $siteRequestLogManager) {
+  public function __construct(RequestHandlerInterface $client, SSLEncryptionService $sslEncryptionService, Logger $logger, SiteRequestLogManager $siteRequestLogManager, $environment) {
     $this->client = $client;
     $this->sslEncryptionService = $sslEncryptionService;
     $this->logger = $logger;
     $this->siteRequestLogManager = $siteRequestLogManager;
+    $this->environment = $environment;
   }
 
   /**
@@ -108,9 +115,12 @@ class SiteConnectionService {
 
       /** @var \Symfony\Component\HttpFoundation\Response $response */
       $this->client->setTimeout($this->connectionTimeout);
-      // Don't verify SSL certificate.
-      // @TODO make this optional - dev only!
-      $this->client->setVerifyPeer(FALSE);
+
+      if ($this->environment === 'dev') {
+        // Don't verify SSL certificate.
+        $this->client->setVerifySslCert(FALSE);
+      }
+
       $this->client->setHeaders($this->connectionHeaders);
       $response = $this->client->post($url, $content);
 

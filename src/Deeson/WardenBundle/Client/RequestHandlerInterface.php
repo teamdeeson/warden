@@ -17,11 +17,11 @@ interface RequestHandlerInterface {
   /**
    * Sets whether to verify the SSL connection.
    *
-   * @param bool $verifyPeer
+   * @param bool $verify
    *
    * @return mixed
    */
-  public function setVerifyPeer($verifyPeer);
+  public function setVerifySslCert($verify);
 
   /**
    * Sets any request headers.

@@ -1,13 +1,14 @@
 <?php
-namespace Deeson\WardenBundle\Services;
+namespace Deeson\WardenBundle\Security;
 
+use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\User;
 use Symfony\Component\Yaml\Yaml;
 
-class UserProviderService implements UserProviderInterface {
+class WebserviceUserProvider implements UserProviderInterface {
 
   protected $securityConfigurationFile = '';
 
@@ -38,11 +39,15 @@ class UserProviderService implements UserProviderInterface {
   }
 
   public function refreshUser(UserInterface $user) {
+    if (!$user instanceof User) {
+      throw new UnsupportedUserException(sprintf('Instances of "%s" are not supported.', get_class($user)));
+    }
+
     return $this->loadUserByUsername($user->getUsername());
   }
 
   public function supportsClass($class) {
-    return $class === 'Symfony\Component\Security\Core\User\User';
+    return User::class === $class;
   }
 
   /**
@@ -64,7 +69,6 @@ class UserProviderService implements UserProviderInterface {
    * @throws \Exception
    */
   public function generateLoginFile($username, $password) {
-
     if ($password == '') {
       throw new \Exception('Password cannot be empty');
     }

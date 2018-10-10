@@ -1,6 +1,7 @@
+#!/usr/bin/env php
 <?php
 
-require_once dirname(__FILE__).'/SymfonyRequirements.php';
+require_once dirname(__FILE__).'/../var/SymfonyRequirements.php';
 
 $lineSize = 70;
 $symfonyRequirements = new SymfonyRequirements();
@@ -119,10 +120,14 @@ function echo_block($style, $title, $message)
 
     echo PHP_EOL.PHP_EOL;
 
-    echo_style($style, str_repeat(' ', $width).PHP_EOL);
-    echo_style($style, str_pad(' ['.$title.']', $width, ' ', STR_PAD_RIGHT).PHP_EOL);
-    echo_style($style, str_pad($message, $width, ' ', STR_PAD_RIGHT).PHP_EOL);
-    echo_style($style, str_repeat(' ', $width).PHP_EOL);
+    echo_style($style, str_repeat(' ', $width));
+    echo PHP_EOL;
+    echo_style($style, str_pad(' ['.$title.']', $width, ' ', STR_PAD_RIGHT));
+    echo PHP_EOL;
+    echo_style($style, $message);
+    echo PHP_EOL;
+    echo_style($style, str_repeat(' ', $width));
+    echo PHP_EOL;
 }
 
 function has_color_support()
