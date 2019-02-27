@@ -227,7 +227,7 @@ class DrupalUpdateRequestService {
    * @return mixed
    */
   protected function getRequestUrl() {
-    return 'http://updates.drupal.org/release-history/' . $this->moduleRequestName . '/' . $this->moduleRequestVersion;
+    return 'https://updates.drupal.org/release-history/' . $this->moduleRequestName . '/' . $this->moduleRequestVersion;
   }
 
   /**
