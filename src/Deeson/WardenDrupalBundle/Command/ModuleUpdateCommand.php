@@ -1,12 +1,11 @@
 <?php
 
-namespace Deeson\WardenBundle\Command;
+namespace Deeson\WardenDrupalBundle\Command;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Deeson\WardenBundle\Managers\SiteManager;
-use Deeson\WardenBundle\Services\DrupalModuleService;
+use Deeson\WardenDrupalBundle\Services\DrupalModuleService;
 
 class ModuleUpdateCommand extends ContainerAwareCommand {
 

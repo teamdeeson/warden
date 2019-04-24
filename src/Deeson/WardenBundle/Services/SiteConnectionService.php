@@ -5,7 +5,6 @@ namespace Deeson\WardenBundle\Services;
 use Deeson\WardenBundle\Client\RequestHandlerException;
 use Deeson\WardenBundle\Client\RequestHandlerInterface;
 use Deeson\WardenBundle\Document\SiteDocument;
-use Deeson\WardenBundle\Document\SiteRequestLogDocument;
 use Deeson\WardenBundle\Exception\WardenRequestException;
 use Deeson\WardenBundle\Managers\SiteRequestLogManager;
 use Symfony\Bridge\Monolog\Logger;

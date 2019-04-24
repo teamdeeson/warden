@@ -4,18 +4,21 @@
             <h3 class="box-title">Drupal site details</h3>
         </div>
         <div class="box-body">
+            <div class="col-md-1">
+                <div><img src="{{ asset(logoPath) }}" width="50" /></div>
+            </div>
             <div class="col-md-3">
                 <p><strong>Current core version:</strong> {{ coreVersion }}</p>
                 <p><strong>Latest version:</strong> {{ latestCoreVersion }}</p>
                 <br />
             </div>
             {% if coreNeedsSecurityUpdate is defined %}
-              <div class="col-md-9">
-                  <div class="alert alert-danger">
+                <div class="col-md-8">
+                    <div class="alert alert-danger">
                       <i class="fa fa-ban"></i>
                       <b>Alert!</b> There is a core security update required for this site: {{ latestCoreVersion }}
-                  </div>
-              </div>
+                    </div>
+                </div>
             {% endif %}
         </div>
     </div>

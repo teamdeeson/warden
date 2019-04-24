@@ -16,7 +16,7 @@ class ThirdPartyLibrariesController extends Controller {
    */
   public function IndexAction() {
     /** @var ThirdPartyLibraryManager $thirdPartyLibraryManager */
-    $thirdPartyLibraryManager = $this->get('warden.third_party_library.library');
+    $thirdPartyLibraryManager = $this->get('warden.third_party_library.third_party_manager');
 
     /** @var SiteManager $siteManager */
     $siteManager = $this->get('warden.site_manager');
@@ -57,7 +57,7 @@ class ThirdPartyLibrariesController extends Controller {
    */
   public function ShowAction($libraryName) {
     /** @var ThirdPartyLibraryManager $thirdPartyLibraryManager */
-    $manager = $this->get('warden.third_party_library.library');
+    $manager = $this->get('warden.third_party_library.third_party_manager');
     /** @var ThirdPartyLibraryDocument $library */
     $library = $manager->getDocumentBy(array('urlSafeName' => $libraryName));
 

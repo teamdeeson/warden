@@ -8,7 +8,6 @@
 
 namespace Deeson\WardenBundle\Event;
 
-use Symfony\Component\EventDispatcher\Event;
 use Deeson\WardenBundle\Document\SiteDocument;
 
 class SiteUpdateEvent extends SiteEvent {
@@ -23,7 +22,7 @@ class SiteUpdateEvent extends SiteEvent {
    * @param $data
    */
   public function __construct(SiteDocument $site, $data) {
-    $this->site = $site;
+    parent::__construct($site);
     $this->data = $data;
   }
 

@@ -1,15 +1,16 @@
 <?php
 
-namespace Deeson\WardenBundle\Document;
+namespace Deeson\WardenDrupalBundle\Document;
 
+use Deeson\WardenBundle\Document\BaseDocument;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 
 /**
  * @MongoDB\Document(
- *     collection="modules"
+ *     collection="drupal_modules"
  * )
  */
-class ModuleDocument extends BaseDocument {
+class DrupalModuleDocument extends BaseDocument {
 
   /** Module version types */
   const MODULE_VERSION_TYPE_RECOMMENDED = 'recommended';
@@ -411,12 +412,12 @@ class ModuleDocument extends BaseDocument {
    *   If the module version is unsupported
    */
   public static function isVersionUnsupported($moduleVersions, $module) {
-    $versionType = ModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED;
-    if (!isset($moduleVersions[ModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED])) {
-      if (!isset($moduleVersions[ModuleDocument::MODULE_VERSION_TYPE_OTHER])) {
+    $versionType = DrupalModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED;
+    if (!isset($moduleVersions[DrupalModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED])) {
+      if (!isset($moduleVersions[DrupalModuleDocument::MODULE_VERSION_TYPE_OTHER])) {
         return TRUE;
       }
-      $versionType = ModuleDocument::MODULE_VERSION_TYPE_OTHER;
+      $versionType = DrupalModuleDocument::MODULE_VERSION_TYPE_OTHER;
     }
 
     return self::validateVersionsAreUnsupported($moduleVersions, $module, $versionType);
@@ -436,8 +437,8 @@ class ModuleDocument extends BaseDocument {
    *   If the module version is unsupported.
    */
   protected static function validateVersionsAreUnsupported($moduleVersions, $module, $versionType) {
-    $recommendedVersionInfo = ModuleDocument::getVersionInfo($moduleVersions[$versionType]['version']);
-    $moduleVersionInfo = ModuleDocument::getVersionInfo($module['version']);
+    $recommendedVersionInfo = DrupalModuleDocument::getVersionInfo($moduleVersions[$versionType]['version']);
+    $moduleVersionInfo = DrupalModuleDocument::getVersionInfo($module['version']);
 
     if ($recommendedVersionInfo['minor'] == $moduleVersionInfo['minor']) {
       return FALSE;
@@ -445,8 +446,8 @@ class ModuleDocument extends BaseDocument {
 
     $unsupported = ($recommendedVersionInfo['minor'] > $moduleVersionInfo['minor']);
 
-    if ($unsupported && $versionType === ModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED && isset($moduleVersions[ModuleDocument::MODULE_VERSION_TYPE_OTHER])) {
-      return self::validateVersionsAreUnsupported($moduleVersions, $module, ModuleDocument::MODULE_VERSION_TYPE_OTHER);
+    if ($unsupported && $versionType === DrupalModuleDocument::MODULE_VERSION_TYPE_RECOMMENDED && isset($moduleVersions[DrupalModuleDocument::MODULE_VERSION_TYPE_OTHER])) {
+      return self::validateVersionsAreUnsupported($moduleVersions, $module, DrupalModuleDocument::MODULE_VERSION_TYPE_OTHER);
     }
 
     return $unsupported;

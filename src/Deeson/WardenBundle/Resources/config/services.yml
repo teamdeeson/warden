@@ -15,8 +15,8 @@ services:
         arguments: ['%kernel.root_dir%']
 
     assets.date_version_strategy:
-      class: Deeson\WardenBundle\Asset\VersionStrategy\DateVersionStrategy
-      public: false
+        class: Deeson\WardenBundle\Asset\VersionStrategy\DateVersionStrategy
+        public: false
 
     warden.user_provider:
         class: Deeson\WardenBundle\Security\WebserviceUserProvider
@@ -37,10 +37,6 @@ services:
     warden.ssl_encryption:
         class: Deeson\WardenBundle\Services\SSLEncryptionService
         arguments: ['%public_key_file%', '%private_key_file%']
-
-    warden.drupal.module_manager:
-        class: Deeson\WardenBundle\Managers\ModuleManager
-        arguments: ['@doctrine_mongodb', '@monolog.logger']
         public: true
 
     warden.site_manager:
@@ -57,27 +53,6 @@ services:
         class: Deeson\WardenBundle\Services\SiteConnectionService
         arguments: ['@warden.http_client', '@warden.ssl_encryption', '@monolog.logger', '@warden.site_request_log_manager', '%kernel.environment%']
 
-    warden.drupal.site:
-        class: Deeson\WardenBundle\Services\DrupalSiteService
-        arguments: ['@warden.drupal.module_manager', '@warden.site_connection', '@monolog.logger', '@event_dispatcher']
-        tags:
-            - { name: kernel.event_listener, event: warden.site.update, method: onWardenSiteUpdate }
-            - { name: kernel.event_listener, event: warden.site.refresh, method: onWardenSiteRefresh }
-            - { name: kernel.event_listener, event: warden.site.show, method: onWardenSiteShow }
-            - { name: kernel.event_listener, event: warden.cron, method: onWardenCron, priority: 100 }
-
-    warden.drupal.module_service:
-        class: Deeson\WardenBundle\Services\DrupalModuleService
-        arguments: ['@warden.drupal.module_manager', '@warden.site_manager', '@monolog.logger']
-        tags:
-            - { name: kernel.event_listener, event: warden.cron, method: onWardenCron, priority: 30 }
-
-    warden.drupal.module_version:
-        class: Deeson\WardenBundle\Services\DrupalUpdateRequestService
-        arguments: ['@warden.http_client', '@warden.site_manager', '@warden.drupal.module_manager', '@monolog.logger']
-        tags:
-            - { name: kernel.event_listener, event: warden.cron, method: onWardenCron, priority: 60 }
-
     warden.dashboard_manager:
         class: Deeson\WardenBundle\Managers\DashboardManager
         arguments: ['@doctrine_mongodb', '@monolog.logger', '@warden.site_manager', '@warden.mail_manager', '@service_container']
@@ -85,3 +60,4 @@ services:
         tags:
             - { name: kernel.event_listener, event: warden.dashboard.update, method: onWardenDashboardUpdate }
             - { name: kernel.event_listener, event: warden.cron, method: onWardenCron, priority: -100 }
+            - { name: kernel.event_listener, event: warden.site.refresh, method: onWardenSiteRefresh, priority: 100 }

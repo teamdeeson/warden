@@ -1,20 +1,21 @@
 <?php
 
-namespace Deeson\WardenBundle\Services;
+namespace Deeson\WardenDrupalBundle\Services;
 
-use Deeson\WardenBundle\Document\ModuleDocument;
+use Deeson\WardenDrupalBundle\Document\DrupalModuleDocument;
 use Deeson\WardenBundle\Document\SiteDocument;
-use Deeson\WardenBundle\Exception\DocumentNotFoundException;
-use Deeson\WardenBundle\Managers\ModuleManager;
 use Deeson\WardenBundle\Managers\SiteManager;
+use Deeson\WardenDrupalBundle\Document\SiteModuleDocument;
+use Deeson\WardenDrupalBundle\Managers\DrupalModuleManager;
+use Deeson\WardenDrupalBundle\Managers\SiteModuleManager;
 use Monolog\Logger;
 
 class DrupalModuleService {
 
   /**
-   * @var ModuleManager
+   * @var DrupalModuleManager
    */
-  protected $drupalModuleManager;
+  protected $moduleManager;
 
   /**
    * @var Logger
@@ -27,13 +28,20 @@ class DrupalModuleService {
   protected $siteManager;
 
   /**
-   * @param ModuleManager $drupalModuleManager
+   * @var SiteModuleManager
+   */
+  protected $siteModuleManager;
+
+  /**
+   * @param DrupalModuleManager $moduleManager
    * @param SiteManager $siteManager
+   * @param SiteModuleManager $siteModuleManager
    * @param Logger $logger
    */
-  public function __construct(ModuleManager $drupalModuleManager, SiteManager $siteManager, Logger $logger) {
-    $this->drupalModuleManager = $drupalModuleManager;
+  public function __construct(DrupalModuleManager $moduleManager, SiteManager $siteManager, SiteModuleManager $siteModuleManager, Logger $logger) {
+    $this->moduleManager = $moduleManager;
     $this->siteManager = $siteManager;
+    $this->siteModuleManager = $siteModuleManager;
     $this->logger = $logger;
   }
 
@@ -59,11 +67,11 @@ class DrupalModuleService {
    * Removes all the sites referenced by all of the modules.
    */
   protected function removeAllModuleSites() {
-    $modules = $this->drupalModuleManager->getAllDocuments();
+    $modules = $this->moduleManager->getAllDocuments();
     foreach ($modules as $module) {
-      /** @var ModuleDocument $module */
+      /** @var DrupalModuleDocument $module */
       $module->setSites(array());
-      $this->drupalModuleManager->updateDocument();
+      $this->moduleManager->updateDocument();
     }
   }
 
@@ -75,7 +83,13 @@ class DrupalModuleService {
     foreach ($sites as $site) {
       /** @var SiteDocument $site */
       print 'Updating site modules: ' . $site->getId() . ' - ' . $site->getUrl() . "\n";
-      $site->updateModules($this->drupalModuleManager);
+      /** @var SiteModuleDocument $siteModule */
+      $siteModule = $this->siteModuleManager->findBySiteId($site->getId());
+      if (empty($siteModule)) {
+        continue;
+      }
+      $siteModule->updateModules($this->moduleManager, $site);
+      $this->siteModuleManager->saveDocument($siteModule);
     }
   }
 
@@ -83,16 +97,16 @@ class DrupalModuleService {
    * Removes modules that have no sites associated to them.
    */
   protected function removeUnusedModules() {
-    $modules = $this->drupalModuleManager->getUnusedModules();
+    $modules = $this->moduleManager->getUnusedModules();
     if (empty($modules)) {
       return;
     }
 
     foreach ($modules as $module) {
-      /** @var ModuleDocument $module */
+      /** @var DrupalModuleDocument $module */
       $this->logger->addInfo('Remove module "' . $module->getName() . '" as it has no sites associated to it.');
-      print "Remove module \"" . $module->getName() . "\" as it has no sites associated to it.\n";
-      $this->drupalModuleManager->deleteDocument($module->getId());
+      print "Removing module \"" . $module->getName() . "\" as it has no sites associated to it.\n";
+      $this->moduleManager->deleteDocument($module->getId());
     }
   }
 

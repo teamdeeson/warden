@@ -13,4 +13,4 @@ if [[ -n "$2" ]]; then
   NEWONLY='--import-new'
 fi
 
-php bin/console deeson:warden:drupal-update --env=${ENV:1} ${NEWONLY}
+php bin/console deeson:warden-drupal:update --env=${ENV:1} ${NEWONLY}

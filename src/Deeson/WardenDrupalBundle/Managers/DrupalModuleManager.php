@@ -1,18 +1,18 @@
 <?php
 
-namespace Deeson\WardenBundle\Managers;
+namespace Deeson\WardenDrupalBundle\Managers;
 
-use Deeson\WardenBundle\Document\ModuleDocument;
 use Deeson\WardenBundle\Exception\DocumentNotFoundException;
+use Deeson\WardenDrupalBundle\Document\DrupalModuleDocument;
 
-class ModuleManager extends BaseManager {
+class DrupalModuleManager extends DrupalBaseManager {
 
   /**
    * Returns a boolean of whether a module with this name already exists.
    *
    * @param string $name
    *
-   * @return ModuleDocument
+   * @return DrupalModuleDocument
    */
   public function getModule($name) {
     $result = $this->getRepository()->findBy(array('projectName' => $name));
@@ -28,16 +28,16 @@ class ModuleManager extends BaseManager {
    *   The type of this manager.
    */
   public function getType() {
-    return 'ModuleDocument';
+    return 'DrupalModuleDocument';
   }
 
   /**
    * Create a new empty type of the object.
    *
-   * @return ModuleDocument
+   * @return DrupalModuleDocument
    */
   public function makeNewItem() {
-    return new ModuleDocument();
+    return new DrupalModuleDocument();
   }
 
   /**
@@ -81,7 +81,7 @@ class ModuleManager extends BaseManager {
    */
   public function addModules(array &$moduleData) {
     foreach ($moduleData as $name => $version) {
-      $majorVersion = ModuleDocument::getMajorVersion($version['version']);
+      $majorVersion = DrupalModuleDocument::getMajorVersion($version['version']);
 
       if (!is_string($majorVersion)) {
         $this->logger->addWarning("Badly formed major version for module $name");

@@ -13,10 +13,10 @@
             </thead>
             <tbody>
             {% for module in modulesRequiringUpdates %}
-                <tr class="{% if site.getModuleIsSecurity(module) %}alert alert-danger{% else %}{% if site.getModuleIsDevRelease(module) %}alert-info{% else %}{% if module.version != site.getModuleLatestVersion(module) %}alert alert-warning{% endif %}{% endif %}{% endif %}">
-                    <td><a href="{{ path('modules_show', {'projectName': module.name }) }}">{{ module.name }}</a> {% if site.isModuleSupported(module) %}<span class="fa fa-warning"></span>&nbsp;Obsolete/ Unsupported{% endif %}</td>
+                <tr class="{% if siteModule.getModuleIsSecurity(module) %}alert alert-danger{% else %}{% if siteModule.getModuleIsDevRelease(module) %}alert-info{% else %}{% if module.version != siteModule.getModuleLatestVersion(module) %}alert alert-warning{% endif %}{% endif %}{% endif %}">
+                    <td><a href="{{ path('warden_drupal_modules_show', {'projectName': module.name }) }}">{{ module.name }}</a> {% if siteModule.isModuleSupported(module) %}<span class="fa fa-warning"></span>&nbsp;Obsolete/ Unsupported{% endif %}</td>
                     <td>{{ module.version }}</td>
-                    <td>{{ site.getModuleLatestVersion(module) }}</td>
+                    <td>{{ siteModule.getModuleLatestVersion(module) }}</td>
                 </tr>
             {% endfor %}
             </tbody>

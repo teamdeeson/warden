@@ -3,13 +3,17 @@
 namespace Deeson\WardenBundle\Managers;
 
 use Deeson\WardenBundle\Document\DashboardDocument;
-use Deeson\WardenBundle\Document\ModuleDocument;
 use Deeson\WardenBundle\Document\SiteDocument;
+use Deeson\WardenBundle\Event\DashboardAddSiteEvent;
 use Deeson\WardenBundle\Event\DashboardUpdateEvent;
+use Deeson\WardenBundle\Event\SiteRefreshEvent;
+use Deeson\WardenBundle\Event\WardenEvents;
 use Deeson\WardenBundle\Services\MailService;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Maknz\Slack\Client;
 use Monolog\Logger;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class DashboardManager extends BaseManager {
 
@@ -88,6 +92,15 @@ class DashboardManager extends BaseManager {
   }
 
   /**
+   * Event wardem.site.refresh
+   *
+   * @param SiteRefreshEvent $event
+   */
+  public function onWardenSiteRefresh(SiteRefreshEvent $event) {
+    $this->updateDashboard($event->getSite());
+  }
+
+  /**
    * Updates the dashboard for the relevant site.
    *
    * @param SiteDocument $site
@@ -96,13 +109,19 @@ class DashboardManager extends BaseManager {
    * @return bool
    */
   protected function updateDashboard(SiteDocument $site, $forceDelete = FALSE) {
-    $qb = $this->createQueryBuilder();
-    $qb->field('siteId')->equals(new \MongoId($site->getId()));
-    $cursor = $qb->getQuery()->execute()->toArray();
-    $dashboardSite = array_pop($cursor);
-    if (!empty($dashboardSite)) {
-      $this->logger->addInfo('Remove the site [' . $site->getName() . '] from the dashboard');
-      $this->deleteDocument($dashboardSite->getId());
+    try {
+      $qb = $this->createQueryBuilder();
+      $qb->field('siteId')->equals(new \MongoId($site->getId()));
+      $cursor = $qb->getQuery()->execute()->toArray();
+      $dashboardSite = array_pop($cursor);
+      if (!empty($dashboardSite)) {
+        $this->logger->addInfo('Remove the site [' . $site->getName() . '] from the dashboard');
+        $this->deleteDocument($dashboardSite->getId());
+      }
+    } catch (\MongoException $e) {
+      return FALSE;
+    } catch (MongoDBException $e) {
+      return FALSE;
     }
 
     if ($forceDelete) {
@@ -122,24 +141,6 @@ class DashboardManager extends BaseManager {
    */
   public function addSiteToDashboard(SiteDocument $site) {
     $hasCriticalIssue = $site->getHasCriticalIssue();
-    $modulesNeedUpdate = array();
-    foreach ($site->getModules() as $siteModule) {
-      if (!isset($siteModule['latestVersion'])) {
-        continue;
-      }
-      if (is_null($siteModule['version'])) {
-        continue;
-      }
-      if (ModuleDocument::isLatestVersion($siteModule)) {
-        continue;
-      }
-
-      if ($siteModule['isSecurity']) {
-        $hasCriticalIssue = TRUE;
-      }
-
-      $modulesNeedUpdate[] = $siteModule;
-    }
 
     // Don't add the site to the dashboard if there are no critical issues.
     if (!$hasCriticalIssue) {
@@ -151,11 +152,9 @@ class DashboardManager extends BaseManager {
     $dashboard->setName($site->getName());
     $dashboard->setSiteId($site->getId());
     $dashboard->setUrl($site->getUrl());
-    $dashboard->setCoreVersion($site->getCoreVersion(), $site->getLatestCoreVersion(), $site->getIsSecurityCoreVersion());
+    $dashboard->setType($site->getType());
     $dashboard->setHasCriticalIssue($hasCriticalIssue);
     $dashboard->setAdditionalIssues($site->getAdditionalIssues());
-    $dashboard->setModules($modulesNeedUpdate);
-
     $this->saveDocument($dashboard);
 
     return TRUE;
@@ -176,7 +175,7 @@ class DashboardManager extends BaseManager {
       return;
     }
 
-    $dashboardSites = $this->getAllDocuments();
+    $dashboardSites = $this->getDocumentsBy([], ['name' => 'asc']);
 
     $params = array(
       'sites' => $dashboardSites,
@@ -207,30 +206,20 @@ class DashboardManager extends BaseManager {
     // @todo set the text for this via a variable/settings document?
     $message = "<!channel> Here is the full list of sites from Warden that need security updates applied:\n\n";
 
-    $dashboardSites = $this->getAllDocuments();
+    /** @var EventDispatcher $dispatcher */
+    $dispatcher = $this->container->get('event_dispatcher');
+
+    $dashboardSites = $this->getDocumentsBy([], ['name' => 'asc']);
     /** @var DashboardDocument $dashboardSite */
     foreach ($dashboardSites as $dashboardSite) {
       /** @var SiteDocument $site */
       $site = $this->siteManager->getDocumentById($dashboardSite->getSiteId());
 
-      /** @todo handle this for being plugable - 2.0 */
-      $modulesHaveSecurityUpdate = [];
-      // Check if Core is out of date.
-      if ($site->getIsSecurityCoreVersion()) {
-        $modulesHaveSecurityUpdate[] = 'Drupal Core';
-      }
+      $event = new DashboardAddSiteEvent($site);
+      $dispatcher->dispatch(WardenEvents::WARDEN_DASHBOARD_ADD_SITE, $event);
 
-      // Get a list of modules that have security updates.
-      $moduleUpdates = $site->getModulesRequiringUpdates();
-      foreach ($moduleUpdates as $module) {
-        if (!$module['isSecurity']) {
-          continue;
-        }
-        $modulesHaveSecurityUpdate[] = $module['name'];
-      }
-      $moduleUpdateList = implode(', ', $modulesHaveSecurityUpdate);
-
-      $message .= ' - ' . $site->getName() . (!empty($moduleUpdateList) ? " ($moduleUpdateList)" : '' ) . "\n";
+      $issuesList = implode(', ', $event->getIssues());
+      $message .= ' - ' . $site->getName() . (!empty($issuesList) ? " ($issuesList)" : '' ) . "\n";
     }
 
     $client = new Client($slackHookUrl);

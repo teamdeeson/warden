@@ -20,74 +20,9 @@
                 <div class="navbar-right">
                     {% if app.user %}
                     <ul class="nav navbar-nav">
-                        <!-- Notifications: style can be found in dropdown.less -->
-                        {#<li class="dropdown notifications-menu">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                <i class="fa fa-warning"></i>
-                                <span class="label label-warning">10</span>
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li class="header">You have 10 notifications</li>
-                                <li>
-                                    <!-- inner menu: contains the actual data -->
-                                    <ul class="menu">
-                                        <li>
-                                            <a href="#">
-                                                <i class="ion ion-ios7-people info"></i> 5 new members joined today
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="#">
-                                                <i class="fa fa-warning danger"></i> Very long description here that may not fit into the page and may cause design problems
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="#">
-                                                <i class="fa fa-users warning"></i> 5 new members joined
-                                            </a>
-                                        </li>
-
-                                        <li>
-                                            <a href="#">
-                                                <i class="ion ion-ios7-cart success"></i> 25 sales made
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="#">
-                                                <i class="ion ion-ios7-person danger"></i> You changed your username
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </li>
-                                <li class="footer"><a href="#">View all</a></li>
-                            </ul>
-                        </li>#}
-
                         <!-- User Account: style can be found in dropdown.less -->
                         <li class="dropdown user user-menu">
-
                             <a href="{{ path('logout') }}">Sign out</a>
-                            {#<a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                <i class="glyphicon glyphicon-user"></i>
-                                <span> David Allard <i class="caret"></i></span>
-                            </a>
-                            <ul class="dropdown-menu">
-                                <!-- User image -->
-                                <li class="pull-left">
-                                    <div class="col-xs-12">
-                                      <p>
-                                          <br/>
-                                           David Allard
-                                      </p>
-                                    </div>
-                                </li>
-                                <!-- Menu Footer-->
-                                <li class="user-footer">
-                                    <div class="pull-right">
-                                        <a href="#" class="btn btn-default btn-flat">Sign out</a>
-                                    </div>
-                                </li>
-                            </ul>#}
                         </li>
                     </ul>
                     {% endif %}
@@ -102,12 +37,8 @@
                 <section class="sidebar">
                     <!-- Sidebar user panel -->
                     <div class="user-panel">
-                        <!--<div class="pull-left image">
-                            <img src="img/avatar3.png" class="fa fa-user img-circle" alt="User Image" />
-                        </div>-->
                         <div class="pull-left info">
                             <p><span class="glyphicon glyphicon-user"></span> &nbsp;Hello, {{ app.user ? app.user.username : 'Anonymous' }}</p>
-                            {#<a href="#"><i class="fa fa-circle text-success"></i> Online</a>#}
                         </div>
                     </div>
 
@@ -121,7 +52,7 @@
                             <a href="{{ path('sites_list') }}"><i class="fa fa-globe"></i> &nbsp;<span>Sites</span></a>
                         </li>
                         <li {% if app.request.get('_route') starts with 'modules_' %} class="active"{% endif %}>
-                            <a href="{{ path('modules_list') }}"><i class="fa fa-th"></i> &nbsp;<span>Modules</span></a>
+                            <a href="{{ path('warden_drupal_modules_list') }}"><i class="fa fa-th"></i> &nbsp;<span>Drupal Modules</span></a>
                         </li>
                         <li {% if app.request.get('_route') starts with 'third_party_libraries_' %} class="active"{% endif %}>
                             <a href="{{ path('warden_third_party_libraries_list') }}"><i class="fa fa-th-list"></i> &nbsp;<span>Third Party Libraries</span></a>
@@ -148,7 +79,6 @@
                 <section class="content-header">
                     <h1>
                         {% block page_title %}{% endblock %}
-                        {#<small>Control panel</small>#}
                     </h1>
                     {#<ol class="breadcrumb">
                         <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>

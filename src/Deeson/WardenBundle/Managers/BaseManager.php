@@ -3,7 +3,6 @@
 namespace Deeson\WardenBundle\Managers;
 
 use Deeson\WardenBundle\Document\BaseDocument;
-use Deeson\WardenBundle\Exception\DocumentMethodNotFoundException;
 use Deeson\WardenBundle\Exception\DocumentNotFoundException;
 use Monolog\Logger;
 
@@ -64,6 +63,8 @@ abstract class BaseManager {
    *
    * @return int
    *   The total document count.
+   *
+   * @throws \Doctrine\ODM\MongoDB\MongoDBException
    */
   public function getAllDocumentsCount() {
     return $this->createQueryBuilder()->getQuery()->execute()->count();

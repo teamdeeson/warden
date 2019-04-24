@@ -5,7 +5,7 @@ namespace Deeson\WardenThirdPartyLibraryBundle\Command;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Deeson\WardenThirdPartyLibraryBundle\Managers\ThirdPartyLibraryManager;
+use Deeson\WardenThirdPartyLibraryBundle\Services\ThirdPartyLibraryService;
 
 class BuildThirdPartyLibrariesCommand extends ContainerAwareCommand {
 
@@ -15,9 +15,9 @@ class BuildThirdPartyLibrariesCommand extends ContainerAwareCommand {
   }
 
   protected function execute(InputInterface $input, OutputInterface $output) {
-    /** @var ThirdPartyLibraryManager $thirdPartyLibraryManager */
-    $thirdPartyLibraryManager = $this->getContainer()->get('warden.third_party_library.library');
-    $thirdPartyLibraryManager->buildList();
+    /** @var ThirdPartyLibraryService $thirdPartyLibraryService */
+    $thirdPartyLibraryService = $this->getContainer()->get('warden.third_party_library.library_service');
+    $thirdPartyLibraryService->buildList();
   }
 
 }

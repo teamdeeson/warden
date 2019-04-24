@@ -3,6 +3,7 @@
 namespace Deeson\WardenBundle\Managers;
 
 use Deeson\WardenBundle\Document\SiteDocument;
+use Doctrine\ODM\MongoDB\MongoDBException;
 
 class SiteManager extends BaseManager {
 
@@ -36,37 +37,36 @@ class SiteManager extends BaseManager {
   }
 
   /**
-   * Gets all the sites for a specific version.
+   * Get the sites based upon a list of object ids.
    *
-   * @param int $version
-   *
-   * @return array
-   */
-  public function getAllByVersion($version) {
-    return $this->getDocumentsBy(array('coreVersion.release' => $version));
-    //'/^' . $version . '.x.*/'
-  }
-
-  /**
-   * Gets the list of major release versions that are being used on registered sites.
+   * @param array $siteIds
+   *   An array of site ids as a Mongo object id.
+   * @param boolean $newOnly
+   *   Whether this is to only process new sites.
    *
    * @return array
+   *   An array of SiteDocuments.
    */
-  public function getAllMajorVersionReleases() {
-    /** @var \Doctrine\ODM\MongoDB\Query\Builder $qb */
-    $qb = $this->createQueryBuilder();
-    $qb->distinct('coreVersion.release');
-    $qb->field('coreVersion.release')->notEqual('0');
-    //$qb->sort('coreVersion.release', 'ASC');
+  public function getAllBySiteIds($siteIds, $newOnly) {
+    try {
+      /** @var \Doctrine\ODM\MongoDB\Query\Builder $qb */
+      $qb = $this->createQueryBuilder();
+      $qb->field('_id')->in($siteIds);
 
-    $cursor = $qb->getQuery()->execute();
+      if ($newOnly) {
+        $qb->field('isNew')->equals(TRUE);
+      }
 
-    $results = array();
-    foreach ($cursor as $result) {
-      $results[] = $result;
+      $cursor = $qb->getQuery()->execute();
+      $results = array();
+      foreach ($cursor as $result) {
+        $results[] = $result;
+      }
+
+      return $results;
     }
-    sort($results);
-
-    return $results;
+    catch (MongoDBException $e) {
+      return array();
+    }
   }
 }

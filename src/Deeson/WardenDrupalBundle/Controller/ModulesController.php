@@ -1,12 +1,14 @@
 <?php
 
-namespace Deeson\WardenBundle\Controller;
+namespace Deeson\WardenDrupalBundle\Controller;
 
-use Deeson\WardenBundle\Document\ModuleDocument;
+use Deeson\WardenDrupalBundle\Document\DrupalModuleDocument;
 use Deeson\WardenBundle\Document\SiteDocument;
 use Deeson\WardenBundle\Managers\SiteManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Deeson\WardenBundle\Managers\ModuleManager;
+use Deeson\WardenDrupalBundle\Managers\DrupalModuleManager;
+use Deeson\WardenDrupalBundle\Document\SiteModuleDocument;
+use Deeson\WardenDrupalBundle\Managers\SiteModuleManager;
 
 class ModulesController extends Controller {
 
@@ -16,7 +18,7 @@ class ModulesController extends Controller {
    * @return \Symfony\Component\HttpFoundation\Response
    */
   public function IndexAction() {
-    /** @var ModuleManager $manager */
+    /** @var DrupalModuleManager $manager */
     $moduleManager = $this->get('warden.drupal.module_manager');
 
     /** @var SiteManager $siteManager */
@@ -27,7 +29,7 @@ class ModulesController extends Controller {
 
     $moduleList = array();
     foreach ($modules as $module) {
-      /** @var ModuleDocument $module */
+      /** @var DrupalModuleDocument $module */
       $module->setUsagePercentage($sitesTotalCount);
       $moduleList[$module->getSiteCount()][] = $module;
     }
@@ -44,7 +46,7 @@ class ModulesController extends Controller {
       'modules' => $modules,
     );
 
-    return $this->render('DeesonWardenBundle:Modules:index.html.twig', $params);
+    return $this->render('DeesonWardenDrupalBundle:Modules:index.html.twig', $params);
   }
 
   /**
@@ -56,7 +58,7 @@ class ModulesController extends Controller {
    * @return \Symfony\Component\HttpFoundation\Response
    */
   public function ShowAction($projectName) {
-    /** @var ModuleManager $manager */
+    /** @var DrupalModuleManager $manager */
     $manager = $this->get('warden.drupal.module_manager');
     $module = $manager->getDocumentBy(array('projectName' => $projectName));
 
@@ -64,11 +66,20 @@ class ModulesController extends Controller {
     $manager = $this->get('warden.site_manager');
     $sites = $manager->getDocumentsBy(array(), array('name' => 'asc'));
 
+    /** @var SiteModuleManager $siteModuleManager */
+    $siteModuleManager = $this->get('warden.drupal.site_module_manager');
+
     $sitesNotUsingModule = array();
     foreach ($sites as $site) {
       /** @var SiteDocument $site */
+      /** @var SiteModuleDocument $siteModuleDoc */
+      $siteModuleDoc = $siteModuleManager->findBySiteId($site->getId());
+      if (empty($siteModuleDoc)) {
+        continue;
+      }
+
       $usingModule = FALSE;
-      foreach ($site->getModules() as $siteModule) {
+      foreach ($siteModuleDoc->getModules() as $siteModule) {
         if ($siteModule['name'] == $module->getProjectName()) {
           $usingModule = TRUE;
           break;
@@ -91,7 +102,7 @@ class ModulesController extends Controller {
       'sitesNotUsingModule' => $sitesNotUsingModule,
     );
 
-    return $this->render('DeesonWardenBundle:Modules:show.html.twig', $params);
+    return $this->render('DeesonWardenDrupalBundle:Modules:show.html.twig', $params);
   }
 
 }

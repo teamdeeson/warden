@@ -13,13 +13,13 @@
             </thead>
             <tbody>
             {% for module in modules %}
-                <tr {% if site.getModuleIsDevRelease(module) %}class="alert-info"{% endif %}>
+                <tr {% if siteModule.getModuleIsDevRelease(module) %}class="alert-info"{% endif %}>
                     <td>
                         {% if (module.version) %}
-                        <a href="{{ path('modules_show', {'projectName': module.name }) }}">
+                        <a href="{{ path('warden_drupal_modules_show', {'projectName': module.name }) }}">
                             {{ module.name }}
                         </a>
-                        {% if site.isModuleSupported(module) %}<span class="fa fa-warning"></span>&nbsp;Obsolete/ Unsupported{% endif %}
+                        {% if siteModule.isModuleSupported(module) %}<span class="fa fa-warning"></span>&nbsp;Obsolete/ Unsupported{% endif %}
                         {% else %}
                             {{ module.name }}
                         {% endif %}
