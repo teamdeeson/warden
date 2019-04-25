@@ -349,6 +349,10 @@ class DrupalSiteService {
 
     /** @var SiteDrupalDocument $siteDrupal */
     $siteDrupal = $this->siteDrupalManager->getBySiteId($site->getId());
+    if (empty($siteDrupal)) {
+      $event->setIssues(['*No Drupal site modules could be found - this site needs refreshing*']);
+      return;
+    }
 
     // Check if Core is out of date.
     if ($siteDrupal->getIsSecurityCoreVersion()) {
