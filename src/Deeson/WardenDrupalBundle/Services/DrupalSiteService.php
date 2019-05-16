@@ -329,11 +329,15 @@ class DrupalSiteService {
 
     /** @var SiteDrupalDocument $siteDrupal */
     $siteDrupal = $this->siteDrupalManager->getBySiteId($site->getId());
-    $this->siteDrupalManager->deleteDocument($siteDrupal->getId());
+    if (!empty($siteDrupal)) {
+      $this->siteDrupalManager->deleteDocument($siteDrupal->getId());
+    }
 
     /** @var SiteModuleDocument $siteModule */
     $siteModule = $this->siteModuleManager->findBySiteId($site->getId());
-    $this->siteModuleManager->deleteDocument($siteModule->getId());
+    if (!empty($siteModule)) {
+      $this->siteModuleManager->deleteDocument($siteModule->getId());
+    }
   }
 
   /**

@@ -289,27 +289,6 @@ class SitesController extends Controller {
     }
   }
 
-  /**
-   * Update the modules to remove the site.
-   *
-   * @param \Deeson\WardenBundle\Document\SiteDocument $site
-   */
-  /*protected function updateModules(SiteDocument $site) {
-    /** @var ModuleManager $moduleManager *
-    $moduleManager = $this->get('warden.drupal.module_manager');
-
-    foreach ($site->getModules() as $siteModule) {
-      /** @var ModuleDocument $module *
-      $module = $moduleManager->findByProjectName($siteModule['name']);
-      if (empty($module)) {
-        print('Error getting module [' . $siteModule['name'] . ']');
-        continue;
-      }
-      $module->removeSite($site->getId());
-      $moduleManager->updateDocument();
-    }
-  }*/
-
   public function EditAction($id, Request $request) {
     /** @var SiteManager $manager */
     $manager = $this->get('warden.site_manager');
