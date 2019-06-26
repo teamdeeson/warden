@@ -132,7 +132,7 @@ class SiteConnectionService {
       $this->siteRequestLogManager->addSuccessfulLog($site, 'Successfully sent request to the site.', $response);
     }
     catch (RequestHandlerException $clientException) {
-      $this->siteRequestLogManager->addFailedLog($site, $clientException->getMessage());
+      $this->siteRequestLogManager->addFailedLog($site, $clientException->getMessage(), 'Failed to connect to the site.');
       throw new WardenRequestException($clientException->getMessage());
     }
   }
