@@ -3,6 +3,7 @@
 namespace Deeson\WardenThirdPartyLibraryBundle\Services;
 
 use Deeson\WardenBundle\Document\SiteDocument;
+use Deeson\WardenBundle\Event\SiteDeleteEvent;
 use Deeson\WardenBundle\Event\SiteShowEvent;
 use Deeson\WardenBundle\Event\SiteUpdateEvent;
 use Deeson\WardenBundle\Managers\SiteManager;
@@ -13,6 +14,10 @@ use Deeson\WardenThirdPartyLibraryBundle\Managers\SiteThirdPartyLibraryManager;
 use Monolog\Logger;
 
 class ThirdPartyLibraryService {
+
+  const UPDATE_MODE_ADD = 1;
+
+  const UPDATE_MODE_DELETE = 2;
 
   /**
    * @var Logger
@@ -119,6 +124,32 @@ class ThirdPartyLibraryService {
   }
 
   /**
+   * Event: warden.site.delete
+   *
+   * Fires when a site is deleted.
+   *
+   * @param SiteDeleteEvent $event
+   */
+  public function onWardenSiteDelete(SiteDeleteEvent $event) {
+    /** @var SiteDocument $site */
+    $site = $event->getSite();
+
+    /** @var SiteThirdPartyLibraryDocument $siteLibrary */
+    $siteLibrary = $this->siteThirdPartyManager->findBySiteId($site->getId());
+    if (empty($siteLibrary)) {
+      $this->logger->addInfo("There are no third party library data for: " . $site->getName());
+      return;
+    }
+
+    $this->siteThirdPartyManager->deleteDocument($siteLibrary->getId());
+
+    $libraries = $siteLibrary->getLibraries();
+    foreach ($libraries as $type => $list) {
+      $this->updateThirdPartyData($site, $list, $type, self::UPDATE_MODE_DELETE);
+    }
+  }
+
+  /**
    * Adds the site library details to the third party libraries list.
    *
    * @param SiteDocument $site
@@ -155,18 +186,30 @@ class ThirdPartyLibraryService {
    *   The list of library data.
    * @param string $type
    *   The library data type.
+   * @param int $mode
+   *   The update mode, either add or delete
    */
-  protected function updateThirdPartyData(SiteDocument $site, array $list, $type) {
+  protected function updateThirdPartyData(SiteDocument $site, array $list, $type, $mode = self::UPDATE_MODE_ADD) {
     foreach ($list as $item) {
       /** @var ThirdPartyLibraryDocument $thirdPartyLibrary */
       $thirdPartyLibrary = $this->thirdPartyManager->getLibrary($item['name'], $type);
       if (empty($thirdPartyLibrary)) {
-        $thirdPartyLibrary = $this->thirdPartyManager->makeNewItem();
-        $thirdPartyLibrary->setName($item['name']);
-        $thirdPartyLibrary->setType($type);
+        if ($mode === self::UPDATE_MODE_ADD) {
+          $thirdPartyLibrary = $this->thirdPartyManager->makeNewItem();
+          $thirdPartyLibrary->setName($item['name']);
+          $thirdPartyLibrary->setType($type);
+        }
+        if ($mode === self::UPDATE_MODE_DELETE) {
+          continue;
+        }
       }
 
-      $thirdPartyLibrary->addSite($site, $item['version']);
+      if ($mode === self::UPDATE_MODE_ADD) {
+        $thirdPartyLibrary->addSite($site, $item['version']);
+      }
+      if ($mode === self::UPDATE_MODE_DELETE) {
+        $thirdPartyLibrary->removeSite($site);
+      }
       $this->thirdPartyManager->saveDocument($thirdPartyLibrary);
     }
   }
