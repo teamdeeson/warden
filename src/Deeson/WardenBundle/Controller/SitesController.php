@@ -294,34 +294,46 @@ class SitesController extends Controller {
     $manager = $this->get('warden.site_manager');
     $site = $manager->getDocumentById($id);
 
-    $form = $this->createFormBuilder($site)
+    $form = $this->createFormBuilder($site, array('attr' => array('class' => 'box-body')))
             ->add('name', TextType::class, array(
               'label' => 'Name: ',
-              'attr' => array('size' => '40'),
+              'attr' => array(
+                'class' => 'form-control',
+              ),
             ))
             ->add('url', TextType::class, array(
               'label' => 'URL: ',
-              'attr' => array('size' => '40'),
+              'attr' => array(
+                'class' => 'form-control',
+              ),
             ))
             ->add('wardenToken', TextType::class, array(
               'label' => 'Token: ',
-              'attr' => array('size' => '80'),
+              'attr' => array(
+                'class' => 'form-control',
+              ),
             ))
             ->add('authUser', TextType::class, array(
               'label' => 'Auth User: ',
-              'attr' => array('size' => '30'),
+              'attr' => array(
+                'class' => 'form-control',
+              ),
               'required' => false
             ))
             ->add('authPass', TextType::class, array(
               'label' => 'Auth Password: ',
-              'attr' => array('size' => '30'),
+              'attr' => array(
+                'class' => 'form-control',
+              ),
               'required' => false
             ))
             ->add('isNew', CheckboxType::class, array(
               'required' => false
             ))
             ->add('save', SubmitType::class, array(
-              'attr' => array('class' => 'btn btn-danger')
+              'attr' => array(
+                'class' => 'btn btn-danger'
+              )
             ))
             ->getForm();
 
