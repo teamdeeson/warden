@@ -28,7 +28,7 @@ services:
         arguments: ['@router', '@security.password_encoder']
 
     warden.http_client:
-        class: Deeson\WardenBundle\Client\BuzzRequestHandler
+        class: Deeson\WardenBundle\Client\GuzzleHttpRequestHandler
 
     warden.mail_manager:
         class: Deeson\WardenBundle\Services\MailService

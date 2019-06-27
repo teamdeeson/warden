@@ -2,7 +2,7 @@
 
 namespace Deeson\WardenBundle\Client;
 
-interface RequestHandlerInterface {
+interface HttpRequestHandlerInterface {
 
   /**
    * Sets the HTTP timeout time in seconds.
@@ -38,7 +38,7 @@ interface RequestHandlerInterface {
    *
    * @return \Symfony\Component\HttpFoundation\Response
    *
-   * @throws \Deeson\WardenBundle\Client\RequestHandlerException
+   * @throws \Deeson\WardenBundle\Client\HttpRequestHandlerException
    */
   public function get($url);
 
@@ -52,7 +52,7 @@ interface RequestHandlerInterface {
    *
    * @return \Symfony\Component\HttpFoundation\Response
    *
-   * @throws \Deeson\WardenBundle\Client\RequestHandlerException
+   * @throws \Deeson\WardenBundle\Client\HttpRequestHandlerException
    */
   public function post($url, $content = '');
 

@@ -2,9 +2,10 @@
 
 namespace Deeson\WardenDrupalBundle\Services;
 
-use Deeson\WardenBundle\Client\RequestHandlerException;
-use Deeson\WardenBundle\Client\RequestHandlerInterface;
+use Deeson\WardenBundle\Client\HttpRequestHandlerException;
+use Deeson\WardenBundle\Client\HttpRequestHandlerInterface;
 use Deeson\WardenDrupalBundle\Document\DrupalModuleDocument;
+use Deeson\WardenBundle\Document\ModuleDocument;
 use Deeson\WardenBundle\Document\SiteDocument;
 use Deeson\WardenBundle\Managers\SiteManager;
 use Deeson\WardenDrupalBundle\Document\SiteDrupalDocument;
@@ -56,7 +57,7 @@ class DrupalUpdateRequestService {
   protected $logger;
 
   /**
-   * @var RequestHandlerInterface
+   * @var HttpRequestHandlerInterface
    */
   protected $client;
 
@@ -91,14 +92,14 @@ class DrupalUpdateRequestService {
   protected $majorVersions = array();
 
   /**
-   * @param RequestHandlerInterface $client
+   * @param HttpRequestHandlerInterface $client
    * @param SiteManager $siteManager
    * @param DrupalModuleManager $moduleManager
    * @param SiteDrupalManager $siteDrupalManager
    * @param SiteModuleManager $siteModuleManager
    * @param Logger $logger
    */
-  public function __construct(RequestHandlerInterface $client, SiteManager $siteManager, DrupalModuleManager $moduleManager, SiteDrupalManager $siteDrupalManager, SiteModuleManager $siteModuleManager, Logger $logger) {
+  public function __construct(HttpRequestHandlerInterface $client, SiteManager $siteManager, DrupalModuleManager $moduleManager, SiteDrupalManager $siteDrupalManager, SiteModuleManager $siteModuleManager, Logger $logger) {
     $this->client = $client;
     $this->siteManager = $siteManager;
     $this->moduleManager = $moduleManager;
@@ -165,7 +166,7 @@ class DrupalUpdateRequestService {
 
       $this->processRequestData($requestData);
     }
-    catch (RequestHandlerException $e) {
+    catch (HttpRequestHandlerException $e) {
       throw new \Exception($e->getMessage());
     }
   }
