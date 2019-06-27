@@ -83,7 +83,7 @@ class SiteRequestLogManager extends BaseManager {
   public function getRequestLogs($siteId, $page = 1, $limit = 20) {
     /** @var \Doctrine\ODM\MongoDB\Query\Builder $qb */
     $qb = $this->createQueryBuilder();
-    $qb->select(array('id', 'timestamp', 'status', 'message'));
+    $qb->select(array('id', 'timestamp', 'status', 'message', 'response'));
     $qb->field('siteId')->equals(new ObjectId($siteId));
     $qb->sort('timestamp', 'DESC');
 

@@ -20,6 +20,7 @@
                           <table class="table table-hover">
                           <thead>
                               <tr>
+                                  <th>&nbsp;</th>
                                   <th>Date Time</th>
                                   <th>Message</th>
                               </tr>
@@ -27,9 +28,15 @@
                           <tbody>
                           {% for log in logs %}
                               <tr class="{% if not log.status %}alert alert-danger{% endif %}">
-                                  <td>{{ log.timestamp | date }}</td>
-                                  <td>{{ log.message }}</td>
+                                <td>{% if not log.status %}<a href="#" class="show-response"><i class="fa fa-fw fa-plus-square-o"></i></a>{% endif %}</td>
+                                <td>{{ log.timestamp | date }}</td>
+                                <td>{{ log.message }}</td>
                               </tr>
+                              {% if not log.status %}
+                                <tr class="log-response callout callout-danger">
+                                  <td colspan="3">Response: <pre>{% if log.response is empty %}Something failed ... probably failed to connect to the site{% else %}{{ log.response }}{% endif %}</pre></td>
+                                </tr>
+                              {% endif %}
                           {% endfor %}
                           </tbody>
                           </table>
@@ -38,6 +45,24 @@
                       <br />
                       {{ arturdoruch_pagination_all(logs.pagination) }}
                   </div>
+
+                <style type="text/css">
+                  .log-response {
+                    display: none;
+                  }
+                  .log-response pre {
+                    white-space: pre-wrap;
+                  }
+                </style>
+                <script type="text/javascript">
+                $(".show-response").click(function(event) {
+                  event.stopPropagation();
+                  $(this).find('i').toggleClass('fa-minus-square-o');
+                  $(this).find('i').toggleClass('fa-plus-square-o');
+                  $(this).closest("tr").next("tr.log-response").toggle();
+                  return false;
+                });
+                </script>
 
               </div>
           </div>

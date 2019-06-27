@@ -1,8 +1,20 @@
 services:
-    warden.third_party_library.library:
-        class:     Deeson\WardenThirdPartyLibraryBundle\Managers\ThirdPartyLibraryManager
-        arguments: ['@doctrine_mongodb', '@monolog.logger', '@warden.site_manager']
+    warden.third_party_library.third_party_manager:
+        class: Deeson\WardenThirdPartyLibraryBundle\Managers\ThirdPartyLibraryManager
+        arguments: ['@doctrine_mongodb', '@monolog.logger']
+        public: true
+
+    warden.third_party_library.site_third_party_manager:
+        class: Deeson\WardenThirdPartyLibraryBundle\Managers\SiteThirdPartyLibraryManager
+        arguments: ['@doctrine_mongodb', '@monolog.logger']
+        public: true
+
+    warden.third_party_library.library_service:
+        class:     Deeson\WardenThirdPartyLibraryBundle\Services\ThirdPartyLibraryService
+        arguments: ['@doctrine_mongodb', '@monolog.logger', '@warden.site_manager', '@warden.third_party_library.third_party_manager', '@warden.third_party_library.site_third_party_manager']
+        public: true
         tags:
             - { name: kernel.event_listener, event: warden.site.show, method: onWardenSiteShow }
             - { name: kernel.event_listener, event: warden.site.update, method: onWardenSiteUpdate }
+            - { name: kernel.event_listener, event: warden.site.delete, method: onWardenSiteDelete }
             - { name: kernel.event_listener, event: warden.cron, method: onWardenCron, priority: -10 }

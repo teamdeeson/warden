@@ -29,7 +29,7 @@ class ThirdPartyLibraryDocument extends BaseDocument {
   protected $type;
 
   /**
-   * @MongoDB\Collection
+   * @Mongodb\Field(type="collection")
    */
   protected $sites;
 
@@ -96,7 +96,7 @@ class ThirdPartyLibraryDocument extends BaseDocument {
     $librarySites = $this->getSites();
     $siteAlreadyRegistered = FALSE;
     foreach ($librarySites as $librarySite) {
-      if ($librarySite['name'] === $site->getName()) {
+      if ($librarySite['id'] === $site->getId()) {
         $siteAlreadyRegistered = TRUE;
         break;
       }
@@ -109,6 +109,19 @@ class ThirdPartyLibraryDocument extends BaseDocument {
         'url' => $site->getUrl(),
         'version' => $version,
       );
+    }
+    $this->setSites($librarySites);
+  }
+
+  /**
+   * @param SiteDocument $site
+   */
+  public function removeSite(SiteDocument $site) {
+    $librarySites = $this->getSites();
+    foreach ($librarySites as $key => $librarySite) {
+      if ($librarySite['id'] === $site->getid()) {
+        unset($librarySites[$key]);
+      }
     }
     $this->setSites($librarySites);
   }

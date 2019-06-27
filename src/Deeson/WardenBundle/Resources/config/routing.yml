@@ -1,6 +1,14 @@
-_secured:
-    resource: "@DeesonWardenBundle/Controller/SecuredController.php"
-    type:     annotation
+login:
+    path: /login
+    defaults: { _controller: DeesonWardenBundle:Security:login }
+
+security_login_check:
+    path: /login_check
+    defaults: { _controller: DeesonWardenBundle:Security:loginCheck }
+
+logout:
+    path: /logout
+    defaults: { _controller: DeesonWardenBundle:Security:logout }
 
 _unauthorised:
     path: /unauthorised
@@ -37,14 +45,6 @@ sites_update_refresh:
 sites_logs:
     path:    /sites/{id}/logs
     defaults: { _controller: DeesonWardenBundle:Sites:logs }
-
-modules_list:
-    path:    /modules
-    defaults: { _controller: DeesonWardenBundle:Modules:index }
-
-modules_show:
-    path:    /modules/{projectName}
-    defaults: { _controller: DeesonWardenBundle:Modules:show }
 
 public_key:
     path:    /public-key

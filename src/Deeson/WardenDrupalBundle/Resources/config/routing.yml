@@ -1,0 +1,8 @@
+
+warden_drupal_modules_list:
+    path:    /modules
+    defaults: { _controller: DeesonWardenDrupalBundle:Modules:index }
+
+warden_drupal_modules_show:
+    path:    /modules/{projectName}
+    defaults: { _controller: DeesonWardenDrupalBundle:Modules:show }

@@ -37,4 +37,4 @@ fi
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 OUTPUT=""
 
-php app/console deeson:warden:warden-cron --env=${ENV:1} ${NEWONLY}
+php bin/console deeson:warden:warden-cron --env=${ENV:1} ${NEWONLY}

@@ -2,6 +2,10 @@ deeson_warden:
     resource: "@DeesonWardenBundle/Resources/config/routing.yml"
     prefix:   /
 
+deeson_warden_drupal:
+    resource: "@DeesonWardenDrupalBundle/Resources/config/routing.yml"
+    prefix:   /
+
 deeson_warden_third_party_library:
     resource: "@DeesonWardenThirdPartyLibraryBundle/Resources/config/routing.yml"
     prefix:   /

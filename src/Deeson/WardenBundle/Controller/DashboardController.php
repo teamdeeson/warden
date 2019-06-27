@@ -2,8 +2,12 @@
 
 namespace Deeson\WardenBundle\Controller;
 
+use Deeson\WardenBundle\Event\DashboardListEvent;
+use Deeson\WardenBundle\Event\WardenEvents;
 use Deeson\WardenBundle\Managers\DashboardManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Deeson\WardenBundle\Document\DashboardDocument;
 
 class DashboardController extends Controller {
 
@@ -12,8 +16,26 @@ class DashboardController extends Controller {
     $dashboardManager = $this->get('warden.dashboard_manager');
     $sites = $dashboardManager->getDocumentsBy(array(), array('name' => 'asc'));
 
+    /** @var EventDispatcher $dispatcher */
+    $dispatcher = $this->get('event_dispatcher');
+
+    $siteList = array();
+    foreach ($sites as $site) {
+      /** @var DashboardDocument $site */
+      $event = new DashboardListEvent($site);
+      $dispatcher->dispatch(WardenEvents::WARDEN_DASHBOARD_LIST, $event);
+
+      $siteList[] = array(
+        'id' => $site->getSiteId(),
+        'name' => $site->getName(),
+        'url' => $site->getUrl(),
+        'iconPath' => $event->getSiteTypeLogoPath(),
+        'critical' => $site->getHasCriticalIssue(),
+      );
+    }
+
     $params = array(
-      'sites' => $sites,
+      'sites' => $siteList,
     );
 
     return $this->render('DeesonWardenBundle:Dashboard:index.html.twig', $params);

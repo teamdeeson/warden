@@ -17,7 +17,7 @@ class DashboardDocument extends BaseDocument {
   protected $name;
 
   /**
-   * @Mongodb\ObjectId
+   * @Mongodb\Field(type="object_id")
    */
   protected $siteId;
 
@@ -27,65 +27,19 @@ class DashboardDocument extends BaseDocument {
   protected $url;
 
   /**
-   * @Mongodb\Hash
+   * @Mongodb\Field(type="string")
    */
-  protected $coreVersion;
+  protected $type;
 
   /**
-   * @Mongodb\Collection
-   */
-  protected $modules;
-
-  /**
-   * @Mongodb\Boolean
+   * @Mongodb\Field(type="boolean")
    */
   protected $hasCriticalIssue;
 
   /**
-   * @Mongodb\Hash
+   * @Mongodb\Field(type="hash")
    */
   protected $additionalIssues;
-
-  /**
-   * @return mixed
-   */
-  public function getCoreVersion() {
-    return (empty($this->coreVersion['current'])) ? '0' : $this->coreVersion['current'];
-  }
-
-  /**
-   * @param $version
-   * @param $latestVersion
-   * @param $isSecurity
-   */
-  public function setCoreVersion($version, $latestVersion, $isSecurity) {
-    $this->coreVersion = array(
-      'current' => $version,
-      'latest' => $latestVersion,
-      'isSecurity' => $isSecurity,
-    );
-  }
-
-  /**
-   * @return mixed
-   */
-  public function getLatestCoreVersion() {
-    return (empty($this->coreVersion['latest'])) ? '0' : $this->coreVersion['latest'];
-  }
-
-  /**
-   * @return mixed
-   */
-  public function getModules() {
-    return $this->modules;
-  }
-
-  /**
-   * @param mixed $modules
-   */
-  public function setModules($modules) {
-    $this->modules = $modules;
-  }
 
   /**
    * @return mixed
@@ -127,6 +81,20 @@ class DashboardDocument extends BaseDocument {
    */
   public function setUrl($url) {
     $this->url = $url;
+  }
+
+  /**
+   * @return mixed
+   */
+  public function getType() {
+    return !empty($this->type) ? $this->type : SiteDocument::TYPE_DEFAULT;
+  }
+
+  /**
+   * @param mixed $type
+   */
+  public function setType($type) {
+    $this->type = $type;
   }
 
   /**

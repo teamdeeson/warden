@@ -2,14 +2,17 @@
 
 namespace Deeson\WardenBundle\Controller;
 
-use Deeson\WardenBundle\Document\ModuleDocument;
 use Deeson\WardenBundle\Event\DashboardUpdateEvent;
-use Deeson\WardenBundle\Event\SiteEvent;
+use Deeson\WardenBundle\Event\SiteDeleteEvent;
+use Deeson\WardenBundle\Event\SiteListEvent;
+use Deeson\WardenBundle\Event\SiteRefreshEvent;
 use Deeson\WardenBundle\Event\SiteShowEvent;
 use Deeson\WardenBundle\Event\SiteUpdateEvent;
 use Deeson\WardenBundle\Event\WardenEvents;
-use Deeson\WardenBundle\Managers\ModuleManager;
 use Deeson\WardenBundle\Managers\SiteRequestLogManager;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Bridge\Monolog\Logger;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -31,8 +34,29 @@ class SitesController extends Controller {
     $manager = $this->get('warden.site_manager');
     $sites = $manager->getDocumentsBy(array(), array('name' => 'asc'));
 
+    /** @var EventDispatcher $dispatcher */
+    $dispatcher = $this->get('event_dispatcher');
+
+    $siteList = array();
+    foreach ($sites as $site) {
+      /** @var SiteDocument $site */
+      $event = new SiteListEvent($site);
+      $dispatcher->dispatch(WardenEvents::WARDEN_SITE_LIST, $event);
+
+      $siteList[] = array(
+        'id' => $site->getId(),
+        'name' => $site->getName(),
+        'url' => $site->getUrl(),
+        'isNew' => $site->getIsNew(),
+        'iconPath' => $event->getSiteTypeLogoPath(),
+        'lastRequest' => $site->getLastSuccessfulRequest(),
+        'notUpdated' => $site->hasNotUpdatedRecently(),
+        'critical' => $site->getHasCriticalIssue(),
+      );
+    }
+
     $params = array(
-      'sites' => $sites,
+      'sites' => $siteList,
     );
 
     return $this->render('DeesonWardenBundle:Sites:index.html.twig', $params);
@@ -53,6 +77,7 @@ class SitesController extends Controller {
     /** @var EventDispatcher $dispatcher */
     $dispatcher = $this->get('event_dispatcher');
 
+    /** @var SiteDocument $site */
     $site = $manager->getDocumentById($id);
 
     $event = new SiteShowEvent($site);
@@ -83,13 +108,20 @@ class SitesController extends Controller {
 
     $querySiteUrl = $sslEncryptionService->decrypt($request->query->get('data'));
 
-    list($siteUrl, $wardenToken) = explode('|', $querySiteUrl);
+    try {
+      list($siteUrl, $wardenToken, $siteType) = explode('|', $querySiteUrl);
+    } catch (\ErrorException $e) {
+      // Previous to v2.0, the siteType wasn't set, so we default the value of it.
+      $siteType = NULL;
+      list($siteUrl, $wardenToken) = explode('|', $querySiteUrl);
+    }
 
     /** @var SiteManager $manager */
     $manager = $this->get('warden.site_manager');
 
     if (!$manager->urlExists($siteUrl)) {
       $site = $manager->makeNewItem();
+      $site->setType($siteType);
       $site->setUrl($siteUrl);
       $site->setWardenToken($wardenToken);
       $manager->saveDocument($site);
@@ -118,19 +150,22 @@ class SitesController extends Controller {
     $site = $manager->getDocumentById($id);
 
     $form = $this->createFormBuilder()
-      ->add('Delete', 'submit', array(
+      ->add('Delete', SubmitType::class, array(
         'attr' => array('class' => 'btn btn-danger')
       ))
       ->getForm();
 
     $form->handleRequest($request);
 
-    if ($form->isValid()) {
+    if ($form->isSubmitted()) {
       $manager->deleteDocument($id);
-      $this->updateModules($site);
 
       /** @var EventDispatcher $dispatcher */
       $dispatcher = $this->get('event_dispatcher');
+
+      $event = new SiteDeleteEvent($site);
+      $dispatcher->dispatch(WardenEvents::WARDEN_SITE_DELETE, $event);
+
       $event = new DashboardUpdateEvent($site, TRUE);
       $dispatcher->dispatch(WardenEvents::WARDEN_DASHBOARD_UPDATE, $event);
 
@@ -174,17 +209,15 @@ class SitesController extends Controller {
     /** @var EventDispatcher $dispatcher */
     $dispatcher = $this->get('event_dispatcher');
 
-    try {
-      $event = new SiteEvent($site);
-      $dispatcher->dispatch(WardenEvents::WARDEN_SITE_REFRESH, $event);
-    }
-    catch (\Exception $e) {
-      $this->get('session')->getFlashBag()->add('error', 'General Error - Unable to retrieve data from the site: ' . $e->getMessage());
-      return $this->redirect($this->generateUrl('sites_show', array('id' => $id)));
+    $event = new SiteRefreshEvent($site);
+    $dispatcher->dispatch(WardenEvents::WARDEN_SITE_REFRESH, $event);
+
+    if ($event->hasMessage(SiteRefreshEvent::WARNING)) {
+      $this->get('session')->getFlashBag()->add('error', 'General Error - Unable to retrieve data from the site: ' . $event->getMessage(SiteRefreshEvent::WARNING));
     }
 
-    if ($event->hasMessage()) {
-      $this->get('session')->getFlashBag()->add('notice', $event->getMessage());
+    if ($event->hasMessage(SiteRefreshEvent::NOTICE)) {
+      $this->get('session')->getFlashBag()->add('notice', $event->getMessage(SiteRefreshEvent::NOTICE));
     }
 
     return $this->redirect($this->generateUrl('sites_show', array('id' => $id)));
@@ -243,7 +276,10 @@ class SitesController extends Controller {
       $dispatcher->dispatch(WardenEvents::WARDEN_SITE_UPDATE, $event);
 
       $site->setLastSuccessfulRequest();
-      $siteManager->updateDocument();
+      if (empty($site->getTypeRaw())) {
+        $site->setDefaultType();
+      }
+      $siteManager->saveDocument($site);
 
       return new Response('OK', 200, array('Content-Type: text/plain'));
 
@@ -253,67 +289,58 @@ class SitesController extends Controller {
     }
   }
 
-  /**
-   * Update the modules to remove the site.
-   *
-   * @param \Deeson\WardenBundle\Document\SiteDocument $site
-   */
-  protected function updateModules(SiteDocument $site) {
-    /** @var ModuleManager $moduleManager */
-    $moduleManager = $this->get('warden.drupal.module_manager');
-
-    foreach ($site->getModules() as $siteModule) {
-      /** @var ModuleDocument $module */
-      $module = $moduleManager->findByProjectName($siteModule['name']);
-      if (empty($module)) {
-        print('Error getting module [' . $siteModule['name'] . ']');
-        continue;
-      }
-      $module->removeSite($site->getId());
-      $moduleManager->updateDocument();
-    }
-  }
-
   public function EditAction($id, Request $request) {
     /** @var SiteManager $manager */
     $manager = $this->get('warden.site_manager');
     $site = $manager->getDocumentById($id);
 
-    $form = $this->createFormBuilder($site)
-            ->add('name', 'text', array(
+    $form = $this->createFormBuilder($site, array('attr' => array('class' => 'box-body')))
+            ->add('name', TextType::class, array(
               'label' => 'Name: ',
-              'attr' => array('size' => '40'),
+              'attr' => array(
+                'class' => 'form-control',
+              ),
             ))
-            ->add('url', 'text', array(
+            ->add('url', TextType::class, array(
               'label' => 'URL: ',
-              'attr' => array('size' => '40'),
+              'attr' => array(
+                'class' => 'form-control',
+              ),
             ))
-            ->add('wardenToken', 'text', array(
+            ->add('wardenToken', TextType::class, array(
               'label' => 'Token: ',
-              'attr' => array('size' => '80'),
+              'attr' => array(
+                'class' => 'form-control',
+              ),
             ))
-            ->add('authUser', 'text', array(
+            ->add('authUser', TextType::class, array(
               'label' => 'Auth User: ',
-              'attr' => array('size' => '30'),
+              'attr' => array(
+                'class' => 'form-control',
+              ),
               'required' => false
             ))
-            ->add('authPass', 'text', array(
+            ->add('authPass', TextType::class, array(
               'label' => 'Auth Password: ',
-              'attr' => array('size' => '30'),
+              'attr' => array(
+                'class' => 'form-control',
+              ),
               'required' => false
             ))
-            ->add('isNew', 'checkbox', array(
+            ->add('isNew', CheckboxType::class, array(
               'required' => false
             ))
-            ->add('save', 'submit', array(
-              'attr' => array('class' => 'btn btn-danger')
+            ->add('save', SubmitType::class, array(
+              'attr' => array(
+                'class' => 'btn btn-danger'
+              )
             ))
             ->getForm();
 
     $form->handleRequest($request);
 
-    if ($form->isValid()) {
-      $manager->updateDocument();
+    if ($form->isSubmitted()) {
+      $manager->saveDocument($site);
       $this->get('session')->getFlashBag()->add('notice', 'Site updated successfully');
       return $this->redirect($this->generateUrl('sites_show', array('id' => $id)));
     }

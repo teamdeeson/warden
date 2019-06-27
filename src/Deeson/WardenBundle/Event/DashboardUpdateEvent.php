@@ -7,15 +7,9 @@
 
 namespace Deeson\WardenBundle\Event;
 
-use Symfony\Component\EventDispatcher\Event;
 use Deeson\WardenBundle\Document\SiteDocument;
 
-class DashboardUpdateEvent extends Event {
-
-  /**
-   * @var SiteDocument
-   */
-  protected $site;
+class DashboardUpdateEvent extends SiteEvent {
 
   /**
    * @var boolean
@@ -29,15 +23,8 @@ class DashboardUpdateEvent extends Event {
    *   If true will only remove the site from the dashboard.
    */
   public function __construct(SiteDocument $site, $forceDelete = FALSE) {
-    $this->site = $site;
+    parent::__construct($site);
     $this->forceDelete = $forceDelete;
-  }
-
-  /**
-   * @return SiteDocument
-   */
-  public function getSite() {
-    return $this->site;
   }
 
   /**

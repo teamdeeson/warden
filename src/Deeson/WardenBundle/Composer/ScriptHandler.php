@@ -8,7 +8,7 @@
 namespace Deeson\WardenBundle\Composer;
 
 use Composer\Script\Event;
-use Deeson\WardenBundle\Services\UserProviderService;
+use Deeson\WardenBundle\Security\WebserviceUserProvider;
 use Deeson\WardenBundle\Services\WardenSetupService;
 
 class ScriptHandler {
@@ -23,7 +23,7 @@ class ScriptHandler {
     $output = $event->getIO();
     $rootDir = getcwd();
 
-    $userProviderService = new UserProviderService($rootDir . '/app');
+    $userProviderService = new WebserviceUserProvider($rootDir . '/app');
     $wardenSetupService = new WardenSetupService($rootDir . '/app');
 
     if (!$userProviderService->isSetup()) {

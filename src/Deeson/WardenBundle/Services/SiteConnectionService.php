@@ -2,10 +2,9 @@
 
 namespace Deeson\WardenBundle\Services;
 
-use Deeson\WardenBundle\Client\RequestHandlerException;
-use Deeson\WardenBundle\Client\RequestHandlerInterface;
+use Deeson\WardenBundle\Client\HttpRequestHandlerException;
+use Deeson\WardenBundle\Client\HttpRequestHandlerInterface;
 use Deeson\WardenBundle\Document\SiteDocument;
-use Deeson\WardenBundle\Document\SiteRequestLogDocument;
 use Deeson\WardenBundle\Exception\WardenRequestException;
 use Deeson\WardenBundle\Managers\SiteRequestLogManager;
 use Symfony\Bridge\Monolog\Logger;
@@ -14,9 +13,29 @@ use Symfony\Bridge\Monolog\Logger;
 class SiteConnectionService {
 
   /**
-   * @var RequestHandlerInterface
+   * @var HttpRequestHandlerInterface
    */
   protected $client;
+
+  /**
+   * @var SSLEncryptionService
+   */
+  protected $sslEncryptionService;
+
+  /**
+   * @var Logger
+   */
+  protected $logger;
+
+  /**
+   * @var SiteRequestLogManager
+   */
+  protected $siteRequestLogManager;
+
+  /**
+   * @var string
+   */
+  protected $environment;
 
   /**
    * The connection timeout in seconds.
@@ -38,33 +57,20 @@ class SiteConnectionService {
   protected $requestTime = 0;
 
   /**
-   * @var SSLEncryptionService
-   */
-  protected $sslEncryptionService;
-
-  /**
-   * @var Logger
-   */
-  protected $logger;
-
-  /**
-   * @var SiteRequestLogManager
-   */
-  protected $siteRequestLogManager;
-
-  /**
    * Constructor
    *
-   * @param RequestHandlerInterface $client
+   * @param HttpRequestHandlerInterface $client
    * @param SSLEncryptionService $sslEncryptionService
    * @param Logger $logger
    * @param SiteRequestLogManager $siteRequestLogManager
+   * @param string $environment
    */
-  public function __construct(RequestHandlerInterface $client, SSLEncryptionService $sslEncryptionService, Logger $logger, SiteRequestLogManager $siteRequestLogManager) {
+  public function __construct(HttpRequestHandlerInterface $client, SSLEncryptionService $sslEncryptionService, Logger $logger, SiteRequestLogManager $siteRequestLogManager, $environment) {
     $this->client = $client;
     $this->sslEncryptionService = $sslEncryptionService;
     $this->logger = $logger;
     $this->siteRequestLogManager = $siteRequestLogManager;
+    $this->environment = $environment;
   }
 
   /**
@@ -108,9 +114,12 @@ class SiteConnectionService {
 
       /** @var \Symfony\Component\HttpFoundation\Response $response */
       $this->client->setTimeout($this->connectionTimeout);
-      // Don't verify SSL certificate.
-      // @TODO make this optional - dev only!
-      $this->client->setVerifyPeer(FALSE);
+
+      if ($this->environment === 'dev') {
+        // Don't verify SSL certificate.
+        $this->client->setVerifySslCert(FALSE);
+      }
+
       $this->client->setHeaders($this->connectionHeaders);
       $response = $this->client->post($url, $content);
 
@@ -122,8 +131,8 @@ class SiteConnectionService {
 
       $this->siteRequestLogManager->addSuccessfulLog($site, 'Successfully sent request to the site.', $response);
     }
-    catch (RequestHandlerException $clientException) {
-      $this->siteRequestLogManager->addFailedLog($site, $clientException->getMessage());
+    catch (HttpRequestHandlerException $clientException) {
+      $this->siteRequestLogManager->addFailedLog($site, $clientException->getMessage(), 'Failed to connect to the site.');
       throw new WardenRequestException($clientException->getMessage());
     }
   }

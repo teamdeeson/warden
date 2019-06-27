@@ -6,7 +6,9 @@
 
 {% block content %}
 
-    {{ form(form) }}
+    <div class="box box-primary">
+        {{ form(form) }}
+    </div>
 
     <br />
     <a href="{{ path('sites_show', {'id': site.getId() }) }}">Cancel</a>
