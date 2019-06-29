@@ -110,7 +110,6 @@ class SiteConnectionService {
       }
 
       $params['token'] = $this->sslEncryptionService->generateRequestToken();
-      $content = http_build_query($params);
 
       /** @var \Symfony\Component\HttpFoundation\Response $response */
       $this->client->setTimeout($this->connectionTimeout);
@@ -121,7 +120,7 @@ class SiteConnectionService {
       }
 
       $this->client->setHeaders($this->connectionHeaders);
-      $response = $this->client->post($url, $content);
+      $response = $this->client->post($url, $params);
 
       if (!$response->isSuccessful()) {
         $this->siteRequestLogManager->addFailedLog($site, 'Unable to request data from ' . $url, $response);

@@ -47,13 +47,13 @@ interface HttpRequestHandlerInterface {
    *
    * @param $url
    *   The URL for the HTTP POST request.
-   * @param string $content
+   * @param array $params
    *   The content for the HTTP POST request.
    *
    * @return \Symfony\Component\HttpFoundation\Response
    *
    * @throws \Deeson\WardenBundle\Client\HttpRequestHandlerException
    */
-  public function post($url, $content = '');
+  public function post($url, $params = []);
 
 }
