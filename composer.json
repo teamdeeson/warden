@@ -14,7 +14,7 @@
         "files": [ "vendor/symfony/symfony/src/Symfony/Component/VarDumper/Resources/functions/dump.php" ]
     },
     "require": {
-        "php": ">=7.1",
+        "php": ">=5.6",
         "ext-openssl": "*",
         "alcaeus/mongo-php-adapter": "^1.0",
         "arturdoruch/paginator-bundle": "^1.1",
@@ -62,7 +62,7 @@
     },
     "config": {
         "platform": {
-            "php": "7.1"
+            "php": "5.6"
         },
         "sort-packages": true
     },
