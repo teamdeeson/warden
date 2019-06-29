@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "97d9c7c2790d7cd8250e99332a0d4c2e",
+    "content-hash": "c3c2974869d86e0aeb22d163b7d4a5d8",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -1296,56 +1296,6 @@
                 "parameters management"
             ],
             "time": "2018-02-13T18:05:56+00:00"
-        },
-        {
-            "name": "kriswallsmith/buzz",
-            "version": "v0.16.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/kriswallsmith/Buzz.git",
-                "reference": "4977b7d44dbef49cdc641f14be6512fdcfe32f12"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/kriswallsmith/Buzz/zipball/4977b7d44dbef49cdc641f14be6512fdcfe32f12",
-                "reference": "4977b7d44dbef49cdc641f14be6512fdcfe32f12",
-                "shasum": ""
-            },
-            "require": {
-                "guzzlehttp/psr7": "^1.4",
-                "php": "^5.4 || ^7.0"
-            },
-            "require-dev": {
-                "php-http/client-integration-tests": "^0.6.2",
-                "symfony/phpunit-bridge": "^3.4 || ^4.0"
-            },
-            "suggest": {
-                "ext-curl": "*"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Buzz\\": "lib/Buzz"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Kris Wallsmith",
-                    "email": "kris.wallsmith@gmail.com",
-                    "homepage": "http://kriswallsmith.net/"
-                }
-            ],
-            "description": "Lightweight HTTP client",
-            "homepage": "https://github.com/kriswallsmith/Buzz",
-            "keywords": [
-                "curl",
-                "http client"
-            ],
-            "time": "2018-03-19T10:34:40+00:00"
         },
         {
             "name": "mongodb/mongodb",
@@ -3076,55 +3026,6 @@
             "time": "2016-10-03T07:35:21+00:00"
         },
         {
-            "name": "sensio/buzz-bundle",
-            "version": "v1.1.0",
-            "target-dir": "Sensio/Bundle/BuzzBundle",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/sensiolabs/SensioBuzzBundle.git",
-                "reference": "ad7c722f755471b80f5c9c7dd703b2975f8a518b"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/sensiolabs/SensioBuzzBundle/zipball/ad7c722f755471b80f5c9c7dd703b2975f8a518b",
-                "reference": "ad7c722f755471b80f5c9c7dd703b2975f8a518b",
-                "shasum": ""
-            },
-            "require": {
-                "kriswallsmith/buzz": "> 0.6",
-                "php": ">=5.3.2"
-            },
-            "type": "symfony-bundle",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.1-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "Sensio\\Bundle\\BuzzBundle": ""
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Marc Weistroff",
-                    "email": "marc.weistroff@sensio.com"
-                }
-            ],
-            "description": "Bundle around the Buzz HTTP client",
-            "homepage": "https://github.com/sensio/SensioBuzzBundle",
-            "keywords": [
-                "buzz",
-                "http client"
-            ],
-            "abandoned": "symfony/flex",
-            "time": "2016-03-15T10:06:41+00:00"
-        },
-        {
             "name": "sensio/distribution-bundle",
             "version": "v5.0.24",
             "source": {
@@ -4034,6 +3935,7 @@
                 "MIT"
             ],
             "description": "A pack for Symfony Encore",
+            "abandoned": "symfony/webpack-encore-bundle",
             "time": "2018-07-16T10:15:28+00:00"
         },
         {
@@ -4211,6 +4113,105 @@
     ],
     "packages-dev": [
         {
+            "name": "kriswallsmith/buzz",
+            "version": "v0.16.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/kriswallsmith/Buzz.git",
+                "reference": "4977b7d44dbef49cdc641f14be6512fdcfe32f12"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/kriswallsmith/Buzz/zipball/4977b7d44dbef49cdc641f14be6512fdcfe32f12",
+                "reference": "4977b7d44dbef49cdc641f14be6512fdcfe32f12",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/psr7": "^1.4",
+                "php": "^5.4 || ^7.0"
+            },
+            "require-dev": {
+                "php-http/client-integration-tests": "^0.6.2",
+                "symfony/phpunit-bridge": "^3.4 || ^4.0"
+            },
+            "suggest": {
+                "ext-curl": "*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Buzz\\": "lib/Buzz"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kris Wallsmith",
+                    "email": "kris.wallsmith@gmail.com",
+                    "homepage": "http://kriswallsmith.net/"
+                }
+            ],
+            "description": "Lightweight HTTP client",
+            "homepage": "https://github.com/kriswallsmith/Buzz",
+            "keywords": [
+                "curl",
+                "http client"
+            ],
+            "time": "2018-03-19T10:34:40+00:00"
+        },
+        {
+            "name": "sensio/buzz-bundle",
+            "version": "v1.1.0",
+            "target-dir": "Sensio/Bundle/BuzzBundle",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/sensiolabs/SensioBuzzBundle.git",
+                "reference": "ad7c722f755471b80f5c9c7dd703b2975f8a518b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/sensiolabs/SensioBuzzBundle/zipball/ad7c722f755471b80f5c9c7dd703b2975f8a518b",
+                "reference": "ad7c722f755471b80f5c9c7dd703b2975f8a518b",
+                "shasum": ""
+            },
+            "require": {
+                "kriswallsmith/buzz": "> 0.6",
+                "php": ">=5.3.2"
+            },
+            "type": "symfony-bundle",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.1-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Sensio\\Bundle\\BuzzBundle": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Marc Weistroff",
+                    "email": "marc.weistroff@sensio.com"
+                }
+            ],
+            "description": "Bundle around the Buzz HTTP client",
+            "homepage": "https://github.com/sensio/SensioBuzzBundle",
+            "keywords": [
+                "buzz",
+                "http client"
+            ],
+            "abandoned": "symfony/flex",
+            "time": "2016-03-15T10:06:41+00:00"
+        },
+        {
             "name": "symfony/phpunit-bridge",
             "version": "v3.4.26",
             "source": {
@@ -4280,7 +4281,6 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "phpunit/phpunit": 0,
-        "sensio/buzz-bundle": 0,
         "sensio/generator-bundle": 0,
         "symfony/webpack-encore-pack": 0
     },
