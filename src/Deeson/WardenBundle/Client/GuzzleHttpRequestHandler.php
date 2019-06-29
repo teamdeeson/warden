@@ -4,6 +4,7 @@ namespace Deeson\WardenBundle\Client;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\RequestOptions;
 use Symfony\Component\HttpFoundation\Response;
 
 class GuzzleHttpRequestHandler implements HttpRequestHandlerInterface {
@@ -70,10 +71,10 @@ class GuzzleHttpRequestHandler implements HttpRequestHandlerInterface {
   /**
    * {@inheritDoc}
    */
-  public function post($url, $content = '') {
+  public function post($url, $params = []) {
     try {
       /** @var \Psr\Http\Message\ResponseInterface $response */
-      $response = $this->client->request('POST', $url, $this->getRequestOptions() + ['body' => $content]);
+      $response = $this->client->request('POST', $url, $this->getRequestOptions() + [RequestOptions::FORM_PARAMS => $params]);
       return new Response($response->getBody(), $response->getStatusCode(), $response->getHeaders());
     } catch (GuzzleException $e) {
       throw new HttpRequestHandlerException($e->getMessage());

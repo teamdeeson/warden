@@ -12,9 +12,9 @@ for any website which has a supporting connector module.
 
 ## Server Configuration
 
-Warden is built using the Symfony2 web development framework.
+Warden is built using the Symfony3 web development framework.
 
-Symfony2 uses [Composer][2] to manage its dependencies, if you don't have
+Symfony3 uses [Composer][2] to manage its dependencies, if you don't have
 Composer yet, download it following the instructions on http://getcomposer.org/
 or just run the following command:
 
