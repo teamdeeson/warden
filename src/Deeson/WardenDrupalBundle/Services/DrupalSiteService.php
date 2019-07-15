@@ -396,7 +396,7 @@ class DrupalSiteService {
 
     // Check if Core is out of date.
     if ($drupalSite->getIsSecurityCoreVersion()) {
-      $modulesHaveSecurityUpdate[] = 'Drupal Core';
+      $modulesHaveSecurityUpdate[] = sprintf('Drupal Core [%s]', $drupalSite->getCoreVersion());
     }
 
     /** @var SiteModuleDocument $siteModule */
