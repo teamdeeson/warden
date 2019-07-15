@@ -51,6 +51,7 @@ class SitesController extends Controller {
         'iconPath' => $event->getSiteTypeLogoPath(),
         'lastRequest' => $site->getLastSuccessfulRequest(),
         'notUpdated' => $site->hasNotUpdatedRecently(),
+        'issuesList' => $event->getSiteIssues(),
         'critical' => $site->getHasCriticalIssue(),
       );
     }

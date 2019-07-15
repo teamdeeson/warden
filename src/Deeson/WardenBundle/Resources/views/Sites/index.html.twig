@@ -25,7 +25,12 @@
                     <tbody>
                     {% for site in sites %}
                         <tr class="{% if site['critical'] %}alert alert-danger{% endif %}">
-                            <td><a href="{{ path('sites_show', {'id': site['id'] }) }}">{{ site['name'] }}</a> [{{ site['url'] }}] {% if site['isNew'] %}(Pending){% endif %}</td>
+                            <td>
+                                <a href="{{ path('sites_show', {'id': site['id'] }) }}">{{ site['name'] }}</a> [{{ site['url'] }}] {% if site['isNew'] %}(Pending){% endif %}
+                                {% if site['issuesList'] is not empty %}
+                                    <br />({{ site['issuesList'] }})
+                                {% endif %}
+                            </td>
                             <td>{% if site['iconPath'] is not empty %}<img src="{{ asset(site['iconPath']) }}" width="20" />{% else %} - {% endif %}</td>
                             <td>{{ site['lastRequest'] }}{% if site['notUpdated'] %} <span class="fa fa-warning"></span>&nbsp;Out of date{% endif %}</td>
                         </tr>

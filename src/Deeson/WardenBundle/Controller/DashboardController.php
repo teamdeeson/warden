@@ -30,6 +30,7 @@ class DashboardController extends Controller {
         'name' => $site->getName(),
         'url' => $site->getUrl(),
         'iconPath' => $event->getSiteTypeLogoPath(),
+        'issuesCount' => $event->getSiteIssuesCount(),
         'critical' => $site->getHasCriticalIssue(),
       );
     }

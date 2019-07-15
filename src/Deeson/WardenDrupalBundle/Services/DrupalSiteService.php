@@ -287,9 +287,14 @@ class DrupalSiteService {
 
     /** @var SiteDrupalDocument $drupalSite */
     $drupalSite = $this->siteDrupalManager->getBySiteId($site->getId());
-    if (!empty($drupalSite)) {
-      $event->setSiteTypeLogoPath($drupalSite->getTypeImagePath());
+    if (empty($drupalSite)) {
+      return;
     }
+
+    $event->setSiteTypeLogoPath($drupalSite->getTypeImagePath());
+
+    $modulesHaveSecurityUpdate = $this->getSiteSecurityIssues($drupalSite);
+    $event->setSiteIssues(implode(', ', $modulesHaveSecurityUpdate));
   }
 
   /**
@@ -309,9 +314,14 @@ class DrupalSiteService {
 
     /** @var SiteDrupalDocument $drupalSite */
     $drupalSite = $this->siteDrupalManager->getBySiteId($site->getId());
-    if (!empty($drupalSite)) {
-      $event->setSiteTypeLogoPath($drupalSite->getTypeImagePath());
+    if (empty($drupalSite)) {
+      return;
     }
+
+    $event->setSiteTypeLogoPath($drupalSite->getTypeImagePath());
+
+    $modulesHaveSecurityUpdate = $this->getSiteSecurityIssues($drupalSite);
+    $event->setSiteIssuesCount(count($modulesHaveSecurityUpdate));
   }
 
   /**
@@ -327,11 +337,13 @@ class DrupalSiteService {
       return;
     }
 
-    /** @var SiteDrupalDocument $siteDrupal */
-    $siteDrupal = $this->siteDrupalManager->getBySiteId($site->getId());
-    if (!empty($siteDrupal)) {
-      $this->siteDrupalManager->deleteDocument($siteDrupal->getId());
+    /** @var SiteDrupalDocument $drupalSite */
+    $drupalSite = $this->siteDrupalManager->getBySiteId($site->getId());
+    if (!empty($drupalSite)) {
+      return;
     }
+
+    $this->siteDrupalManager->deleteDocument($drupalSite->getId());
 
     /** @var SiteModuleDocument $siteModule */
     $siteModule = $this->siteModuleManager->findBySiteId($site->getId());
@@ -349,33 +361,16 @@ class DrupalSiteService {
    */
   public function onWardenDashboardAddSite(DashboardAddSiteEvent $event) {
     $site = $event->getSite();
-    $modulesHaveSecurityUpdate = [];
 
-    /** @var SiteDrupalDocument $siteDrupal */
-    $siteDrupal = $this->siteDrupalManager->getBySiteId($site->getId());
-    if (empty($siteDrupal)) {
+    /** @var SiteDrupalDocument $drupalSite */
+    $drupalSite = $this->siteDrupalManager->getBySiteId($site->getId());
+    if (empty($drupalSite)) {
       $event->setIssues(['*No Drupal site modules could be found - this site needs refreshing*']);
       return;
     }
 
     // Check if Core is out of date.
-    if ($siteDrupal->getIsSecurityCoreVersion()) {
-      $modulesHaveSecurityUpdate[] = 'Drupal Core';
-    }
-
-    /** @var SiteModuleDocument $siteModule */
-    $siteModule = $this->siteModuleManager->findBySiteId($site->getId());
-
-    // Get a list of modules that have security updates.
-    $moduleUpdates = $siteModule->getModulesRequiringUpdates();
-    foreach ($moduleUpdates as $module) {
-      if (!$module['isSecurity']) {
-        continue;
-      }
-      $modulesHaveSecurityUpdate[] = $module['name'];
-    }
-    sort($modulesHaveSecurityUpdate);
-
+    $modulesHaveSecurityUpdate = $this->getSiteSecurityIssues($drupalSite);
     $event->setIssues($modulesHaveSecurityUpdate);
   }
 
@@ -387,5 +382,36 @@ class DrupalSiteService {
   protected function getMicroTimeFloat() {
     list($microSeconds, $seconds) = explode(' ', microtime());
     return ((float) $microSeconds + (float) $seconds);
+  }
+
+  /**
+   * Gets the security issues for a given site.
+   *
+   * @param SiteDrupalDocument $drupalSite
+   *
+   * @return array
+   */
+  protected function getSiteSecurityIssues(SiteDrupalDocument $drupalSite) {
+    $modulesHaveSecurityUpdate = [];
+
+    // Check if Core is out of date.
+    if ($drupalSite->getIsSecurityCoreVersion()) {
+      $modulesHaveSecurityUpdate[] = 'Drupal Core';
+    }
+
+    /** @var SiteModuleDocument $siteModule */
+    $siteModule = $this->siteModuleManager->findBySiteId($drupalSite->getSiteId());
+
+    // Get a list of modules that have security updates.
+    $moduleUpdates = $siteModule->getModulesRequiringUpdates();
+    foreach ($moduleUpdates as $module) {
+      if (!$module['isSecurity']) {
+        continue;
+      }
+      $modulesHaveSecurityUpdate[] = $module['name'];
+    }
+    sort($modulesHaveSecurityUpdate);
+
+    return $modulesHaveSecurityUpdate;
   }
 }
