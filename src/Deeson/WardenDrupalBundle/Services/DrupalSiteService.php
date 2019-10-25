@@ -18,8 +18,8 @@ use Deeson\WardenBundle\Managers\SiteManager;
 use Deeson\WardenBundle\Services\SiteConnectionService;
 use Deeson\WardenDrupalBundle\Managers\DrupalModuleManager;
 use Deeson\WardenDrupalBundle\Managers\SiteDrupalManager;
-use Deeson\WardenDrupalBundle\Managers\SiteModuleManager;
-use Deeson\WardenDrupalBundle\Document\SiteModuleDocument;
+use Deeson\WardenDrupalBundle\Managers\SiteDrupalModuleManager;
+use Deeson\WardenDrupalBundle\Document\SiteDrupalModuleDocument;
 use Deeson\WardenDrupalBundle\Document\SiteDrupalDocument;
 use Symfony\Bridge\Monolog\Logger;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -42,7 +42,7 @@ class DrupalSiteService {
   protected $siteDrupalManager;
 
   /**
-   * @var SiteModuleManager
+   * @var SiteDrupalModuleManager
    */
   protected $siteModuleManager;
 
@@ -64,13 +64,13 @@ class DrupalSiteService {
   /**
    * @param DrupalModuleManager $moduleManager
    * @param SiteDrupalManager $siteDrupalManager
-   * @param SiteModuleManager $siteModuleManager
+   * @param SiteDrupalModuleManager $siteModuleManager
    * @param SiteManager $siteManager
    * @param SiteConnectionService $siteConnectionService
    * @param Logger $logger
    * @param EventDispatcherInterface $dispatcher
    */
-  public function __construct(DrupalModuleManager $moduleManager, SiteDrupalManager $siteDrupalManager, SiteModuleManager $siteModuleManager, SiteManager $siteManager, SiteConnectionService $siteConnectionService, Logger $logger, EventDispatcherInterface $dispatcher) {
+  public function __construct(DrupalModuleManager $moduleManager, SiteDrupalManager $siteDrupalManager, SiteDrupalModuleManager $siteModuleManager, SiteManager $siteManager, SiteConnectionService $siteConnectionService, Logger $logger, EventDispatcherInterface $dispatcher) {
     $this->moduleManager = $moduleManager;
     $this->siteDrupalManager = $siteDrupalManager;
     $this->siteModuleManager = $siteModuleManager;
@@ -127,7 +127,7 @@ class DrupalSiteService {
     $siteDrupal->setCoreVersion($data->core->drupal->version);
     $this->siteDrupalManager->saveDocument($siteDrupal);
 
-    /** @var SiteModuleDocument $siteModule */
+    /** @var SiteDrupalModuleDocument $siteModule */
     $siteModule = $this->siteModuleManager->findBySiteId($site->getId());
     if (empty($siteModule)) {
       $siteModule = $this->siteModuleManager->makeNewItem();
@@ -241,7 +241,7 @@ class DrupalSiteService {
     }
 
     // Check if there are any Drupal modules that require updates.
-    /** @var SiteModuleDocument $siteModule */
+    /** @var SiteDrupalModuleDocument $siteModule */
     $siteModule = $this->siteModuleManager->findBySiteId($site->getId());
     if (!empty($siteModule)) {
       $modulesRequiringUpdates = $siteModule->getModulesRequiringUpdates();
@@ -345,7 +345,7 @@ class DrupalSiteService {
 
     $this->siteDrupalManager->deleteDocument($drupalSite->getId());
 
-    /** @var SiteModuleDocument $siteModule */
+    /** @var SiteDrupalModuleDocument $siteModule */
     $siteModule = $this->siteModuleManager->findBySiteId($site->getId());
     if (!empty($siteModule)) {
       $this->siteModuleManager->deleteDocument($siteModule->getId());
@@ -399,7 +399,7 @@ class DrupalSiteService {
       $modulesHaveSecurityUpdate[] = sprintf('Drupal Core [%s]', $drupalSite->getCoreVersion());
     }
 
-    /** @var SiteModuleDocument $siteModule */
+    /** @var SiteDrupalModuleDocument $siteModule */
     $siteModule = $this->siteModuleManager->findBySiteId($drupalSite->getSiteId());
 
     // Get a list of modules that have security updates.

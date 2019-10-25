@@ -5,9 +5,9 @@ namespace Deeson\WardenDrupalBundle\Services;
 use Deeson\WardenDrupalBundle\Document\DrupalModuleDocument;
 use Deeson\WardenBundle\Document\SiteDocument;
 use Deeson\WardenBundle\Managers\SiteManager;
-use Deeson\WardenDrupalBundle\Document\SiteModuleDocument;
+use Deeson\WardenDrupalBundle\Document\SiteDrupalModuleDocument;
 use Deeson\WardenDrupalBundle\Managers\DrupalModuleManager;
-use Deeson\WardenDrupalBundle\Managers\SiteModuleManager;
+use Deeson\WardenDrupalBundle\Managers\SiteDrupalModuleManager;
 use Monolog\Logger;
 
 class DrupalModuleService {
@@ -28,17 +28,17 @@ class DrupalModuleService {
   protected $siteManager;
 
   /**
-   * @var SiteModuleManager
+   * @var SiteDrupalModuleManager
    */
   protected $siteModuleManager;
 
   /**
    * @param DrupalModuleManager $moduleManager
    * @param SiteManager $siteManager
-   * @param SiteModuleManager $siteModuleManager
+   * @param SiteDrupalModuleManager $siteModuleManager
    * @param Logger $logger
    */
-  public function __construct(DrupalModuleManager $moduleManager, SiteManager $siteManager, SiteModuleManager $siteModuleManager, Logger $logger) {
+  public function __construct(DrupalModuleManager $moduleManager, SiteManager $siteManager, SiteDrupalModuleManager $siteModuleManager, Logger $logger) {
     $this->moduleManager = $moduleManager;
     $this->siteManager = $siteManager;
     $this->siteModuleManager = $siteModuleManager;
@@ -83,7 +83,7 @@ class DrupalModuleService {
     foreach ($sites as $site) {
       /** @var SiteDocument $site */
       print 'Updating site modules: ' . $site->getId() . ' - ' . $site->getUrl() . "\n";
-      /** @var SiteModuleDocument $siteModule */
+      /** @var SiteDrupalModuleDocument $siteModule */
       $siteModule = $this->siteModuleManager->findBySiteId($site->getId());
       if (empty($siteModule)) {
         continue;

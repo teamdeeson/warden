@@ -2,25 +2,25 @@
 
 namespace Deeson\WardenDrupalBundle\Managers;
 
-use Deeson\WardenDrupalBundle\Document\SiteModuleDocument;
+use Deeson\WardenDrupalBundle\Document\SiteDrupalModuleDocument;
 
-class SiteModuleManager extends DrupalBaseManager {
+class SiteDrupalModuleManager extends DrupalBaseManager {
 
   /**
    * @return string
    *   The type of this manager.
    */
   public function getType() {
-    return 'SiteModuleDocument';
+    return 'SiteDrupalModuleDocument';
   }
 
   /**
    * Create a new empty type of the object.
    *
-   * @return SiteModuleDocument
+   * @return SiteDrupalModuleDocument
    */
   public function makeNewItem() {
-    return new SiteModuleDocument();
+    return new SiteDrupalModuleDocument();
   }
 
   /**

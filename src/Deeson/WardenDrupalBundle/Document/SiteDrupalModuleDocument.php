@@ -10,10 +10,10 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 
 /**
  * @MongoDB\Document(
- *     collection="sites_modules"
+ *     collection="sites_drupal_modules"
  * )
  */
-class SiteModuleDocument extends BaseDocument {
+class SiteDrupalModuleDocument extends BaseDocument {
 
   /**
    * @Mongodb\Field(type="string")
