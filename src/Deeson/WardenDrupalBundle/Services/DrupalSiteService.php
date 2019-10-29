@@ -401,6 +401,9 @@ class DrupalSiteService {
 
     /** @var SiteDrupalModuleDocument $siteModule */
     $siteModule = $this->siteModuleManager->findBySiteId($drupalSite->getSiteId());
+    if (empty($siteModule)) {
+      return $modulesHaveSecurityUpdate;
+    }
 
     // Get a list of modules that have security updates.
     $moduleUpdates = $siteModule->getModulesRequiringUpdates();
