@@ -11,8 +11,8 @@ use Deeson\WardenBundle\Managers\SiteManager;
 use Deeson\WardenDrupalBundle\Document\SiteDrupalDocument;
 use Deeson\WardenDrupalBundle\Managers\DrupalModuleManager;
 use Deeson\WardenDrupalBundle\Managers\SiteDrupalManager;
-use Deeson\WardenDrupalBundle\Managers\SiteModuleManager;
-use Deeson\WardenDrupalBundle\Document\SiteModuleDocument;
+use Deeson\WardenDrupalBundle\Managers\SiteDrupalModuleManager;
+use Deeson\WardenDrupalBundle\Document\SiteDrupalModuleDocument;
 use Monolog\Logger;
 
 class DrupalUpdateRequestService {
@@ -72,7 +72,7 @@ class DrupalUpdateRequestService {
   protected $siteDrupalManager;
 
   /**
-   * @var SiteModuleManager
+   * @var SiteDrupalModuleManager
    */
   protected $siteModuleManager;
 
@@ -96,10 +96,10 @@ class DrupalUpdateRequestService {
    * @param SiteManager $siteManager
    * @param DrupalModuleManager $moduleManager
    * @param SiteDrupalManager $siteDrupalManager
-   * @param SiteModuleManager $siteModuleManager
+   * @param SiteDrupalModuleManager $siteModuleManager
    * @param Logger $logger
    */
-  public function __construct(HttpRequestHandlerInterface $client, SiteManager $siteManager, DrupalModuleManager $moduleManager, SiteDrupalManager $siteDrupalManager, SiteModuleManager $siteModuleManager, Logger $logger) {
+  public function __construct(HttpRequestHandlerInterface $client, SiteManager $siteManager, DrupalModuleManager $moduleManager, SiteDrupalManager $siteDrupalManager, SiteDrupalModuleManager $siteModuleManager, Logger $logger) {
     $this->client = $client;
     $this->siteManager = $siteManager;
     $this->moduleManager = $moduleManager;
@@ -401,7 +401,7 @@ class DrupalUpdateRequestService {
         continue;
       }
 
-      /** @var SiteModuleDocument $siteModule */
+      /** @var SiteDrupalModuleDocument $siteModule */
       $siteModule = $this->siteModuleManager->findBySiteId($site->getId());
       if (empty($siteModule)) {
         continue;
@@ -432,11 +432,11 @@ class DrupalUpdateRequestService {
    * Updates the module data for each site.
    *
    * @param string $version
-   * @param SiteModuleDocument $siteModule
+   * @param SiteDrupalModuleDocument $siteModule
    *
    * @return bool
    */
-  protected function updateSiteModules($version, SiteModuleDocument $siteModule) {
+  protected function updateSiteModules($version, SiteDrupalModuleDocument $siteModule) {
     // Check all the site modules to see if any of them are out of date and need a security update.
     $siteHasSecurityIssues = FALSE;
     foreach ($siteModule->getModules() as $module) {
@@ -490,12 +490,12 @@ class DrupalUpdateRequestService {
    *
    * @param array $module
    * @param string $version
-   * @param SiteModuleDocument $siteModule
+   * @param SiteDrupalModuleDocument $siteModule
    *   The SiteDocument object to be updated.
    *
    * @return bool
    */
-  protected function moduleHasSecurityUpdate($module, $version, SiteModuleDocument &$siteModule) {
+  protected function moduleHasSecurityUpdate($module, $version, SiteDrupalModuleDocument &$siteModule) {
     // If a site module is a dev version, then force it to have no security update.
     if (DrupalModuleDocument::isDevRelease($module['version'])) {
       $drupalModule['isSecurity'] = FALSE;

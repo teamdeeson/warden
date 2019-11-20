@@ -10,16 +10,14 @@
         <div class="row">
             <div class="col-xs-12">
                 <div class="box">
-                    <div class="box-header">
-
-                    </div><!-- /.box-header -->
-                    <div class="box-body table-responsive no-padding">
+                    <div class="box-body no-padding">
                         <table class="table table-hover">
                         <thead>
                             <tr>
-                                <th width="80%">Site</th>
-                                <th>Type</th>
-                                <th>Status</th>
+                                <th>Site</th>
+                                <th width="10%">Type</th>
+                                <th width="12%">Updates</th>
+                                <th width="10%">Status</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -27,6 +25,11 @@
                             <tr class="{% if site['critical'] %}alert alert-danger{% else %}alert alert-warning{% endif %}">
                                 <td><a href="{{ path('sites_show', {'id': site['id'] }) }}">{{ site['name'] }}</a> [{{ site['url'] }}]</td>
                                 <td>{% if site['iconPath'] is not empty %}<img src="{{ asset(site['iconPath']) }}" width="20" />{% else %} - {% endif %}</td>
+                                <td>
+                                    {% transchoice site['issuesCount'] %}
+                                        {0} -|{1} 1 update|]1,Inf[ %count% updates
+                                    {% endtranschoice %}
+                                </td>
                                 <td style="cursor: pointer;" {% if site['critical'] %}onclick="document.location = '{{ path('sites_show', {'id': site['id'] }) }}';" class="error"{% endif %}>{% if site['critical'] %}<span class="fa fa-warning"></span>&nbsp;{% endif %}View</td>
                             </tr>
                         {% endfor %}

@@ -20,7 +20,8 @@ framework:
     validation:      { enable_annotations: true }
     templating:
         engines: ['twig']
-        #assets_version: SomeVersionScheme
+    assets:
+        version_strategy: 'assets.date_version_strategy'
     default_locale:  "%locale%"
     session:
         # https://symfony.com/doc/current/reference/configuration/framework.html#handler-id
@@ -29,8 +30,6 @@ framework:
         cookie_lifetime: 3600
     fragments:       ~
     http_method_override: true
-    assets:
-        version_strategy: 'assets.date_version_strategy'
     php_errors:
         log: true
 

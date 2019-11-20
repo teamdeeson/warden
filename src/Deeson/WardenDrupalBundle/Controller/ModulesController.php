@@ -7,8 +7,8 @@ use Deeson\WardenBundle\Document\SiteDocument;
 use Deeson\WardenBundle\Managers\SiteManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Deeson\WardenDrupalBundle\Managers\DrupalModuleManager;
-use Deeson\WardenDrupalBundle\Document\SiteModuleDocument;
-use Deeson\WardenDrupalBundle\Managers\SiteModuleManager;
+use Deeson\WardenDrupalBundle\Document\SiteDrupalModuleDocument;
+use Deeson\WardenDrupalBundle\Managers\SiteDrupalModuleManager;
 
 class ModulesController extends Controller {
 
@@ -66,13 +66,13 @@ class ModulesController extends Controller {
     $manager = $this->get('warden.site_manager');
     $sites = $manager->getDocumentsBy(array(), array('name' => 'asc'));
 
-    /** @var SiteModuleManager $siteModuleManager */
+    /** @var SiteDrupalModuleManager $siteModuleManager */
     $siteModuleManager = $this->get('warden.drupal.site_module_manager');
 
     $sitesNotUsingModule = array();
     foreach ($sites as $site) {
       /** @var SiteDocument $site */
-      /** @var SiteModuleDocument $siteModuleDoc */
+      /** @var SiteDrupalModuleDocument $siteModuleDoc */
       $siteModuleDoc = $siteModuleManager->findBySiteId($site->getId());
       if (empty($siteModuleDoc)) {
         continue;

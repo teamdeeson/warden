@@ -18,8 +18,8 @@ use Deeson\WardenBundle\Managers\SiteManager;
 use Deeson\WardenBundle\Services\SiteConnectionService;
 use Deeson\WardenDrupalBundle\Managers\DrupalModuleManager;
 use Deeson\WardenDrupalBundle\Managers\SiteDrupalManager;
-use Deeson\WardenDrupalBundle\Managers\SiteModuleManager;
-use Deeson\WardenDrupalBundle\Document\SiteModuleDocument;
+use Deeson\WardenDrupalBundle\Managers\SiteDrupalModuleManager;
+use Deeson\WardenDrupalBundle\Document\SiteDrupalModuleDocument;
 use Deeson\WardenDrupalBundle\Document\SiteDrupalDocument;
 use Symfony\Bridge\Monolog\Logger;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -42,7 +42,7 @@ class DrupalSiteService {
   protected $siteDrupalManager;
 
   /**
-   * @var SiteModuleManager
+   * @var SiteDrupalModuleManager
    */
   protected $siteModuleManager;
 
@@ -64,13 +64,13 @@ class DrupalSiteService {
   /**
    * @param DrupalModuleManager $moduleManager
    * @param SiteDrupalManager $siteDrupalManager
-   * @param SiteModuleManager $siteModuleManager
+   * @param SiteDrupalModuleManager $siteModuleManager
    * @param SiteManager $siteManager
    * @param SiteConnectionService $siteConnectionService
    * @param Logger $logger
    * @param EventDispatcherInterface $dispatcher
    */
-  public function __construct(DrupalModuleManager $moduleManager, SiteDrupalManager $siteDrupalManager, SiteModuleManager $siteModuleManager, SiteManager $siteManager, SiteConnectionService $siteConnectionService, Logger $logger, EventDispatcherInterface $dispatcher) {
+  public function __construct(DrupalModuleManager $moduleManager, SiteDrupalManager $siteDrupalManager, SiteDrupalModuleManager $siteModuleManager, SiteManager $siteManager, SiteConnectionService $siteConnectionService, Logger $logger, EventDispatcherInterface $dispatcher) {
     $this->moduleManager = $moduleManager;
     $this->siteDrupalManager = $siteDrupalManager;
     $this->siteModuleManager = $siteModuleManager;
@@ -127,7 +127,7 @@ class DrupalSiteService {
     $siteDrupal->setCoreVersion($data->core->drupal->version);
     $this->siteDrupalManager->saveDocument($siteDrupal);
 
-    /** @var SiteModuleDocument $siteModule */
+    /** @var SiteDrupalModuleDocument $siteModule */
     $siteModule = $this->siteModuleManager->findBySiteId($site->getId());
     if (empty($siteModule)) {
       $siteModule = $this->siteModuleManager->makeNewItem();
@@ -241,7 +241,7 @@ class DrupalSiteService {
     }
 
     // Check if there are any Drupal modules that require updates.
-    /** @var SiteModuleDocument $siteModule */
+    /** @var SiteDrupalModuleDocument $siteModule */
     $siteModule = $this->siteModuleManager->findBySiteId($site->getId());
     if (!empty($siteModule)) {
       $modulesRequiringUpdates = $siteModule->getModulesRequiringUpdates();
@@ -287,9 +287,14 @@ class DrupalSiteService {
 
     /** @var SiteDrupalDocument $drupalSite */
     $drupalSite = $this->siteDrupalManager->getBySiteId($site->getId());
-    if (!empty($drupalSite)) {
-      $event->setSiteTypeLogoPath($drupalSite->getTypeImagePath());
+    if (empty($drupalSite)) {
+      return;
     }
+
+    $event->setSiteTypeLogoPath($drupalSite->getTypeImagePath());
+
+    $modulesHaveSecurityUpdate = $this->getSiteSecurityIssues($drupalSite);
+    $event->setSiteIssues(implode(', ', $modulesHaveSecurityUpdate));
   }
 
   /**
@@ -309,9 +314,14 @@ class DrupalSiteService {
 
     /** @var SiteDrupalDocument $drupalSite */
     $drupalSite = $this->siteDrupalManager->getBySiteId($site->getId());
-    if (!empty($drupalSite)) {
-      $event->setSiteTypeLogoPath($drupalSite->getTypeImagePath());
+    if (empty($drupalSite)) {
+      return;
     }
+
+    $event->setSiteTypeLogoPath($drupalSite->getTypeImagePath());
+
+    $modulesHaveSecurityUpdate = $this->getSiteSecurityIssues($drupalSite);
+    $event->setSiteIssuesCount(count($modulesHaveSecurityUpdate));
   }
 
   /**
@@ -327,13 +337,15 @@ class DrupalSiteService {
       return;
     }
 
-    /** @var SiteDrupalDocument $siteDrupal */
-    $siteDrupal = $this->siteDrupalManager->getBySiteId($site->getId());
-    if (!empty($siteDrupal)) {
-      $this->siteDrupalManager->deleteDocument($siteDrupal->getId());
+    /** @var SiteDrupalDocument $drupalSite */
+    $drupalSite = $this->siteDrupalManager->getBySiteId($site->getId());
+    if (!empty($drupalSite)) {
+      return;
     }
 
-    /** @var SiteModuleDocument $siteModule */
+    $this->siteDrupalManager->deleteDocument($drupalSite->getId());
+
+    /** @var SiteDrupalModuleDocument $siteModule */
     $siteModule = $this->siteModuleManager->findBySiteId($site->getId());
     if (!empty($siteModule)) {
       $this->siteModuleManager->deleteDocument($siteModule->getId());
@@ -349,33 +361,16 @@ class DrupalSiteService {
    */
   public function onWardenDashboardAddSite(DashboardAddSiteEvent $event) {
     $site = $event->getSite();
-    $modulesHaveSecurityUpdate = [];
 
-    /** @var SiteDrupalDocument $siteDrupal */
-    $siteDrupal = $this->siteDrupalManager->getBySiteId($site->getId());
-    if (empty($siteDrupal)) {
+    /** @var SiteDrupalDocument $drupalSite */
+    $drupalSite = $this->siteDrupalManager->getBySiteId($site->getId());
+    if (empty($drupalSite)) {
       $event->setIssues(['*No Drupal site modules could be found - this site needs refreshing*']);
       return;
     }
 
     // Check if Core is out of date.
-    if ($siteDrupal->getIsSecurityCoreVersion()) {
-      $modulesHaveSecurityUpdate[] = 'Drupal Core';
-    }
-
-    /** @var SiteModuleDocument $siteModule */
-    $siteModule = $this->siteModuleManager->findBySiteId($site->getId());
-
-    // Get a list of modules that have security updates.
-    $moduleUpdates = $siteModule->getModulesRequiringUpdates();
-    foreach ($moduleUpdates as $module) {
-      if (!$module['isSecurity']) {
-        continue;
-      }
-      $modulesHaveSecurityUpdate[] = $module['name'];
-    }
-    sort($modulesHaveSecurityUpdate);
-
+    $modulesHaveSecurityUpdate = $this->getSiteSecurityIssues($drupalSite);
     $event->setIssues($modulesHaveSecurityUpdate);
   }
 
@@ -387,5 +382,39 @@ class DrupalSiteService {
   protected function getMicroTimeFloat() {
     list($microSeconds, $seconds) = explode(' ', microtime());
     return ((float) $microSeconds + (float) $seconds);
+  }
+
+  /**
+   * Gets the security issues for a given site.
+   *
+   * @param SiteDrupalDocument $drupalSite
+   *
+   * @return array
+   */
+  protected function getSiteSecurityIssues(SiteDrupalDocument $drupalSite) {
+    $modulesHaveSecurityUpdate = [];
+
+    // Check if Core is out of date.
+    if ($drupalSite->getIsSecurityCoreVersion()) {
+      $modulesHaveSecurityUpdate[] = sprintf('Drupal Core [%s]', $drupalSite->getCoreVersion());
+    }
+
+    /** @var SiteDrupalModuleDocument $siteModule */
+    $siteModule = $this->siteModuleManager->findBySiteId($drupalSite->getSiteId());
+    if (empty($siteModule)) {
+      return $modulesHaveSecurityUpdate;
+    }
+
+    // Get a list of modules that have security updates.
+    $moduleUpdates = $siteModule->getModulesRequiringUpdates();
+    foreach ($moduleUpdates as $module) {
+      if (!$module['isSecurity']) {
+        continue;
+      }
+      $modulesHaveSecurityUpdate[] = $module['name'];
+    }
+    sort($modulesHaveSecurityUpdate);
+
+    return $modulesHaveSecurityUpdate;
   }
 }

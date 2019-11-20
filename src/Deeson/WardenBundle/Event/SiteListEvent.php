@@ -15,6 +15,11 @@ class SiteListEvent extends SiteEvent {
   protected $siteTypeLogoPath = null;
 
   /**
+   * @var string
+   */
+  protected $siteIssues = null;
+
+  /**
    * @return string
    */
   public function getSiteTypeLogoPath() {
@@ -26,6 +31,20 @@ class SiteListEvent extends SiteEvent {
    */
   public function setSiteTypeLogoPath($logoPath) {
     $this->siteTypeLogoPath = $logoPath;
+  }
+
+  /**
+   * @return string
+   */
+  public function getSiteIssues() {
+    return $this->siteIssues;
+  }
+
+  /**
+   * @param string $siteIssues
+   */
+  public function setSiteIssues($siteIssues) {
+    $this->siteIssues = $siteIssues;
   }
 
 }

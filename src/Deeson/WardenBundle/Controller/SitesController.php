@@ -51,6 +51,7 @@ class SitesController extends Controller {
         'iconPath' => $event->getSiteTypeLogoPath(),
         'lastRequest' => $site->getLastSuccessfulRequest(),
         'notUpdated' => $site->hasNotUpdatedRecently(),
+        'issuesList' => $event->getSiteIssues(),
         'critical' => $site->getHasCriticalIssue(),
       );
     }
@@ -297,6 +298,7 @@ class SitesController extends Controller {
     $form = $this->createFormBuilder($site, array('attr' => array('class' => 'box-body')))
             ->add('name', TextType::class, array(
               'label' => 'Name: ',
+              'disabled' => true,
               'attr' => array(
                 'class' => 'form-control',
               ),
@@ -328,7 +330,11 @@ class SitesController extends Controller {
               'required' => false
             ))
             ->add('isNew', CheckboxType::class, array(
-              'required' => false
+              'label' => 'Is this site new: ',
+              'required' => false,
+              'attr' => array(
+                'class' => 'form-checkbox'
+              )
             ))
             ->add('save', SubmitType::class, array(
               'attr' => array(

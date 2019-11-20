@@ -23,6 +23,11 @@ class DashboardListEvent extends Event {
   protected $siteTypeLogoPath = null;
 
   /**
+   * @var int
+   */
+  protected $siteIssuesCount = 0;
+
+  /**
    * @param DashboardDocument $site
    */
   public function __construct(DashboardDocument $site) {
@@ -48,6 +53,20 @@ class DashboardListEvent extends Event {
    */
   public function setSiteTypeLogoPath($logoPath) {
     $this->siteTypeLogoPath = $logoPath;
+  }
+
+  /**
+   * @return int
+   */
+  public function getSiteIssuesCount() {
+    return $this->siteIssuesCount;
+  }
+
+  /**
+   * @param int $count
+   */
+  public function setSiteIssuesCount($count) {
+    $this->siteIssuesCount = $count;
   }
 
 }

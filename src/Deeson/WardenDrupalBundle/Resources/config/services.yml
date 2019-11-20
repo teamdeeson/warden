@@ -5,7 +5,7 @@ services:
         public: true
 
     warden.drupal.site_module_manager:
-        class: Deeson\WardenDrupalBundle\Managers\SiteModuleManager
+        class: Deeson\WardenDrupalBundle\Managers\SiteDrupalModuleManager
         arguments: ['@doctrine_mongodb', '@monolog.logger']
         public: true
 

@@ -1,109 +1,106 @@
 {{ include('DeesonWardenBundle::header.html.twig') }}
 
-        {# start header #}
-        <header class="header">
-            <a href="/" class="logo">
-                <!-- Add the class icon to your logo image or logo icon to add the margining -->
-                <span class="icon-deesonicons-21"><strong>Warden</strong></span>
-            </a>
-            <!-- Header Navbar: style can be found in header.less -->
-            <nav class="navbar navbar-static-top" role="navigation">
-                <!-- Sidebar toggle button-->
-                {% if app.user %}
-                <a href="#" class="navbar-btn sidebar-toggle" data-toggle="offcanvas" role="button">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </a>
-                {% endif %}
-                <div class="navbar-right">
-                    {% if app.user %}
-                    <ul class="nav navbar-nav">
-                        <!-- User Account: style can be found in dropdown.less -->
-                        <li class="dropdown user user-menu">
-                            <a href="{{ path('logout') }}">Sign out</a>
-                        </li>
-                    </ul>
-                    {% endif %}
-                </div>
-            </nav>
-        </header>
-        <div class="wrapper row-offcanvas row-offcanvas-left">
-            <!-- Left side column. contains the logo and sidebar -->
-            {% if app.user %}
-            <aside class="left-side sidebar-offcanvas">
-                <!-- sidebar: style can be found in sidebar.less -->
-                <section class="sidebar">
-                    <!-- Sidebar user panel -->
-                    <div class="user-panel">
-                        <div class="pull-left info">
-                            <p><span class="glyphicon glyphicon-user"></span> &nbsp;Hello, {{ app.user ? app.user.username : 'Anonymous' }}</p>
-                        </div>
-                    </div>
+<div class="wrapper">
 
-                    <!-- /.search form -->
-                    <!-- sidebar menu: : style can be found in sidebar.less -->
-                    <ul class="sidebar-menu">
-                        <li {% if app.request.get('_route') == '_dashboard' %} class="active"{% endif %}>
-                            <a href="/" class="active"><i class="icon-deesonicons-21"></i> &nbsp;<span>Dashboard</span></a>
-                        </li>
-                        <li {% if app.request.get('_route') starts with 'sites_' %} class="active"{% endif %}>
-                            <a href="{{ path('sites_list') }}"><i class="fa fa-globe"></i> &nbsp;<span>Sites</span></a>
-                        </li>
-                        <li {% if app.request.get('_route') starts with 'modules_' %} class="active"{% endif %}>
-                            <a href="{{ path('warden_drupal_modules_list') }}"><i class="fa fa-th"></i> &nbsp;<span>Drupal Modules</span></a>
-                        </li>
-                        <li {% if app.request.get('_route') starts with 'third_party_libraries_' %} class="active"{% endif %}>
-                            <a href="{{ path('warden_third_party_libraries_list') }}"><i class="fa fa-th-list"></i> &nbsp;<span>Third Party Libraries</span></a>
-                        </li>
-                    </ul>
-                    <div class="marketing col-xs-12 bottom-absolute">
-                      <p>
-                        <a href="http://deeson.co.uk" targte="_blank"><i class="icon-deesonicons-13"></i></a>&nbsp;
-                        <a href="https://www.linkedin.com/company/deeson"><span class="icon-deesonicons-242"></span></a>&nbsp;
-                        <a href="https://twitter.com/DeesonAgency"><span class="icon-deesonicons-07"></span></a>&nbsp;
-                        <br/>
-                        <span class="small"><span class="icon-deesonicons-02"></span>&nbsp;Drupal experts since 2007</span>
-                      </p>
-                    </div>
-                </section>
-                <!-- /.sidebar -->
-            </aside>
-            {% endif %}
+  <header class="main-header">
+    <!-- Logo -->
+    <a href="/" class="logo">
+      <!-- mini logo for sidebar mini 50x50 pixels -->
+      <span class="logo-mini"><span class="icon-deesonicons-21"></span></span>
+      <!-- logo for regular state and mobile devices -->
+      <span class="logo-lg"><span class="icon-deesonicons-21"><strong>Warden</strong></span></span>
+    </a>
+    <!-- Header Navbar: style can be found in header.less -->
+    <nav class="navbar navbar-static-top">
+      <!-- Sidebar toggle button-->
+      <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
+        <span class="sr-only">Toggle navigation</span>
+      </a>
 
-            <!-- Right side column. Contains the navbar and content of the page -->
-            <aside class="right-side">
-                <!-- Content Header (Page header) -->
-                {% if app.user %}
-                <section class="content-header">
-                    <h1>
-                        {% block page_title %}{% endblock %}
-                    </h1>
-                    {#<ol class="breadcrumb">
-                        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-                        <li class="active">Dashboard</li>
-                    </ol>#}
-                </section>
-                {% endif %}
+      <div class="navbar-custom-menu">
+        <ul class="nav navbar-nav">
+          <!-- User Account: style can be found in dropdown.less -->
+          <li class="dropdown user user-menu">
+            <a href="{{ path('logout') }}">Sign out</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </header>
+  <!-- Left side column. contains the logo and sidebar -->
+  <aside class="main-sidebar">
+    <!-- sidebar: style can be found in sidebar.less -->
+    <section class="sidebar">
+      <!-- Sidebar user panel -->
+      <div class="user-panel">
+        <div class="pull-left info">
+          <p><span class="fa fa-user"></span> Hello, {{ app.user.username }}</p>
+        </div>
+      </div>
+      <!-- sidebar menu: : style can be found in sidebar.less -->
+      <ul class="sidebar-menu">
+        <li {% if app.request.get('_route') == '_dashboard' %} class="active"{% endif %}>
+            <a href="{{ path('_dashboard') }}" class="active"><i class="icon-deesonicons-21"></i> &nbsp;<span>Dashboard</span></a>
+        </li>
+        <li {% if app.request.get('_route') starts with 'sites_' %} class="active"{% endif %}>
+            <a href="{{ path('sites_list') }}"><i class="fa fa-globe"></i> &nbsp;<span>Sites</span></a>
+        </li>
+        <li {% if app.request.get('_route') starts with 'warden_drupal_modules_' %} class="active"{% endif %}>
+            <a href="{{ path('warden_drupal_modules_list') }}"><i class="fa fa-th"></i> &nbsp;<span>Drupal Modules</span></a>
+        </li>
+        <li {% if app.request.get('_route') starts with 'warden_third_party_libraries_' %} class="active"{% endif %}>
+            <a href="{{ path('warden_third_party_libraries_list') }}"><i class="fa fa-th-list"></i> &nbsp;<span>Third Party Libraries</span></a>
+        </li>
+      </ul>
+      <div class="marketing col-xs-12 bottom-absolute">
+        <span class="marketing-lg">
+          <p>
+            <a href="http://deeson.co.uk" target="_blank"><i class="icon-deesonicons-13"></i></a>&nbsp;
+            <a href="https://www.linkedin.com/company/deeson"><span class="icon-deesonicons-242"></span></a>&nbsp;
+            <a href="https://twitter.com/DeesonAgency"><span class="icon-deesonicons-07"></span></a>&nbsp;
+            <br/>
+            <span class="small"><span class="icon-deesonicons-02"></span>&nbsp;Drupal experts since 2007</span>
+          </p>
+        </span>
+      </div>
+    </section>
+    <!-- /.sidebar -->
+  </aside>
 
-                <!-- Main content -->
-                <section class="content">
-                    {% for flashMessage in app.session.flashbag.get('error') %}
-                    <div class="callout callout-danger">
-                        <p>{{ flashMessage }}</p>
-                    </div>
-                    {% endfor %}
-                    {% for flashMessage in app.session.flashbag.get('notice') %}
-                    <div class="callout callout-info">
-                        <p>{{ flashMessage }}</p>
-                    </div>
-                    {% endfor %}
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        {% block page_title %}{% endblock %}
+      </h1>
+      {#<ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Dashboard</li>
+      </ol>#}
+    </section>
 
-                    {% block content %}{% endblock %}
+    <!-- Main content -->
+    <section class="content">
 
-                </section><!-- /.content -->
-            </aside><!-- /.right-side -->
-        </div><!-- ./wrapper -->
+      {% for flashMessage in app.session.flashbag.get('error') %}
+      <div class="callout callout-danger">
+          <p>{{ flashMessage }}</p>
+      </div>
+      {% endfor %}
+      {% for flashMessage in app.session.flashbag.get('notice') %}
+      <div class="callout callout-info">
+          <p>{{ flashMessage }}</p>
+      </div>
+      {% endfor %}
+
+      {% block content %}{% endblock %}
+
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+</div>
+<!-- ./wrapper -->
 
 {{ include('DeesonWardenBundle::footer.html.twig') }}
