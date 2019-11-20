@@ -17,6 +17,7 @@
 /web/bundles/
 
 # Application
+frontend
 app/config/warden-security.yml
 src/Deeson/WardenBundle/Resources/public/css/warden-custom.css
 

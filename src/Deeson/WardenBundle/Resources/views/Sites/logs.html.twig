@@ -10,40 +10,39 @@
         <div class="row">
           <div class="col-xs-12">
               <div class="box">
-                  <div class="box-header">
-
-                  </div><!-- /.box-header -->
-                  <div class="box-body table-responsive">
-                      {{ arturdoruch_pagination_all(logs.pagination) }}
-                      <div class="row">
-                        <div class="col-sm-12">
-                          <table class="table table-hover">
-                          <thead>
-                              <tr>
-                                  <th>&nbsp;</th>
-                                  <th>Date Time</th>
-                                  <th>Message</th>
-                              </tr>
-                          </thead>
-                          <tbody>
-                          {% for log in logs %}
-                              <tr class="{% if not log.status %}alert alert-danger{% endif %}">
-                                <td>{% if not log.status %}<a href="#" class="show-response"><i class="fa fa-fw fa-plus-square-o"></i></a>{% endif %}</td>
-                                <td>{{ log.timestamp | date }}</td>
-                                <td>{{ log.message }}</td>
-                              </tr>
-                              {% if not log.status %}
-                                <tr class="log-response callout callout-danger">
-                                  <td colspan="3">Response: <pre>{% if log.response is empty %}Something failed ... probably failed to connect to the site{% else %}{{ log.response }}{% endif %}</pre></td>
+                  <div class="box-body">
+                      <div class="dataTables_wrapper form-inline dt-bootstrap">
+                        {{ arturdoruch_pagination_all(logs.pagination) }}
+                        <div class="row">
+                          <div class="col-sm-12">
+                            <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>&nbsp;</th>
+                                    <th>Date Time</th>
+                                    <th>Message</th>
                                 </tr>
-                              {% endif %}
-                          {% endfor %}
-                          </tbody>
-                          </table>
+                            </thead>
+                            <tbody>
+                            {% for log in logs %}
+                                <tr class="{% if not log.status %}alert alert-danger{% endif %}">
+                                  <td>{% if not log.status %}<a href="#" class="show-response"><i class="fa fa-fw fa-plus-square-o"></i></a>{% endif %}</td>
+                                  <td>{{ log.timestamp | date }}</td>
+                                  <td>{{ log.message }}</td>
+                                </tr>
+                                {% if not log.status %}
+                                  <tr class="log-response callout callout-danger">
+                                    <td colspan="3">Response: <pre>{% if log.response is empty %}Something failed ... probably failed to connect to the site{% else %}{{ log.response }}{% endif %}</pre></td>
+                                  </tr>
+                                {% endif %}
+                            {% endfor %}
+                            </tbody>
+                            </table>
+                          </div>
                         </div>
+                        <br />
+                        {{ arturdoruch_pagination_all(logs.pagination) }}
                       </div>
-                      <br />
-                      {{ arturdoruch_pagination_all(logs.pagination) }}
                   </div>
 
                 <style type="text/css">

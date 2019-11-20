@@ -71,6 +71,7 @@ class ModulesController extends Controller {
 
     $sitesNotUsingModule = array();
     foreach ($sites as $site) {
+      /** @var SiteDocument $site */
       /** @var SiteDrupalModuleDocument $siteModuleDoc */
       $siteModuleDoc = $siteModuleManager->findBySiteId($site->getId());
       if (empty($siteModuleDoc)) {

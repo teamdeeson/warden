@@ -2,40 +2,59 @@
 
 {% block content %}
 
-    <div class="form-box" id="login-box">
-        <div class="header bg-brand">Sign In
-        {% if error %}
-            <h4 class="text-center"><i class="fa fa-warning text-yellow"></i> {{ error.message }}</h4>
-        {% endif %}
-        </div>
-
-        <form action="{{ path("security_login_check") }}" method="post" id="login">
-            <div class="body bg-gray">
-                <div class="form-group">
-                    <input type="text" id="username" name="_username" class="form-control" placeholder="User ID"/>
-                </div>
-                <div class="form-group">
-                    <input type="password" id="password" name="_password" class="form-control" placeholder="Password"/>
-                </div>
-            </div>
-            <div class="footer">
-                <button type="submit" class="btn bg-red btn-block">Sign me in</button>
-            </div>
-        </form>
-
-        <div class="margin text-center">
-            <div class="marketing">
-              <p>
-
-                <br/>
-                <a href="http://deeson.co.uk" targte="_blank"><i class="icon-deesonicons-13"></i></a>&nbsp;
-                <a href="https://www.linkedin.com/company/deeson"><span class="icon-deesonicons-242"></span></a>&nbsp;
-                <a href="https://twitter.com/DeesonAgency"><span class="icon-deesonicons-07"></span></a>&nbsp;
-                <br/><br/>
-                <span class="small"><span class="icon-deesonicons-02"></span>&nbsp;Drupal experts since 2007</span>
-              </p>
-            </div>
-        </div>
+  <div class="login-box">
+    <div class="login-logo">
+      <span class="icon-deesonicons-21"><strong>Warden</strong></span>
     </div>
+    <!-- /.login-logo -->
+    <div class="login-box-body">
+      <p class="login-box-msg">Log in with your username and password</p>
+
+      <form action="{{ path("security_login_check") }}" method="post">
+        <div class="form-group">
+          <div class="input-group">
+            <div class="input-group-addon">
+              <i class="fa fa-user"></i>
+            </div>
+            <input type="text" id="username" name="_username" class="form-control" placeholder="Username">
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="input-group">
+            <div class="input-group-addon">
+              <i class="fa fa-lock"></i>
+            </div>
+            <input type="password" id="password" name="_password" class="form-control" placeholder="Password">
+          </div>
+        </div>
+        {% if error %}
+          <div class="alert alert-danger"><p class="login-error-msg"><i class="fa fa-warning text-yellow"></i> {{ error.message }}</p></div>
+        {% endif %}
+        <div class="row">
+          <div class="col-xs-8">&nbsp;</div>
+          <!-- /.col -->
+          <div class="col-xs-4">
+            <button type="submit" class="btn btn-danger btn-block btn-flat">Sign In</button>
+          </div>
+          <!-- /.col -->
+        </div>
+      </form>
+      <div class="margin text-center">
+        <div class="marketing">
+          <p>
+            <a href="http://deeson.co.uk" target="_blank"><i class="icon-deesonicons-13"></i></a>&nbsp;
+            <a href="https://www.linkedin.com/company/deeson"><span class="icon-deesonicons-242"></span></a>&nbsp;
+            <a href="https://twitter.com/DeesonAgency"><span class="icon-deesonicons-07"></span></a>&nbsp;
+          </p>
+          <p>
+            <span class="small"><span class="icon-deesonicons-02"></span>&nbsp;Drupal experts since 2007</span>
+          </p>
+        </div>
+      </div>
+
+    </div>
+    <!-- /.login-box-body -->
+  </div>
+  <!-- /.login-box -->
 
 {% endblock %}
