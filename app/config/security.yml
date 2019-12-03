@@ -1,17 +1,15 @@
+# app/config/security.yml
 security:
     encoders:
-        Symfony\Component\Security\Core\User\User:
-            algorithm: sha512
-            encode_as_base64: false
-            iterations: 1
+        FOS\UserBundle\Model\UserInterface: bcrypt
 
     role_hierarchy:
         ROLE_ADMIN:       ROLE_USER
-        ROLE_SUPER_ADMIN: [ROLE_USER, ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]
+        ROLE_SUPER_ADMIN: [ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]
 
     providers:
-        webservice:
-            id: warden.user_provider
+        fos_userbundle:
+            id: fos_user.user_provider.username
 
     firewalls:
         dev:
@@ -31,18 +29,82 @@ security:
             security: false
         secured_area:
             pattern: ^/
-            guard:
-                authenticators:
-                    - warden.form_login_authenticator
+            user_checker: security.user_checker
             form_login:
-                check_path: security_login_check
-                login_path: login
+                provider: fos_userbundle
+                csrf_token_generator: security.csrf.token_manager
+#            guard:
+#                authenticators:
+#                    - warden.form_login_authenticator
+#            form_login:
+#                check_path: security_login_check
+#                login_path: login
             logout:
                 path: /logout
                 target: /
             logout_on_user_change: true
+#        main:
+#            pattern: ^/
+#            user_checker: fos_user.user_checker
+#            form_login:
+#                provider: fos_userbundle
+#                csrf_token_generator: security.csrf.token_manager
 
-    access_denied_url: /unauthorised
+#            logout:       true
+#            anonymous:    true
 
     access_control:
+#        - { path: ^/login$, role: IS_AUTHENTICATED_ANONYMOUSLY }
+#        - { path: ^/register, role: IS_AUTHENTICATED_ANONYMOUSLY }
+#        - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/admin, role: ROLE_ADMIN }
         - { path: ^/, roles: ROLE_USER, requires_channel: "%protocol%" }
+
+#security:
+#    encoders:
+#        Symfony\Component\Security\Core\User\User:
+#            algorithm: sha512
+#            encode_as_base64: false
+#            iterations: 1
+#
+#    role_hierarchy:
+#        ROLE_ADMIN:       ROLE_USER
+#        ROLE_SUPER_ADMIN: [ROLE_USER, ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]
+#
+#    providers:
+#        webservice:
+#            id: warden.user_provider
+#
+#    firewalls:
+#        dev:
+#            pattern:  ^/(_(profiler|wdt)|css|images|js)/
+#            security: false
+#        login:
+#            pattern:  ^/login$
+#            security: false
+#        add_site:
+#            pattern:  ^/sites/add
+#            security: false
+#        public_key:
+#            pattern:  ^/public-key
+#            security: false
+#        sites_update:
+#            pattern:  ^/site-update
+#            security: false
+#        secured_area:
+#            pattern: ^/
+#            guard:
+#                authenticators:
+#                    - warden.form_login_authenticator
+#            form_login:
+#                check_path: security_login_check
+#                login_path: login
+#            logout:
+#                path: /logout
+#                target: /
+#            logout_on_user_change: true
+#
+#    access_denied_url: /unauthorised
+#
+#    access_control:
+#        - { path: ^/, roles: ROLE_USER, requires_channel: "%protocol%" }

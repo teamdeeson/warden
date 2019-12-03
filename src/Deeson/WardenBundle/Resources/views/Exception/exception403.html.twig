@@ -1,0 +1,21 @@
+{% extends 'DeesonWardenBundle::layout.html.twig' %}
+
+{% block title %}Warden Error - Access Denied{% endblock %}
+
+{% block page_title %}Access Denied{% endblock %}
+
+{% block content %}
+
+    <div class="error-page">
+      <h2 class="headline text-red">{{ exception.statusCode }}</h2>
+
+      <div class="error-content">
+        <h3><i class="fa fa-warning text-red"></i> Access Denied.</h3>
+
+        <p>
+          You tried to access a page that you don't have access to. Meanwhile, you may <a href="{{ path('_dashboard') }}">return to dashboard</a>.
+        </p>
+      </div>
+    </div>
+
+{% endblock %}

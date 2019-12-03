@@ -1,0 +1,53 @@
+{% extends 'DeesonWardenBundle::layout.html.twig' %}
+
+{% block title %}Warden{% endblock %}
+
+{% block page_title 'Users' %}
+
+{% block content %}
+
+    {% if users %}
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <div class="box-body no-padding">
+                    <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th width="30%">User</th>
+                            <th>Role</th>
+                            <th>Groups</th>
+                            <th>Status</th>
+                            <th>Created Login</th>
+                            <th>Last Login</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for user in users %}
+                        <tr>
+                            <td>
+                                <a href="{{ path('admin_user_edit', {'id': user.getId() }) }}">{{ user.getUsername() }}</a>
+                            </td>
+                            <td>{{ user.getRoles() | join(', ') }}</td>
+                            <td>{{ user.getGroupNames() | join(', ') }}</td>
+                            <td>{% if user.isEnabled() %}Enabled{% else %}Disabled{% endif %}</td>
+                            <td>{% if user.getCreatedDate() %}{{ user.getCreatedDate() | date('Y-m-d h:i:s') }}{% else %}-{% endif %}</td>
+                            <td>{% if user.getLastLogin() %}{{ user.getLastLogin() | date('Y-m-d h:i:s') }}{% else %}-{% endif %}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <a href="{{ path('admin_user_add') }}">Add User</a>
+
+    {% else %}
+
+    <p>There are currently no users registered.</p>
+
+    {% endif %}
+
+{% endblock %}

@@ -1,14 +1,14 @@
-login:
-    path: /login
-    defaults: { _controller: DeesonWardenBundle:Security:login }
+#login:
+#    path: /login
+#    defaults: { _controller: DeesonWardenBundle:Security:login }
 
-security_login_check:
-    path: /login_check
-    defaults: { _controller: DeesonWardenBundle:Security:loginCheck }
+#security_login_check:
+#    path: /login_check
+#    defaults: { _controller: DeesonWardenBundle:Security:loginCheck }
 
-logout:
-    path: /logout
-    defaults: { _controller: DeesonWardenBundle:Security:logout }
+#logout:
+#    path: /logout
+#    defaults: { _controller: DeesonWardenBundle:Security:logout }
 
 _unauthorised:
     path: /unauthorised
@@ -20,36 +20,56 @@ _dashboard:
 
 sites_list:
     path:    /sites
-    defaults: { _controller: DeesonWardenBundle:Sites:index }
+    defaults: { _controller: DeesonWardenBundle:Site:index }
 
 sites_add:
     path:    /sites/add
-    defaults: { _controller: DeesonWardenBundle:Sites:add }
+    defaults: { _controller: DeesonWardenBundle:Site:add }
 
 sites_show:
     path:    /sites/{id}
-    defaults: { _controller: DeesonWardenBundle:Sites:show }
+    defaults: { _controller: DeesonWardenBundle:Site:show }
 
 sites_edit:
     path:    /sites/{id}/edit
-    defaults: { _controller: DeesonWardenBundle:Sites:edit }
+    defaults: { _controller: DeesonWardenBundle:Site:edit }
 
 sites_delete:
     path:    /sites/{id}/delete
-    defaults: { _controller: DeesonWardenBundle:Sites:delete }
+    defaults: { _controller: DeesonWardenBundle:Site:delete }
 
 sites_update_refresh:
     path:    /sites/{id}/refresh
-    defaults: { _controller: DeesonWardenBundle:Sites:refresh }
+    defaults: { _controller: DeesonWardenBundle:Site:refresh }
 
 sites_logs:
     path:    /sites/{id}/logs
-    defaults: { _controller: DeesonWardenBundle:Sites:logs }
+    defaults: { _controller: DeesonWardenBundle:Site:logs }
 
 public_key:
     path:    /public-key
-    defaults: { _controller: DeesonWardenBundle:Sites:publickey }
+    defaults: { _controller: DeesonWardenBundle:Site:publickey }
 
 sites_update:
     path:    /site-update
-    defaults: { _controller: DeesonWardenBundle:Sites:update }
+    defaults: { _controller: DeesonWardenBundle:Site:update }
+
+admin_user_list:
+    path:    /admin/user/list
+    defaults: { _controller: DeesonWardenBundle:User:list }
+
+admin_user_add:
+    path:    /admin/user/create
+    defaults: { _controller: DeesonWardenBundle:User:create }
+
+admin_user_edit:
+    path:    /admin/user/{id}/edit
+    defaults: { _controller: DeesonWardenBundle:User:edit }
+
+admin_user_delete:
+    path:    /admin/user/{id}/delete
+    defaults: { _controller: DeesonWardenBundle:User:delete }
+
+admin_user_change_password:
+    path:    /admin/user/{id}/change-password
+    defaults: { _controller: DeesonWardenBundle:User:changepassword }

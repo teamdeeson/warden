@@ -1,0 +1,20 @@
+{% extends 'DeesonWardenBundle::layout.html.twig' %}
+
+{% block title %}Warden Admin: New Group{% endblock %}
+
+{% block page_title 'Warden Admin: New Group' %}
+
+{% block content %}
+  {% trans_default_domain 'FOSUserBundle' %}
+
+  {{ form_start(form, { 'action': path('fos_user_group_new'), 'attr': { 'class': 'fos_user_group_new' } }) }}
+      {{ form_widget(form) }}
+      <div>
+          <input type="submit" value="{{ 'group.new.submit'|trans }}" />
+      </div>
+  {{ form_end(form) }}
+
+
+{% endblock %}
+
+

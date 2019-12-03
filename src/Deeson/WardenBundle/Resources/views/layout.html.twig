@@ -21,8 +21,46 @@
         <ul class="nav navbar-nav">
           <!-- User Account: style can be found in dropdown.less -->
           <li class="dropdown user user-menu">
-            <a href="{{ path('logout') }}">Sign out</a>
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+              <img src="https://source.unsplash.com/random/160x160" class="user-image" alt="{{ app.user.username }}">
+              <span class="hidden-xs">{{ app.user.username }} - 11</span>
+            </a>
+            <ul class="dropdown-menu">
+              <!-- User image -->
+              <li class="user-header">
+                <img src="https://source.unsplash.com/random/160x160" class="img-circle" alt="{{ app.user.username }}">
+                <p>
+                  {{ app.user.username }}
+                </p>
+              </li>
+              <li class="user-body">
+                <div class="row">
+                  {% if is_granted('ROLE_ADMIN') %}
+                  <div class="col-xs-6 text-center">
+                    <a href="{{ path('admin_user_list') }}">Users</a>
+                  </div>
+                  <div class="col-xs-6 text-center">
+                    <a href="{{ path('fos_user_group_list') }}">Groups</a>
+                  </div>
+                  {% endif %}
+                </div>
+                <!-- /.row -->
+              </li>
+              <!-- Menu Footer-->
+              <li class="user-footer">
+                <div class="pull-left">
+                  {#<a href="{{ path('fos_user_profile_edit') }}" class="btn btn-default btn-flat">Profile</a>#}
+                  <a href="{{ path('fos_user_profile_show') }}" class="btn btn-default btn-flat">Profile</a>
+                </div>
+                <div class="pull-right">
+                  <a href="{{ path('fos_user_security_logout') }}" class="btn btn-default btn-flat">Sign out</a>
+                </div>
+              </li>
+            </ul>
           </li>
+          {#<li>
+            <a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
+          </li>#}
         </ul>
       </div>
     </nav>
@@ -33,8 +71,11 @@
     <section class="sidebar">
       <!-- Sidebar user panel -->
       <div class="user-panel">
+        <div class="pull-left image">
+          <img src="https://source.unsplash.com/random/160x160" class="img-circle" alt="{{ app.user }}">
+        </div>
         <div class="pull-left info">
-          <p><span class="fa fa-user"></span> Hello, {{ app.user.username }}</p>
+          <p>Hello, {{ app.user.username }}</p>
         </div>
       </div>
       <!-- sidebar menu: : style can be found in sidebar.less -->

@@ -15,6 +15,7 @@
                     <thead>
                         <tr>
                             <th width="60%">Site</th>
+                            <th>Groups</th>
                             <th>Type</th>
                             <th>Last scanned</th>
                         </tr>
@@ -28,6 +29,7 @@
                                     <br />({{ site['issuesList'] }})
                                 {% endif %}
                             </td>
+                            <td>{{ site['groups'] | join(', ') }}</td>
                             <td>{% if site['iconPath'] is not empty %}<img src="{{ asset(site['iconPath']) }}" width="20" />{% else %} - {% endif %}</td>
                             <td>{{ site['lastRequest'] }}{% if site['notUpdated'] %} <span class="fa fa-warning"></span>&nbsp;Out of date{% endif %}</td>
                         </tr>

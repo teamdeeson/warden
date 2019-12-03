@@ -1,0 +1,21 @@
+{% extends 'DeesonWardenBundle::layout.html.twig' %}
+
+{% block title %}Warden Admin: Groups{% endblock %}
+
+{% block page_title 'Warden Admin: Groups' %}
+
+{% block content %}
+
+  <h1>Group list</h1>
+
+  <div class="fos_user_group_list">
+      <ul>
+      {% for group in groups %}
+          <li><a href="{{ path('fos_user_group_edit', {'groupName': group.getName()} ) }}">{{ group.getName() }}</a></li>
+      {% endfor %}
+      </ul>
+  </div>
+
+  <a href="{{ path('fos_user_group_new') }}">Create Group</a>
+
+{% endblock %}

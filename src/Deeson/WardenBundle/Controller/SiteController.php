@@ -21,8 +21,9 @@ use Deeson\WardenBundle\Managers\SiteManager;
 use Deeson\WardenBundle\Document\SiteDocument;
 use Deeson\WardenBundle\Services\SSLEncryptionService;
 use Symfony\Component\HttpFoundation\Response;
+use Deeson\WardenBundle\Document\UserDocument;
 
-class SitesController extends Controller {
+class SiteController extends Controller {
 
   /**
    * Default action for listing the sites available.
@@ -32,6 +33,12 @@ class SitesController extends Controller {
   public function IndexAction() {
     /** @var SiteManager $manager */
     $manager = $this->get('warden.site_manager');
+
+    /** @var UserDocument $user */
+    $user = $this->getUser();
+    //printf('<pre>%s</pre>', print_r([$user->getUsername(),$user->getGroupIds()], true));
+
+    // @todo find sites that are in the group ids that the user has or that don't have a group id set
     $sites = $manager->getDocumentsBy(array(), array('name' => 'asc'));
 
     /** @var EventDispatcher $dispatcher */
@@ -53,6 +60,7 @@ class SitesController extends Controller {
         'notUpdated' => $site->hasNotUpdatedRecently(),
         'issuesList' => $event->getSiteIssues(),
         'critical' => $site->getHasCriticalIssue(),
+        'groups' => $site->getGroupNames(),
       );
     }
 
@@ -60,7 +68,7 @@ class SitesController extends Controller {
       'sites' => $siteList,
     );
 
-    return $this->render('DeesonWardenBundle:Sites:index.html.twig', $params);
+    return $this->render('DeesonWardenBundle:Site:index.html.twig', $params);
   }
 
   /**
@@ -94,7 +102,7 @@ class SitesController extends Controller {
       $params[$key] = $value;
     }
 
-    return $this->render('DeesonWardenBundle:Sites:show.html.twig', $params);
+    return $this->render('DeesonWardenBundle:Site:show.html.twig', $params);
   }
 
   /**
@@ -179,7 +187,7 @@ class SitesController extends Controller {
       'site' => $site,
       'form' => $form->createView(),
     );
-    return $this->render('DeesonWardenBundle:Sites:delete.html.twig', $params);
+    return $this->render('DeesonWardenBundle:Site:delete.html.twig', $params);
   }
 
   /**
@@ -293,7 +301,12 @@ class SitesController extends Controller {
   public function EditAction($id, Request $request) {
     /** @var SiteManager $manager */
     $manager = $this->get('warden.site_manager');
+    /** @var SiteDocument $site */
     $site = $manager->getDocumentById($id);
+
+    /*print_r($site->getName());
+    print_r($site->getGroups());
+    die();*/
 
     $form = $this->createFormBuilder($site, array('attr' => array('class' => 'box-body')))
             ->add('name', TextType::class, array(
@@ -336,6 +349,23 @@ class SitesController extends Controller {
                 'class' => 'form-checkbox'
               )
             ))
+            ->add('groups')
+//            ->add('groups', Collection::class, array(
+//              'label' => 'Groups: ',
+//              //'required' => false,
+//              //'entry_type' => ChoiceType::class,
+//              /*'entry_options'  => [
+//                      'choices'  => [
+//                          'Nashville' => 'nashville',
+//                          'Paris'     => 'paris',
+//                          'Berlin'    => 'berlin',
+//                          'London'    => 'london',
+//                      ],
+//                  ],
+//              'attr' => array(
+//                'class' => 'form-checkbox'
+//              ),*/
+//            ))
             ->add('save', SubmitType::class, array(
               'attr' => array(
                 'class' => 'btn btn-danger'
@@ -356,7 +386,7 @@ class SitesController extends Controller {
       'form' => $form->createView(),
     );
 
-    return $this->render('DeesonWardenBundle:Sites:edit.html.twig', $params);
+    return $this->render('DeesonWardenBundle:Site:edit.html.twig', $params);
   }
 
   /**
@@ -384,6 +414,6 @@ class SitesController extends Controller {
       'logs' => $siteRequestLogManager->getRequestLogs($id, $page),
     );
 
-    return $this->render('DeesonWardenBundle:Sites:logs.html.twig', $params);
+    return $this->render('DeesonWardenBundle:Site:logs.html.twig', $params);
   }
 }

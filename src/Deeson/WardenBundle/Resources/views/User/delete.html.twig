@@ -1,0 +1,16 @@
+{% extends 'DeesonWardenBundle::layout.html.twig' %}
+
+{% block title %}Delete user: {{ user.getUsername() }}{% endblock %}
+
+{% block page_title %}Delete user: {{ user.getUsername() }}{% endblock %}
+
+{% block content %}
+
+    <p>This will permanently remove this user from Warden.</p>
+
+    {{ form(form) }}
+
+    <br />
+    <a href="{{ path('admin_user_edit', {'id': user.getId() }) }}">Cancel</a>
+
+{% endblock %}

@@ -19,16 +19,21 @@ class ExceptionListener {
 
   public function onKernelException(GetResponseForExceptionEvent $event) {
     // provide the better way to display a enhanced error page only in prod environment, if you want
-    if ('prod' == $this->kernel->getEnvironment()) {
+    if ('prod' === $this->kernel->getEnvironment()) {
       // exception object
       $exception = $event->getException();
 
       // new Response object
       $response = new Response();
 
+      $exceptionTemplate = 'exception' . $exception->getStatusCode();
+      if (!$this->templating->exists('DeesonWardenBundle:Exception:' . $exceptionTemplate . '.html.twig')) {
+        $exceptionTemplate = 'exception';
+      }
+
       // set response content
       $response->setContent(
-        $this->templating->render('DeesonWardenBundle:Exception:exception.html.twig',
+        $this->templating->render('DeesonWardenBundle:Exception:' . $exceptionTemplate . '.html.twig',
           array('exception' => $exception)
         )
       );

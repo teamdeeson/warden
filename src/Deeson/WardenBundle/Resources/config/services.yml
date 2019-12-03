@@ -1,9 +1,4 @@
 services:
-#    _defaults:
-#        autowire: true
-#        autoconfigure: true
-#        public: false
-
     kernel.listener.warden_exception_listener:
         class: Deeson\WardenBundle\Listener\ExceptionListener
         arguments: ['@templating', '@kernel']
@@ -38,6 +33,11 @@ services:
         class: Deeson\WardenBundle\Services\SSLEncryptionService
         arguments: ['%public_key_file%', '%private_key_file%']
         public: true
+
+    warden.form.profile:
+        class: Deeson\WardenBundle\Form\ProfileFormType
+        tags:
+            - { name: form.type, alias: warden_user_profile }
 
     warden.site_manager:
         class: Deeson\WardenBundle\Managers\SiteManager

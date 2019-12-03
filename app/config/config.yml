@@ -11,6 +11,7 @@ parameters:
 framework:
     #esi:             ~
     #translator:      { fallback: "%locale%" }
+    translator: ~
     secret:          "%secret%"
     router:
         resource: "%kernel.root_dir%/config/routing.yml"
@@ -60,7 +61,22 @@ swiftmailer:
     password:  "%mailer_password%"
     spool: { type: memory }
 
+# ArturDoruchPaginatorBundle Configuration
 artur_doruch_paginator:
     limit: 10
     prev_page_label: 'Previous'
     next_page_label: 'Next'
+
+# FOSUserBundle Configuration
+fos_user:
+    db_driver: mongodb
+    firewall_name: secured_area
+    user_class: Deeson\WardenBundle\Document\UserDocument
+    group:
+        group_class: Deeson\WardenBundle\Document\GroupDocument
+    from_email:
+        address: "%mailer_user%"
+        sender_name: "%mailer_user%"
+    profile:
+        form:
+            type: Deeson\WardenBundle\Form\ProfileFormType

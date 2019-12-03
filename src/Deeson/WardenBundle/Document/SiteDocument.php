@@ -69,6 +69,11 @@ class SiteDocument extends BaseDocument {
   protected $type;
 
   /**
+   * @MongoDB\ReferenceMany(targetDocument="Deeson\WardenBundle\Document\GroupDocument")
+   */
+  protected $groups;
+
+  /**
    * @return mixed
    */
   public function getName() {
@@ -241,6 +246,32 @@ class SiteDocument extends BaseDocument {
     $timestamp = \DateTime::createFromFormat('d/m/Y H:i:s', $this->lastSuccessfulRequest)->getTimestamp();
     $diff = time() - $timestamp;
     return $diff > (60 * 60 * 24);
+  }
+
+  /**
+   * @return mixed
+   */
+  public function getGroups() {
+    return $this->groups;
+  }
+
+  /**
+   * @param mixed $groups
+   */
+  public function setGroups($groups) {
+    $this->groups = $groups;
+  }
+
+  /**
+   * @return array
+   */
+  public function getGroupNames() {
+    $names = [];
+    foreach ($this->getGroups() as $group) {
+      $names[] = $group->getName();
+    }
+
+    return $names;
   }
 
 }

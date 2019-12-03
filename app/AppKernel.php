@@ -19,6 +19,7 @@ class AppKernel extends Kernel
             new Deeson\WardenDrupalBundle\DeesonWardenDrupalBundle(),
             new Deeson\WardenThirdPartyLibraryBundle\DeesonWardenThirdPartyLibraryBundle(),
             new ArturDoruch\PaginatorBundle\ArturDoruchPaginatorBundle(),
+            new FOS\UserBundle\FOSUserBundle(),
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {

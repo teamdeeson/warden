@@ -1,0 +1,17 @@
+{% extends 'DeesonWardenBundle::layout.html.twig' %}
+
+{% block title %}Create user{% endblock %}
+
+{% block page_title %}Create user{% endblock %}
+
+{% block content %}
+
+    <div class="box box-danger">
+        {{ form(form) }}
+    </div>
+
+    <br />
+    <br />
+    <a href="{{ path('admin_user_list') }}">Cancel</a>
+
+{% endblock %}

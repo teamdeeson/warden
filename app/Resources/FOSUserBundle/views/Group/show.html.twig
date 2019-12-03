@@ -1,0 +1,17 @@
+{% extends 'DeesonWardenBundle::layout.html.twig' %}
+
+{% block title %}Warden Admin: Group{% endblock %}
+
+{% block page_title 'Warden Admin: Group' %}
+
+{% block content %}
+  {% trans_default_domain 'FOSUserBundle' %}
+
+  <div class="fos_user_group_show">
+      <p>{{ 'group.show.name'|trans }}: {{ group.getName() }}</p>
+  </div>
+
+
+{% endblock %}
+
+
