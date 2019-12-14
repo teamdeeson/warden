@@ -1,15 +1,3 @@
-#login:
-#    path: /login
-#    defaults: { _controller: DeesonWardenBundle:Security:login }
-
-#security_login_check:
-#    path: /login_check
-#    defaults: { _controller: DeesonWardenBundle:Security:loginCheck }
-
-#logout:
-#    path: /logout
-#    defaults: { _controller: DeesonWardenBundle:Security:logout }
-
 _unauthorised:
     path: /unauthorised
     defaults: { _controller: DeesonWardenBundle:Dashboard:unauthorised }
@@ -59,8 +47,8 @@ admin_user_list:
     defaults: { _controller: DeesonWardenBundle:User:list }
 
 admin_user_add:
-    path:    /admin/user/create
-    defaults: { _controller: DeesonWardenBundle:User:create }
+    path:    /admin/user/new
+    defaults: { _controller: DeesonWardenBundle:User:new }
 
 admin_user_edit:
     path:    /admin/user/{id}/edit
@@ -73,3 +61,19 @@ admin_user_delete:
 admin_user_change_password:
     path:    /admin/user/{id}/change-password
     defaults: { _controller: DeesonWardenBundle:User:changepassword }
+
+admin_user_group_list:
+    path:    /admin/group/list
+    defaults: { _controller: warden.group.controller:listAction }
+
+admin_user_group_new:
+    path:    /admin/group/new
+    defaults: { _controller: warden.group.controller:newAction }
+
+admin_user_group_edit:
+    path:    /admin/group/{id}/edit
+    defaults: { _controller: warden.group.controller:editAction }
+
+admin_user_group_delete:
+    path:    /admin/group/{id}/delete
+    defaults: { _controller: warden.group.controller:deleteAction }

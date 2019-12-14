@@ -13,14 +13,14 @@ services:
         class: Deeson\WardenBundle\Asset\VersionStrategy\DateVersionStrategy
         public: false
 
-    warden.user_provider:
-        class: Deeson\WardenBundle\Security\WebserviceUserProvider
-        arguments: ['%kernel.root_dir%']
-        public: true
+#    warden.user_provider:
+#        class: Deeson\WardenBundle\Security\WebserviceUserProvider
+#        arguments: ['%kernel.root_dir%']
+#        public: true
 
-    warden.form_login_authenticator:
-        class: Deeson\WardenBundle\Security\FormLoginAuthenticator
-        arguments: ['@router', '@security.password_encoder']
+#    warden.form_login_authenticator:
+#        class: Deeson\WardenBundle\Security\FormLoginAuthenticator
+#        arguments: ['@router', '@security.password_encoder']
 
     warden.http_client:
         class: Deeson\WardenBundle\Client\GuzzleHttpRequestHandler
@@ -32,6 +32,11 @@ services:
     warden.ssl_encryption:
         class: Deeson\WardenBundle\Services\SSLEncryptionService
         arguments: ['%public_key_file%', '%private_key_file%']
+        public: true
+
+    warden.group.controller:
+        class: Deeson\WardenBundle\Controller\GroupController
+        arguments: ['@event_dispatcher', '@fos_user.group.form.factory', '@fos_user.group_manager']
         public: true
 
     warden.form.profile:

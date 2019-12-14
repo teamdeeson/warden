@@ -22,30 +22,30 @@
           <!-- User Account: style can be found in dropdown.less -->
           <li class="dropdown user user-menu">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-              <img src="https://source.unsplash.com/random/160x160" class="user-image" alt="{{ app.user.username }}">
-              <span class="hidden-xs">{{ app.user.username }} - 11</span>
+              <img src="{{ asset('bundles/deesonwarden/assets/img/avatar.png') }}" class="user-image" alt="{{ app.user.username }}">
+              <span class="hidden-xs">{{ app.user.username }}</span>
             </a>
             <ul class="dropdown-menu">
               <!-- User image -->
               <li class="user-header">
-                <img src="https://source.unsplash.com/random/160x160" class="img-circle" alt="{{ app.user.username }}">
+                <img src="{{ asset('bundles/deesonwarden/assets/img/avatar.png') }}" class="img-circle" alt="{{ app.user.username }}">
                 <p>
                   {{ app.user.username }}
                 </p>
               </li>
-              <li class="user-body">
-                <div class="row">
-                  {% if is_granted('ROLE_ADMIN') %}
-                  <div class="col-xs-6 text-center">
-                    <a href="{{ path('admin_user_list') }}">Users</a>
+              {% if is_granted('ROLE_ADMIN') %}
+                <li class="user-body">
+                  <div class="row">
+                    <div class="col-xs-6 text-center">
+                      <a href="{{ path('admin_user_list') }}">Users</a>
+                    </div>
+                    <div class="col-xs-6 text-center">
+                      <a href="{{ path('admin_user_group_list') }}">Groups</a>
+                    </div>
                   </div>
-                  <div class="col-xs-6 text-center">
-                    <a href="{{ path('fos_user_group_list') }}">Groups</a>
-                  </div>
-                  {% endif %}
-                </div>
-                <!-- /.row -->
-              </li>
+                  <!-- /.row -->
+                </li>
+              {% endif %}
               <!-- Menu Footer-->
               <li class="user-footer">
                 <div class="pull-left">
@@ -58,9 +58,6 @@
               </li>
             </ul>
           </li>
-          {#<li>
-            <a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
-          </li>#}
         </ul>
       </div>
     </nav>
@@ -72,7 +69,7 @@
       <!-- Sidebar user panel -->
       <div class="user-panel">
         <div class="pull-left image">
-          <img src="https://source.unsplash.com/random/160x160" class="img-circle" alt="{{ app.user }}">
+          <img src="{{ asset('bundles/deesonwarden/assets/img/avatar.png') }}" class="img-circle" alt="{{ app.user.username }}">
         </div>
         <div class="pull-left info">
           <p>Hello, {{ app.user.username }}</p>

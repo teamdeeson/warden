@@ -2,7 +2,7 @@
 
 namespace Deeson\WardenBundle\Document;
 
-use FOS\UserBundle\Model\Group as BaseGroup;
+use FOS\UserBundle\Model\Group;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 
 /**
@@ -10,7 +10,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
  *     collection="user_group"
  * )
  */
-class GroupDocument extends BaseGroup {
+class GroupDocument extends Group {
 
   /**
    * @MongoDB\Id(strategy="auto")

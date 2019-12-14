@@ -14,23 +14,26 @@ class InstallCommand extends ContainerAwareCommand {
 
   protected function configure() {
     $this->setName('deeson:warden:install')
-      ->setDescription('Installer for configuring the application for the first time.')
-      ->addOption('regenerate', NULL, InputOption::VALUE_NONE, 'Set this to regenerate the site config file.');
+      ->setDescription('Installer for configuring the application for the first time.');
   }
 
   protected function execute(InputInterface $input, OutputInterface $output) {
     /** @var WardenSetupService $wardenSetupService */
     $wardenSetupService = $this->getContainer()->get('warden_setup');
 
-    /** @var WebserviceUserProvider $userProviderService */
-    $userProviderService = $this->getContainer()->get('warden.user_provider');
+    // @todo check if admin user exists and if not then created it with fsouserbundle.
+    // check if there are any users in the user table/
+    // if not then ask for the new admin password and create the admin user with fsouserbundle
 
-    if ($userProviderService->isSetup() && !$input->getOption('regenerate')) {
+    /** @var WebserviceUserProvider $userProviderService */
+    //$userProviderService = $this->getContainer()->get('warden.user_provider');
+
+    /*if ($userProviderService->isSetup() && !$input->getOption('regenerate')) {
       $output->writeln('Warden username and password is already setup - check the README file if you need to regenerate.');
       return;
-    }
+    }*/
 
-    $helper = $this->getHelper('question');
+    /*$helper = $this->getHelper('question');
 
     $usernameQuestion = new Question('Please enter the admin username [admin]: ', 'admin');
     $username = $helper->ask($input, $output, $usernameQuestion);
@@ -51,10 +54,10 @@ class InstallCommand extends ContainerAwareCommand {
     $passwordQuestion->setHidden(TRUE);
     $passwordQuestion->setHiddenFallback(FALSE);
 
-    $password = $helper->ask($input, $output, $passwordQuestion);
+    $password = $helper->ask($input, $output, $passwordQuestion);*/
 
-    $output->writeln(' - Setting up the password file ...');
-    $userProviderService->generateLoginFile($username, $password);
+    //$output->writeln(' - Setting up the password file ...');
+    //$userProviderService->generateLoginFile($username, $password);
     $output->writeln(' - Setting up the CSS file ...');
     $wardenSetupService->generateCSSFile();
 

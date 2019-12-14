@@ -20,7 +20,7 @@ class UserDocument extends User {
   protected $id;
 
   /**
-   * @MongoDB\Date
+   * @MongoDB\Field(type="date")
    */
   protected $createdDate;
 

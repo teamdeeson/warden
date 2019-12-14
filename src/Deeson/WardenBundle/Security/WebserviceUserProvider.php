@@ -8,7 +8,7 @@ use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\User;
 use Symfony\Component\Yaml\Yaml;
 
-class WebserviceUserProvider implements UserProviderInterface {
+class WebserviceUserProvider/* implements UserProviderInterface*/ {
 
   protected $securityConfigurationFile = '';
 
@@ -20,7 +20,7 @@ class WebserviceUserProvider implements UserProviderInterface {
    * @param string $username
    * @return UserInterface|void
    */
-  public function loadUserByUsername($username) {
+  /*public function loadUserByUsername($username) {
     if (!file_exists($this->securityConfigurationFile)) {
       throw new UsernameNotFoundException(sprintf("Username %s not found", $username));
     }
@@ -48,7 +48,7 @@ class WebserviceUserProvider implements UserProviderInterface {
 
   public function supportsClass($class) {
     return User::class === $class;
-  }
+  }*/
 
   /**
    * Determine if setup has already been done

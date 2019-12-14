@@ -39,18 +39,18 @@ class SiteController extends Controller {
     //printf('<pre>%s</pre>', print_r([$user->getUsername(),$user->getGroupIds()], true));
 
     // @todo find sites that are in the group ids that the user has or that don't have a group id set
-    $sites = $manager->getDocumentsBy(array(), array('name' => 'asc'));
+    $sites = $manager->getDocumentsBy([], ['name' => 'asc']);
 
     /** @var EventDispatcher $dispatcher */
     $dispatcher = $this->get('event_dispatcher');
 
-    $siteList = array();
+    $siteList = [];
     foreach ($sites as $site) {
       /** @var SiteDocument $site */
       $event = new SiteListEvent($site);
       $dispatcher->dispatch(WardenEvents::WARDEN_SITE_LIST, $event);
 
-      $siteList[] = array(
+      $siteList[] = [
         'id' => $site->getId(),
         'name' => $site->getName(),
         'url' => $site->getUrl(),
@@ -61,12 +61,12 @@ class SiteController extends Controller {
         'issuesList' => $event->getSiteIssues(),
         'critical' => $site->getHasCriticalIssue(),
         'groups' => $site->getGroupNames(),
-      );
+      ];
     }
 
-    $params = array(
+    $params = [
       'sites' => $siteList,
-    );
+    ];
 
     return $this->render('DeesonWardenBundle:Site:index.html.twig', $params);
   }
@@ -92,11 +92,11 @@ class SiteController extends Controller {
     $event = new SiteShowEvent($site);
     $dispatcher->dispatch(WardenEvents::WARDEN_SITE_SHOW, $event);
 
-    $params = array(
+    $params = [
       'site' => $site,
       'templates' => $event->getTemplates(),
       'tabTemplates' => $event->getTabTemplates(),
-    );
+    ];
 
     foreach ($event->getParams() as $key => $value) {
       $params[$key] = $value;
@@ -119,7 +119,8 @@ class SiteController extends Controller {
 
     try {
       list($siteUrl, $wardenToken, $siteType) = explode('|', $querySiteUrl);
-    } catch (\ErrorException $e) {
+    }
+    catch (\ErrorException $e) {
       // Previous to v2.0, the siteType wasn't set, so we default the value of it.
       $siteType = NULL;
       list($siteUrl, $wardenToken) = explode('|', $querySiteUrl);
@@ -159,9 +160,9 @@ class SiteController extends Controller {
     $site = $manager->getDocumentById($id);
 
     $form = $this->createFormBuilder()
-      ->add('Delete', SubmitType::class, array(
-        'attr' => array('class' => 'btn btn-danger')
-      ))
+      ->add('Delete', SubmitType::class, [
+        'attr' => ['class' => 'btn btn-danger'],
+      ])
       ->getForm();
 
     $form->handleRequest($request);
@@ -183,10 +184,10 @@ class SiteController extends Controller {
       return $this->redirect($this->generateUrl('sites_list'));
     }
 
-    $params = array(
+    $params = [
       'site' => $site,
       'form' => $form->createView(),
-    );
+    ];
     return $this->render('DeesonWardenBundle:Site:delete.html.twig', $params);
   }
 
@@ -197,7 +198,7 @@ class SiteController extends Controller {
     /** @var SSLEncryptionService $sslEncryptionService */
     $sslEncryptionService = $this->container->get('warden.ssl_encryption');
     $publicKey = base64_encode($sslEncryptionService->getPublicKey());
-    return new Response($publicKey, 200, array('Content-Type: text/plain'));
+    return new Response($publicKey, 200, ['Content-Type: text/plain']);
   }
 
   /**
@@ -229,13 +230,14 @@ class SiteController extends Controller {
       $this->get('session')->getFlashBag()->add('notice', $event->getMessage(SiteRefreshEvent::NOTICE));
     }
 
-    return $this->redirect($this->generateUrl('sites_show', array('id' => $id)));
+    return $this->redirect($this->generateUrl('sites_show', ['id' => $id]));
   }
 
   /**
    * Endpoint for a site to update itself
    *
    * @param Request $request
+   *
    * @return Response
    */
   public function updateAction(Request $request) {
@@ -268,7 +270,7 @@ class SiteController extends Controller {
       }
 
       /** @var SiteDocument $site */
-      $site = $siteManager->getDocumentBy(array('url' => $wardenDataObject->url));
+      $site = $siteManager->getDocumentBy(['url' => $wardenDataObject->url]);
 
       if (empty($site)) {
         // @todo have a proper exception here.
@@ -290,11 +292,12 @@ class SiteController extends Controller {
       }
       $siteManager->saveDocument($site);
 
-      return new Response('OK', 200, array('Content-Type: text/plain'));
+      return new Response('OK', 200, ['Content-Type: text/plain']);
 
-    } catch (\Exception $e) {
+    }
+    catch (\Exception $e) {
       $logger->addError($e->getMessage());
-      return new Response('Bad Request', 400, array('Content-Type: text/plain'));
+      return new Response('Bad Request', 400, ['Content-Type: text/plain']);
     }
   }
 
@@ -308,83 +311,83 @@ class SiteController extends Controller {
     print_r($site->getGroups());
     die();*/
 
-    $form = $this->createFormBuilder($site, array('attr' => array('class' => 'box-body')))
-            ->add('name', TextType::class, array(
-              'label' => 'Name: ',
-              'disabled' => true,
-              'attr' => array(
-                'class' => 'form-control',
-              ),
-            ))
-            ->add('url', TextType::class, array(
-              'label' => 'URL: ',
-              'attr' => array(
-                'class' => 'form-control',
-              ),
-            ))
-            ->add('wardenToken', TextType::class, array(
-              'label' => 'Token: ',
-              'attr' => array(
-                'class' => 'form-control',
-              ),
-            ))
-            ->add('authUser', TextType::class, array(
-              'label' => 'Auth User: ',
-              'attr' => array(
-                'class' => 'form-control',
-              ),
-              'required' => false
-            ))
-            ->add('authPass', TextType::class, array(
-              'label' => 'Auth Password: ',
-              'attr' => array(
-                'class' => 'form-control',
-              ),
-              'required' => false
-            ))
-            ->add('isNew', CheckboxType::class, array(
-              'label' => 'Is this site new: ',
-              'required' => false,
-              'attr' => array(
-                'class' => 'form-checkbox'
-              )
-            ))
-            ->add('groups')
-//            ->add('groups', Collection::class, array(
-//              'label' => 'Groups: ',
-//              //'required' => false,
-//              //'entry_type' => ChoiceType::class,
-//              /*'entry_options'  => [
-//                      'choices'  => [
-//                          'Nashville' => 'nashville',
-//                          'Paris'     => 'paris',
-//                          'Berlin'    => 'berlin',
-//                          'London'    => 'london',
-//                      ],
-//                  ],
-//              'attr' => array(
-//                'class' => 'form-checkbox'
-//              ),*/
-//            ))
-            ->add('save', SubmitType::class, array(
-              'attr' => array(
-                'class' => 'btn btn-danger'
-              )
-            ))
-            ->getForm();
+    $form = $this->createFormBuilder($site, ['attr' => ['class' => 'box-body']])
+      ->add('name', TextType::class, [
+        'label' => 'Name: ',
+        'disabled' => TRUE,
+        'attr' => [
+          'class' => 'form-control',
+        ],
+      ])
+      ->add('url', TextType::class, [
+        'label' => 'URL: ',
+        'attr' => [
+          'class' => 'form-control',
+        ],
+      ])
+      ->add('wardenToken', TextType::class, [
+        'label' => 'Token: ',
+        'attr' => [
+          'class' => 'form-control',
+        ],
+      ])
+      ->add('authUser', TextType::class, [
+        'label' => 'Auth User: ',
+        'attr' => [
+          'class' => 'form-control',
+        ],
+        'required' => FALSE,
+      ])
+      ->add('authPass', TextType::class, [
+        'label' => 'Auth Password: ',
+        'attr' => [
+          'class' => 'form-control',
+        ],
+        'required' => FALSE,
+      ])
+      ->add('isNew', CheckboxType::class, [
+        'label' => 'Is this site new: ',
+        'required' => FALSE,
+        'attr' => [
+          'class' => 'form-checkbox',
+        ],
+      ])
+      ->add('groups')
+      //            ->add('groups', Collection::class, array(
+      //              'label' => 'Groups: ',
+      //              //'required' => false,
+      //              //'entry_type' => ChoiceType::class,
+      //              /*'entry_options'  => [
+      //                      'choices'  => [
+      //                          'Nashville' => 'nashville',
+      //                          'Paris'     => 'paris',
+      //                          'Berlin'    => 'berlin',
+      //                          'London'    => 'london',
+      //                      ],
+      //                  ],
+      //              'attr' => array(
+      //                'class' => 'form-checkbox'
+      //              ),*/
+      //            ))
+      ->add('save', SubmitType::class, [
+        'attr' => [
+          'class' => 'btn btn-danger',
+        ],
+      ])
+      ->getForm();
 
     $form->handleRequest($request);
 
     if ($form->isSubmitted()) {
       $manager->saveDocument($site);
       $this->get('session')->getFlashBag()->add('notice', 'Site updated successfully');
-      return $this->redirect($this->generateUrl('sites_show', array('id' => $id)));
+      return $this->redirect($this->generateUrl('sites_show', ['id' => $id]));
     }
 
-    $params = array(
+    $params = [
       'site' => $site,
       'form' => $form->createView(),
-    );
+    ];
 
     return $this->render('DeesonWardenBundle:Site:edit.html.twig', $params);
   }
@@ -409,10 +412,10 @@ class SiteController extends Controller {
 
     $page = $request->get('page');
 
-    $params = array(
+    $params = [
       'site' => $site,
       'logs' => $siteRequestLogManager->getRequestLogs($id, $page),
-    );
+    ];
 
     return $this->render('DeesonWardenBundle:Site:logs.html.twig', $params);
   }

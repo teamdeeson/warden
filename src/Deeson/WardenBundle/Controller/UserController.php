@@ -18,8 +18,6 @@ class UserController extends Controller {
    * @return \Symfony\Component\HttpFoundation\Response
    */
   public function listAction() {
-    $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'Unable to access this page!');
-
     /** @var UserManager $userManager */
     $userManager = $this->get('fos_user.user_manager');
 
@@ -36,7 +34,7 @@ class UserController extends Controller {
    * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
    * @throws \Exception
    */
-  public function createAction(Request $request) {
+  public function newAction(Request $request) {
     /** @var UserManager $userManager */
     $userManager = $this->get('fos_user.user_manager');
     /** @var UserDocument $user */
@@ -128,15 +126,15 @@ class UserController extends Controller {
         ],
       ]
     );
-    /*$formBuilder->add('password', PasswordType::class, [
+    $formBuilder->add('password', PasswordType::class, [
         'label' => 'Password: ',
         'attr' => [
           'class' => 'form-control',
         ],
       ]
-    );*/
+    );
     $formBuilder->add('roles', ChoiceType::class, [
-      'choices'  => [
+      'choices' => [
         'ROLE_ADMIN' => 'ROLE_ADMIN',
         //'ROLE_SUPER_ADMIN' => 'ROLE_SUPER_ADMIN'
       ],
@@ -152,12 +150,13 @@ class UserController extends Controller {
         }
         return $choice;
       },
-      //'expanded' => true,
+      'expanded' => true,
+      //'checked' => true,
       'multiple' => true,
       'required' => false,
-      /*'attr' => array(
+      'attr' => array(
         'class' => 'form-checkbox'
-      )*/
+      )
     ]);
     $formBuilder->add('groups');
     /*$groupOptions = [];
@@ -195,6 +194,7 @@ class UserController extends Controller {
     if ($form->isSubmitted() && $form->isValid()) {
       // @todo user overridden manager/ update listener to handle these.
       $user->setEmail($user->getUsername());
+      $user->setPlainPassword($user->getPassword());
       $userManager->updateUser($user);
 
       $this->get('session')->getFlashBag()->add('notice', 'User updated successfully');
@@ -216,15 +216,16 @@ class UserController extends Controller {
    * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
    */
   public function deleteAction($id, Request $request) {
+
     /** @var UserManager $userManager */
     $userManager = $this->get('fos_user.user_manager');
     /** @var UserDocument $user */
     $user = $userManager->findUserBy(['id' => $id]);
 
     $form = $this->createFormBuilder()
-      ->add('Delete', SubmitType::class, array(
-        'attr' => array('class' => 'btn btn-danger')
-      ))
+      ->add('Delete', SubmitType::class, [
+        'attr' => ['class' => 'btn btn-danger'],
+      ])
       ->getForm();
 
     $form->handleRequest($request);
@@ -237,10 +238,10 @@ class UserController extends Controller {
       return $this->redirect($this->generateUrl('admin_user_list'));
     }
 
-    $params = array(
+    $params = [
       'user' => $user,
       'form' => $form->createView(),
-    );
+    ];
     return $this->render('DeesonWardenBundle:User:delete.html.twig', $params);
   }
 
