@@ -1,8 +1,12 @@
 #! /bin/bash
 
 env="@dev"
+options=""
 if [[ -n "$1" ]]; then
   env=$1
+  if [[ $1 == "@dev" ]]; then
+    options="--relative"
+  fi
 fi
 
 runaswebserver="No"
@@ -15,5 +19,5 @@ if [[ "${runaswebserver}" == "Yes" ]]; then
   sudo su - www-data -s /bin/bash -c "cd $PWD; php app/console --env=${env:1} cache:clear --no-debug; php app/console --env=${env:1} assets:install web"
 else
   php bin/console --env=${env:1} cache:clear --no-debug
-  php bin/console --env=${env:1} assets:install web
+  php bin/console --env=${env:1} assets:install ${options} web
 fi
