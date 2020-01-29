@@ -6,3 +6,11 @@ warden_drupal_modules_list:
 warden_drupal_modules_show:
     path:    /modules/{projectName}
     defaults: { _controller: DeesonWardenDrupalBundle:Modules:show }
+
+warden_drupal_modules_set_safe_version:
+    path:    /site/{siteId}/update-safe-version
+    defaults: { _controller: DeesonWardenDrupalBundle:Modules:updateSafeVersion }
+
+warden_drupal_modules_get_safe_reason:
+    path:    /site/{siteId}/get-safe-version-reason
+    defaults: { _controller: DeesonWardenDrupalBundle:Modules:getSafeVersionReason }

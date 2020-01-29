@@ -5,6 +5,8 @@ namespace Deeson\WardenDrupalBundle\Controller;
 use Deeson\WardenDrupalBundle\Document\DrupalModuleDocument;
 use Deeson\WardenBundle\Document\SiteDocument;
 use Deeson\WardenBundle\Managers\SiteManager;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Deeson\WardenDrupalBundle\Managers\DrupalModuleManager;
 use Deeson\WardenDrupalBundle\Document\SiteDrupalModuleDocument;
@@ -103,6 +105,62 @@ class ModulesController extends Controller {
     );
 
     return $this->render('DeesonWardenDrupalBundle:Modules:show.html.twig', $params);
+  }
+
+  /**
+   * Update the relevant module with the version that it will
+   *
+   * Update the relevant module with the version that user is happy to mark as fixed
+   *
+   * @param $siteId
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *
+   * @return \Symfony\Component\HttpFoundation\JsonResponse
+   */
+  public function updateSafeVersionAction($siteId, Request $request) {
+    if (!$request->isXmlHttpRequest()) {
+      return new JsonResponse('Unable to process this request', 400);
+    }
+
+    try {
+      /** @var SiteDrupalModuleManager $siteDrupalManager */
+      $siteDrupalManager = $this->get('warden.drupal.site_module_manager');
+      $siteDrupalManager->addSafeVersionFlag($siteId, $this->getUser()->getUsername(), $request->get('moduleId'), $request->get('reason'));
+
+      $data = [];
+      $data['moduleId'] = $request->get('moduleId');
+      $data['reason'] = $request->get('reason');
+      $data['siteId'] = $siteId;
+      $data['user'] = $this->getUser()->getUsername();
+
+      return new JsonResponse($data);
+    } catch (\Exception $e) {
+      return new JsonResponse('Unable to get data', 500);
+    }
+  }
+
+  /**
+   * Retrieves the latest safe version information for a given site and module.
+   *
+   * @param $siteId
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *
+   * @return \Symfony\Component\HttpFoundation\JsonResponse
+   */
+  public function getSafeVersionReasonAction($siteId, Request $request) {
+    if (!$request->isXmlHttpRequest()) {
+      return new JsonResponse('Unable to process this request', 400);
+    }
+
+    try {
+      /** @var SiteDrupalModuleManager $siteDrupalManager */
+      $siteDrupalManager = $this->get('warden.drupal.site_module_manager');
+      $safeVersion = $siteDrupalManager->getSafeVersionFlag($siteId, $request->get('module'));
+
+      return new JsonResponse($safeVersion);
+    } catch (\Exception $e) {
+      return new JsonResponse('Unable to get data', 500);
+    }
   }
 
 }

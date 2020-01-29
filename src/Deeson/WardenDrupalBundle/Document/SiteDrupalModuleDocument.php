@@ -290,4 +290,57 @@ class SiteDrupalModuleDocument extends BaseDocument {
     return $modulesForUpdating;
   }
 
+  /**
+   * Adds the safe version flag for the specific module.
+   *
+   * @param string $user
+   * @param string $moduleName
+   * @param string $reason
+   *
+   * @throws \Exception
+   */
+  public function addSafeVersionFlag($user, $moduleName, $reason) {
+    $siteModuleList = $this->getModules();
+    foreach ($siteModuleList as $key => $module) {
+      if ($moduleName != $module['name']) {
+        continue;
+      }
+
+      $dateTime = new \DateTime();
+      $now = $dateTime->format('Y-m-d\TH:i:s');
+
+      $siteModuleList[$key]['flag']['safeVersion'][] = [
+        'user' => $user,
+        'datetime' => $now,
+        'version' => $module['version'],
+        'reason' => $reason,
+      ];
+    }
+    $this->modules = $siteModuleList;
+  }
+
+  /**
+   * Checks if this module has a safe version set against it.
+   *
+   * @param $moduleName
+   *
+   * @return bool
+   */
+  public function hasSafeVersionFlag($moduleName) {
+    $siteModuleList = $this->getModules();
+    foreach ($siteModuleList as $key => $module) {
+      if ($moduleName != $module['name']) {
+        continue;
+      }
+      if (!empty($module['flag'])) {
+        foreach ($module['flag']['safeVersion'] as $safeVersion) {
+          if ($safeVersion['version'] === $module['version']) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
+  }
+
 }

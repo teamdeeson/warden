@@ -109,3 +109,12 @@ a {
 input.form-checkbox {
   margin-left: 10px;
 }
+
+/****** Warden specific styling ******/
+
+#modal-safe-reason #safe-reason {
+  white-space: pre-wrap;
+  border: 1px solid #999;
+  background: #f5f5f5;
+  padding: 5px;
+}

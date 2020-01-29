@@ -13,13 +13,136 @@
             </thead>
             <tbody>
             {% for module in modulesRequiringUpdates %}
-                <tr class="{% if siteModule.getModuleIsSecurity(module) %}alert alert-danger{% else %}{% if siteModule.getModuleIsDevRelease(module) %}alert-info{% else %}{% if module.version != siteModule.getModuleLatestVersion(module) %}alert alert-warning{% endif %}{% endif %}{% endif %}">
+              {% set hasSafeVersionFlag = siteModule.hasSafeVersionFlag(module.name) %}
+              {% set alertClass = hasSafeVersionFlag ? 'bg-teal' : 'alert-danger' %}
+                <tr class="{% if siteModule.getModuleIsSecurity(module) %}alert {{ alertClass }}{% else %}{% if siteModule.getModuleIsDevRelease(module) %}alert-info{% else %}{% if module.version != siteModule.getModuleLatestVersion(module) %}alert alert-warning{% endif %}{% endif %}{% endif %}">
                     <td><a href="{{ path('warden_drupal_modules_show', {'projectName': module.name }) }}">{{ module.name }}</a> {% if siteModule.isModuleSupported(module) %}<span class="fa fa-warning"></span>&nbsp;Obsolete/ Unsupported{% endif %}</td>
-                    <td>{{ module.version }}</td>
+                    <td>
+                        {{ module.version }}
+                        {% if hasSafeVersionFlag %}
+                          <a href="#" data-toggle="modal" data-target="#modal-safe-reason" data-module-id="{{ module.name }}" title="View safe version reason"><i class="fa fa-eye"></i></a>
+                        {% else %}
+                          {% if siteModule.getModuleIsSecurity(module) %}
+                            <a href="#" data-toggle="modal" data-target="#modal-safe-version" data-module-id="{{ module.name }}" title="Is this a safe version"><i class="fa fa-pencil"></i></a>
+                          {% endif %}
+                        {% endif %}
+                    </td>
                     <td>{{ siteModule.getModuleLatestVersion(module) }}</td>
                 </tr>
             {% endfor %}
             </tbody>
         </table>
+
+        <!-- /.modal #modal-safe-version -->
+        <div class="modal fade" id="modal-safe-version">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Is this version safe to mark as </h4>
+              </div>
+              <div class="modal-body">
+                <form id="safe-version">
+                  <p>Do you want to fix this?</p>
+                  <textarea name="reason" style="width:100%; "></textarea>
+                  <input type="hidden" name="moduleId" id="moduleId" value="" />
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="modal-safe-version-form-submit" data-dismiss="modal">Save changes</button>
+              </div>
+            </div>
+            <!-- /.modal-content -->
+          </div>
+          <!-- /.modal-dialog -->
+        </div>
+        <!-- /.modal #modal-safe-version -->
+
+        <!-- /.modal #modal-safe-reason -->
+        <div class="modal fade" id="modal-safe-reason">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Safe Reason</h4>
+              </div>
+              <div class="modal-body">
+                <p>Reason for this being OK'd at this version</p>
+                <div id="safe-reason-loading">loading .... </div>
+                <div id="safe-reason-data">
+                  User: <span id="safe-user"></span>
+                  <div id="safe-reason"></div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+            <!-- /.modal-content -->
+          </div>
+          <!-- /.modal-dialog -->
+        </div>
+        <!-- /.modal #modal-safe-reason -->
+
+      <script type="text/javascript">
+      <!--
+      var target = null;
+      $('#modal-safe-version').on('show.bs.modal', function(e) {
+        target = e.relatedTarget;
+        var moduleId = $(target).data('module-id');
+        var modal = $(this);
+        modal.find('#moduleId').val(moduleId);
+      });
+
+      $('#modal-safe-version-form-submit').on('click', function(e) {
+        $.ajax({
+          type: "POST",
+          url: "{{ path('warden_drupal_modules_set_safe_version', {'siteId': siteId }) }}",
+          data: $('form#safe-version').serialize(),
+          async: true,
+          success: function(response) {
+            $(target).hide();
+            $(target).closest('tr').removeClass('alert-danger').addClass('bg-teal');
+            $('#modal-safe-version .btn-default').click()
+          },
+          error: function() {
+            console.log('Error');
+          }
+        });
+        return false;
+      });
+
+      $('#modal-safe-reason').on('show.bs.modal', function(e) {
+        target = e.relatedTarget;
+        var moduleId = $(target).data('module-id');
+
+        $('#safe-reason-loading').show();
+        $('#safe-reason-data').hide();
+        $('#safe-reason').html('');
+        $('#safe-user').html('');
+        $.ajax({
+          type: "GET",
+          url: "{{ path('warden_drupal_modules_get_safe_reason', {'siteId': siteId }) }}",
+          data: {
+            'module': moduleId
+          },
+          async: true,
+          success: function(response) {
+            $('#safe-reason').html(response.reason);
+            $('#safe-user').html(response.user);
+            $('#safe-reason-loading').hide();
+            $('#safe-reason-data').show();
+          },
+          error: function() {
+            console.log('Error');
+            $('#safe-reason').html('There was an error getting this data');
+            $('#safe-reason-loading').hide();
+            $('#safe-reason-data').show();
+          }
+        });
+      });
+      //-->
+      </script>
     </div>
 </div>

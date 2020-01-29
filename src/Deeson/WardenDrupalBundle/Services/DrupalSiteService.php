@@ -224,6 +224,8 @@ class DrupalSiteService {
 
     $this->logger->addInfo('This is the start of a Drupal show site event: ' . $site->getUrl());
 
+    $event->addParam('siteId', $site->getId());
+
     // Check if Drupal core requires a security update.
     /** @var SiteDrupalDocument $siteDrupal */
     $siteDrupal = $this->siteDrupalManager->getBySiteId($site->getId());
