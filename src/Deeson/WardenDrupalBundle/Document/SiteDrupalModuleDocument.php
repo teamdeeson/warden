@@ -79,19 +79,21 @@ class SiteDrupalModuleDocument extends BaseDocument {
       );
 
       // Set the current version if there was one.
-      if (isset($currentVersions[$name])) {
-        if (isset($currentVersions[$name]['latestVersion'])) {
+      if (!empty($currentVersions[$name])) {
+        if (!empty($currentVersions[$name]['latestVersion'])) {
           $module['latestVersion'] = $currentVersions[$name]['latestVersion'];
         }
-        if (isset($currentVersions[$name]['isSecurity'])) {
+        if (!empty($currentVersions[$name]['isSecurity'])) {
           $module['isSecurity'] = $currentVersions[$name]['isSecurity'];
         }
       }
 
-      $drupalVersion = DrupalModuleDocument::getMajorVersion($module['version']);
-      $moduleVersions = $version['latestVersion'][$drupalVersion];
+      if (!empty($version['latestVersion'])) {
+        $drupalVersion = DrupalModuleDocument::getMajorVersion($module['version']);
+        $moduleVersions = $version['latestVersion'][$drupalVersion];
+        $module['isUnsupported'] = DrupalModuleDocument::isVersionUnsupported($moduleVersions, $module);
+      }
 
-      $module['isUnsupported'] = DrupalModuleDocument::isVersionUnsupported($moduleVersions, $module);
       $moduleList[$name] = $module;
     }
     ksort($moduleList);
