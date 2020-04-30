@@ -321,6 +321,28 @@ class SiteDrupalModuleDocument extends BaseDocument {
   }
 
   /**
+   * Removes the safe version flag from the modules list.
+   *
+   * @param $moduleName
+   * @param $version
+   */
+  public function removeSafeVersionFlag($moduleName, $version) {
+    $siteModuleList = $this->getModules();
+    foreach ($siteModuleList as $key => $module) {
+      if ($moduleName != $module['name']) {
+        continue;
+      }
+
+      foreach ($module['flag']['safeVersion'] as $flagKey => $flagVersion) {
+        if ($flagVersion['version'] === $version) {
+          unset($siteModuleList[$key]['flag']['safeVersion'][$flagKey]);
+        }
+      }
+    }
+    $this->modules = $siteModuleList;
+  }
+
+  /**
    * Checks if this module has a safe version set against it.
    *
    * @param $moduleName

@@ -163,4 +163,28 @@ class ModulesController extends Controller {
     }
   }
 
+  /**
+   * Remove the safe version flag from the module for the particular module version.
+   *
+   * @param $siteId
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *
+   * @return \Symfony\Component\HttpFoundation\JsonResponse
+   */
+  public function removeSafeVersionReasonAction($siteId, Request $request) {
+    if (!$request->isXmlHttpRequest()) {
+      return new JsonResponse('Unable to process this request', 400);
+    }
+
+    try {
+      /** @var SiteDrupalModuleManager $siteDrupalManager */
+      $siteDrupalManager = $this->get('warden.drupal.site_module_manager');
+      $safeVersion = $siteDrupalManager->removeSafeVersionFlag($siteId, $request->get('moduleId'), $request->get('version'));
+
+      return new JsonResponse($safeVersion);
+    } catch (\Exception $e) {
+      return new JsonResponse('Unable to get data', 500);
+    }
+  }
+
 }

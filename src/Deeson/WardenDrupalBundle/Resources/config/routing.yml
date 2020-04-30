@@ -14,3 +14,7 @@ warden_drupal_modules_set_safe_version:
 warden_drupal_modules_get_safe_reason:
     path:    /site/{siteId}/get-safe-version-reason
     defaults: { _controller: DeesonWardenDrupalBundle:Modules:getSafeVersionReason }
+
+warden_drupal_modules_remove_safe_version:
+    path:    /site/{siteId}/remove-safe-version-reason
+    defaults: { _controller: DeesonWardenDrupalBundle:Modules:removeSafeVersionReason }

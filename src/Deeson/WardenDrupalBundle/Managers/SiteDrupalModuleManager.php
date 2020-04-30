@@ -68,4 +68,18 @@ class SiteDrupalModuleManager extends DrupalBaseManager {
 
     return null;
   }
+
+  /**
+   * Removes a safe version from the modules list
+   *
+   * @param $siteId
+   * @param $moduleName
+   * @param $version
+   */
+  public function removeSafeVersionFlag($siteId, $moduleName, $version) {
+    /** @var SiteDrupalModuleDocument $siteDrupal */
+    $siteDrupal = $this->findBySiteId($siteId);
+    $siteDrupal->removeSafeVersionFlag($moduleName, $version);
+    $this->saveDocument($siteDrupal);
+  }
 }

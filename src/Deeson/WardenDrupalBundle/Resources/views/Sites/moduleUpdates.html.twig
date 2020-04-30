@@ -22,7 +22,7 @@
                         {{ module.version }}
                         {% if hasSecurityAlert and hasSafeVersionFlag %}
                           &nbsp;<a href="#" data-toggle="modal" data-target="#modal-safe-reason" data-module-id="{{ module.name }}" title="View safe version reason"><i class="fa fa-eye"></i></a>
-                          &nbsp;<a href="#" data-toggle="modal" data-target="#modal-remove-safe-reason" data-module-id="{{ module.name }}" title="Remove this safe version reason"><i class="fa fa-trash"></i></a>
+                          &nbsp;<a href="#" data-toggle="modal" data-target="#modal-remove-safe-reason" data-module-id="{{ module.name }}" data-version="{{ module.version }}" title="Remove this safe version reason"><i class="fa fa-trash"></i></a>
                         {% else %}
                           {% if siteModule.getModuleIsSecurity(module) %}
                             &nbsp;<a href="#" data-toggle="modal" data-target="#modal-safe-version" data-module-id="{{ module.name }}" title="Is this a safe version"><i class="fa fa-pencil"></i></a>
@@ -87,6 +87,32 @@
         </div>
         <!-- /.modal #modal-safe-reason -->
 
+        <!-- /.modal #modal-safe-reason -->
+        <div class="modal fade" id="modal-remove-safe-reason">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Remove Safe Reason</h4>
+              </div>
+              <div class="modal-body">
+                <form id="remove-safe-version">
+                  <p>Are you sure you want to remove this safe version flag from '<span id="removal-safe-module-name"></span>'?</p>
+                  <input type="hidden" name="moduleId" id="moduleId" value="" />
+                  <input type="hidden" name="version" id="version" value="" />
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="modal-remove-safe-reason-form-submit" data-dismiss="modal">Remove</button>
+              </div>
+            </div>
+            <!-- /.modal-content -->
+          </div>
+          <!-- /.modal-dialog -->
+        </div>
+        <!-- /.modal #modal-safe-reason -->
+
       <script type="text/javascript">
       <!--
       var target = null;
@@ -143,6 +169,35 @@
             $('#safe-reason-data').show();
           }
         });
+      });
+
+      $('#modal-remove-safe-reason').on('show.bs.modal', function(e) {
+        target = e.relatedTarget;
+        var moduleId = $(target).data('module-id');
+        var version = $(target).data('version');
+        var modal = $(this);
+        modal.find('#removal-safe-module-name').html(moduleId);
+        modal.find('#moduleId').val(moduleId);
+        modal.find('#version').val(version);
+      });
+
+
+      $('#modal-remove-safe-reason-form-submit').on('click', function(e) {
+        $.ajax({
+          type: "POST",
+          url: "{{ path('warden_drupal_modules_remove_safe_version', {'siteId': siteId }) }}",
+          data: $('form#remove-safe-version').serialize(),
+          async: true,
+          success: function(response) {
+            $(target).hide();
+            $(target).closest('tr').removeClass('bg-teal').addClass('alert-danger');
+            $('#modal-remove-safe-reason .btn-default').click()
+          },
+          error: function() {
+            console.log('Error');
+          }
+        });
+        return false;
       });
       //-->
       </script>
