@@ -390,4 +390,115 @@ class SiteDrupalModuleDocumentTest extends \PHPUnit_Framework_TestCase {
     $modulesNeedUpdate = $siteModuleDocument->getModulesRequiringUpdates();
     $this->assertEquals($expectedModuleList, $modulesNeedUpdate, 'The modules needing updates list doesn\'t match what was expected');
   }
+
+  /**
+   * @test
+   */
+  public function testAddSafeVersionFlag() {
+    $modules = [
+      'test' => [
+        'name' => 'test',
+        'version' => '7.x-1.1'
+      ]
+    ];
+
+    $siteModuleDocument = new SiteDrupalModuleDocument();
+    $siteModuleDocument->setModules($modules);
+
+    $latestVersion = [
+      'test' => [
+        'recommended' => [
+          'version' => '7.x-1.2',
+          'isSecurity' => '1'
+        ]
+      ]
+    ];
+
+    $siteModuleDocument->setModulesLatestVersion($latestVersion);
+
+    $user = 'admin';
+    $reason = 'this is my reason';
+    $dateTime = new \DateTime();
+    $now = $dateTime->format('Y-m-d\TH:i:s');
+    $siteModuleDocument->addSafeVersionFlag($user, 'test', $reason);
+
+    $expectedModule = [
+      'test' => [
+        'name' => 'test',
+        'version' => '7.x-1.1',
+        'latestVersion' => '7.x-1.2',
+        'isSecurity' => '1',
+        'isUnsupported' => false,
+        'flag' => [
+          'safeVersion' => [
+            [
+              'user' => $user,
+              'datetime' => $now,
+              'version' => '7.x-1.1',
+              'reason' => $reason,
+            ]
+          ]
+        ]
+      ]
+    ];
+
+    $this->assertEquals($expectedModule, $siteModuleDocument->getModules(), 'The updated module doesn\'t match');
+  }
+
+  /**
+   * @test
+   */
+  public function testModulesHasSafeVersionFlag() {
+    $module = [
+      'name' => 'test',
+      'version' => '7.x-1.1',
+      'flag' => [
+        'safeVersion' => [
+          [
+            'user' => 'admin',
+            'datetime' => '2020-01-01T12:00:00',
+            'version' => '7.x-1.1',
+            'reason' => 'some reason',
+          ]
+        ]
+      ]
+    ];
+
+    $this->assertTrue(SiteDrupalModuleDocument::modulesHasSafeVersionFlag($module), 'The safe version is not set');
+  }
+
+  /**
+   * @test
+   */
+  public function testModulesHasSafeVersionFlagDoesNotMatch() {
+    $module = [
+      'name' => 'test',
+      'version' => '7.x-1.2',
+      'flag' => [
+        'safeVersion' => [
+          [
+            'user' => 'admin',
+            'datetime' => '2020-01-01T12:00:00',
+            'version' => '7.x-1.1',
+            'reason' => 'some reason',
+          ]
+        ]
+      ]
+    ];
+
+    $this->assertFalse(SiteDrupalModuleDocument::modulesHasSafeVersionFlag($module), 'The safe version is not set');
+  }
+
+  /**
+   * @test
+   */
+  public function testModulesHasSafeVersionFlagWithNoFlag() {
+    $module = [
+      'name' => 'test',
+      'version' => '7.x-1.2'
+    ];
+
+    $this->assertFalse(SiteDrupalModuleDocument::modulesHasSafeVersionFlag($module), 'The safe version flag is set');
+  }
+
 }
