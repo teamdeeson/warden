@@ -14,16 +14,18 @@
             <tbody>
             {% for module in modulesRequiringUpdates %}
               {% set hasSafeVersionFlag = siteModule.hasSafeVersionFlag(module.name) %}
+              {% set hasSecurityAlert = siteModule.getModuleIsSecurity(module) %}
               {% set alertClass = hasSafeVersionFlag ? 'bg-teal' : 'alert-danger' %}
-                <tr class="{% if siteModule.getModuleIsSecurity(module) %}alert {{ alertClass }}{% else %}{% if siteModule.getModuleIsDevRelease(module) %}alert-info{% else %}{% if module.version != siteModule.getModuleLatestVersion(module) %}alert alert-warning{% endif %}{% endif %}{% endif %}">
+                <tr class="{% if hasSecurityAlert %}alert {{ alertClass }}{% else %}{% if siteModule.getModuleIsDevRelease(module) %}alert-info{% else %}{% if module.version != siteModule.getModuleLatestVersion(module) %}alert alert-warning{% endif %}{% endif %}{% endif %}">
                     <td><a href="{{ path('warden_drupal_modules_show', {'projectName': module.name }) }}">{{ module.name }}</a> {% if siteModule.isModuleSupported(module) %}<span class="fa fa-warning"></span>&nbsp;Obsolete/ Unsupported{% endif %}</td>
                     <td>
                         {{ module.version }}
-                        {% if hasSafeVersionFlag %}
-                          <a href="#" data-toggle="modal" data-target="#modal-safe-reason" data-module-id="{{ module.name }}" title="View safe version reason"><i class="fa fa-eye"></i></a>
+                        {% if hasSecurityAlert and hasSafeVersionFlag %}
+                          &nbsp;<a href="#" data-toggle="modal" data-target="#modal-safe-reason" data-module-id="{{ module.name }}" title="View safe version reason"><i class="fa fa-eye"></i></a>
+                          &nbsp;<a href="#" data-toggle="modal" data-target="#modal-remove-safe-reason" data-module-id="{{ module.name }}" title="Remove this safe version reason"><i class="fa fa-trash"></i></a>
                         {% else %}
                           {% if siteModule.getModuleIsSecurity(module) %}
-                            <a href="#" data-toggle="modal" data-target="#modal-safe-version" data-module-id="{{ module.name }}" title="Is this a safe version"><i class="fa fa-pencil"></i></a>
+                            &nbsp;<a href="#" data-toggle="modal" data-target="#modal-safe-version" data-module-id="{{ module.name }}" title="Is this a safe version"><i class="fa fa-pencil"></i></a>
                           {% endif %}
                         {% endif %}
                     </td>

@@ -260,6 +260,7 @@ class SiteDrupalModuleDocument extends BaseDocument {
     $siteModuleList = $this->getModules();
     $modulesList = array();
     foreach ($siteModuleList as $module) {
+      // @todo duplicate code checks with DrupalUpdateRequestService::updateSiteModules
       if (!isset($module['latestVersion'])) {
         continue;
       }
@@ -332,14 +333,34 @@ class SiteDrupalModuleDocument extends BaseDocument {
       if ($moduleName != $module['name']) {
         continue;
       }
-      if (!empty($module['flag'])) {
-        foreach ($module['flag']['safeVersion'] as $safeVersion) {
-          if ($safeVersion['version'] === $module['version']) {
-            return true;
-          }
+      if (SiteDrupalModuleDocument::modulesHasSafeVersionFlag($module)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Check if module data has the safe version flag set
+   *
+   * @param array $module
+   * @param array $module
+   *
+   * @return bool
+   */
+  public static function modulesHasSafeVersionFlag($module) {
+    if (empty($module['flag'])) {
+      return false;
+    }
+
+    if (!empty($module['flag']['safeVersion'])) {
+      foreach ($module['flag']['safeVersion'] as $safeVersion) {
+        if ($safeVersion['version'] === $module['version']) {
+          return true;
         }
       }
     }
+
     return false;
   }
 
