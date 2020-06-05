@@ -408,7 +408,7 @@ class DrupalSiteService {
     // Get a list of modules that have security updates.
     $moduleUpdates = $siteModule->getModulesRequiringUpdates();
     foreach ($moduleUpdates as $module) {
-      if (!$module['isSecurity']) {
+      if (isset($module['isSecurity']) && !$module['isSecurity']) {
         continue;
       }
       $modulesHaveSecurityUpdate[] = $module['name'];
