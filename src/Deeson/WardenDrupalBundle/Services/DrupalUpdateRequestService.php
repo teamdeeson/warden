@@ -255,7 +255,7 @@ class DrupalUpdateRequestService {
    * @return float
    */
   protected function getMicrotimeFloat() {
-    list($usec, $sec) = explode(' ', microtime());
+    [$usec, $sec] = explode(' ', microtime());
     return ((float)$usec + (float)$sec);
   }
 
@@ -440,6 +440,7 @@ class DrupalUpdateRequestService {
     // Check all the site modules to see if any of them are out of date and need a security update.
     $siteHasSecurityIssues = FALSE;
     foreach ($siteModule->getModules() as $module) {
+      // @todo duplicate code checks with SiteDrupalModuleDocument::getModulesRequiringUpdates
       if (!isset($module['latestVersion'])) {
         continue;
       }
@@ -447,6 +448,9 @@ class DrupalUpdateRequestService {
         continue;
       }
       if (DrupalModuleDocument::isLatestVersion($module)) {
+        continue;
+      }
+      if (SiteDrupalModuleDocument::modulesHasSafeVersionFlag($module)) {
         continue;
       }
 
