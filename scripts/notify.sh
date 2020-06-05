@@ -26,7 +26,7 @@ fi
 
 if [[ $1 == "test" || $1 == "dev" || $1 == "prod" ]] ; then
     if [[ $2 == "slack" || $2 == "email" ]] ; then
-        php app/console deeson:warden:dashboard-send-notification --env=${1} --type=${2}
+        php bin/console deeson:warden:dashboard-send-notification --env=${1} --type=${2}
     else
       echo "Error: Notification type not provided. Second argument must be 'slack' or 'email."
       usage
